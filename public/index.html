@@ -219,6 +219,14 @@ textarea.text-field{resize:vertical;min-height:130px}
   padding:13px;cursor:pointer;-webkit-appearance:none;
 }
 .btn-confirm-p:active{background:#059669}
+.btn-upload{
+  width:100%;background:#111827;border:1.5px dashed #374151;border-radius:10px;
+  color:#9ca3af;font-size:14px;font-family:'Inter',sans-serif;
+  padding:14px;cursor:pointer;text-align:center;
+  transition:border-color .15s, background .15s;
+  -webkit-appearance:none;
+}
+.btn-upload:active{background:#1f2937;border-color:#10b981;color:#10b981}
 .btn-eg{
   background:none;border:none;color:#6b7280;font-size:12px;
   font-family:'Inter',sans-serif;cursor:pointer;text-decoration:underline;text-align:left;
@@ -338,7 +346,24 @@ textarea.text-field{resize:vertical;min-height:130px}
 <div class="panel" id="panel">
   <div class="panel-handle"></div>
   <div class="panel-title">Add Transcript</div>
-  <div class="panel-sub">Paste a transcript and give it a name.</div>
+  <div class="panel-sub">Upload a file or paste text directly.</div>
+
+  <!-- File upload -->
+  <div>
+    <div class="field-label">UPLOAD A FILE</div>
+    <button class="btn-upload" onclick="document.getElementById('file-inp').click()">
+      📎 &nbsp;Browse files (txt, doc, docx, pdf…)
+    </button>
+    <input type="file" id="file-inp" accept=".txt,.doc,.docx,.pdf,.rtf,.csv,.md,.text,text/plain,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" multiple style="display:none" onchange="handleFiles(this)"/>
+    <div id="file-status" style="font-size:12px;color:#6b7280;margin-top:6px;display:none"></div>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;color:#374151;font-size:12px">
+    <div style="flex:1;height:1px;background:#374151"></div>
+    OR
+    <div style="flex:1;height:1px;background:#374151"></div>
+  </div>
+
   <div>
     <div class="field-label">NAME (optional)</div>
     <input type="text" class="text-field" id="p-name"
@@ -346,14 +371,14 @@ textarea.text-field{resize:vertical;min-height:130px}
       autocorrect="off"/>
   </div>
   <div>
-    <div class="field-label">TRANSCRIPT TEXT</div>
+    <div class="field-label">PASTE TEXT</div>
     <textarea class="text-field" id="p-text"
       placeholder="Paste the full transcript here..."></textarea>
   </div>
   <button class="btn-eg" onclick="loadExample()">← Load example transcript</button>
   <div class="panel-btns">
     <button class="btn-cancel-p" onclick="closePanel()">Cancel</button>
-    <button class="btn-confirm-p" onclick="confirmAdd()">Add Transcript →</button>
+    <button class="btn-confirm-p" onclick="confirmAdd()">Add →</button>
   </div>
   <div id="loaded-section" style="display:none">
     <div class="field-label" style="margin-bottom:8px">LOADED TRANSCRIPTS</div>
@@ -689,6 +714,89 @@ function renderLoaded(){
       <span class="loaded-item-name">📄 ${esc(s.name)}</span>
       <button class="loaded-item-rm" onclick="removeSource(${s.id})">×</button>
     </div>`).join('');
+}
+
+// ── FILE UPLOAD ────────────────────────────────────────────────────────────
+async function handleFiles(input){
+  const files = Array.from(input.files || []);
+  if(!files.length) return;
+  const status = document.getElementById('file-status');
+  status.style.display = 'block';
+  status.textContent = 'Reading files...';
+  let loaded = 0;
+
+  for(const file of files){
+    if(sources.length >= 10) break;
+    try {
+      let text = '';
+      const name = file.name;
+      const ext  = name.split('.').pop().toLowerCase();
+
+      if(ext === 'pdf'){
+        // Read PDF as text using basic extraction
+        text = await readPDF(file);
+      } else {
+        // Read as plain text (works for txt, md, csv, rtf, doc as plain)
+        text = await readAsText(file);
+      }
+
+      if(text.trim()){
+        const srcName = name.replace(/\.[^.]+$/, ''); // strip extension
+        sources.push({id:uid++, name:srcName, content:text.trim()});
+        loaded++;
+      }
+    } catch(e){
+      showToast('Could not read ' + file.name + ': ' + e.message);
+    }
+  }
+
+  updateBadge();
+  renderLoaded();
+  input.value = '';
+
+  if(loaded > 0){
+    status.textContent = `✅ ${loaded} file${loaded!==1?'s':''} loaded successfully`;
+    status.style.color = '#6ee7b7';
+    setTimeout(()=>{ status.style.display='none'; }, 3000);
+  } else {
+    status.textContent = 'Could not read any files. Try copying and pasting the text instead.';
+    status.style.color = '#fca5a5';
+  }
+}
+
+function readAsText(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload  = e => resolve(e.target.result);
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsText(file, 'utf-8');
+  });
+}
+
+async function readPDF(file){
+  // Load PDF.js from CDN and extract text
+  if(!window.pdfjsLib){
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf  = await window.pdfjsLib.getDocument({data: arrayBuffer}).promise;
+  let text   = '';
+  for(let i = 1; i <= pdf.numPages; i++){
+    const page    = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(item => item.str).join(' ') + '\n';
+  }
+  return text;
+}
+
+function loadScript(src){
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
 }
 
 function updateBadge(){
