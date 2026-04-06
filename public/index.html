@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Transcript Chat</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Inter',sans-serif;background:#111827;color:#f3f4f6;overflow:hidden}
+body{display:flex;flex-direction:column;height:100dvh}
+
+/* LOGIN */
+#login-screen{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:24px;background:#111827;
+}
+.login-box{
+  width:100%;max-width:360px;
+  background:#1f2937;border:1px solid #374151;
+  border-radius:20px;padding:32px 28px;
+  display:flex;flex-direction:column;gap:20px;
+}
+.login-logo{text-align:center}
+.login-logo-icon{font-size:36px;margin-bottom:8px}
+.login-logo-title{font-size:20px;font-weight:700;color:#f9fafb}
+.login-logo-title span{color:#10b981}
+.login-logo-sub{font-size:13px;color:#6b7280;margin-top:4px}
+.login-field{display:flex;flex-direction:column;gap:6px}
+.login-label{font-size:11px;font-weight:600;color:#6b7280;letter-spacing:.08em}
+.login-input{
+  background:#111827;border:1.5px solid #374151;
+  border-radius:10px;color:#f3f4f6;
+  font-family:'Inter',sans-serif;font-size:15px;
+  padding:13px 15px;outline:none;transition:border-color .15s;
+  width:100%;
+}
+.login-input:focus{border-color:#10b981}
+.login-input::placeholder{color:#374151}
+.login-error{
+  font-size:12px;color:#f87171;background:#1f0a0a;
+  border:1px solid #7f1d1d;border-radius:8px;
+  padding:10px 12px;display:none;
+}
+.login-error.show{display:block}
+.btn-login{
+  width:100%;background:#10b981;color:#fff;border:none;
+  border-radius:10px;font-size:15px;font-weight:700;
+  font-family:'Inter',sans-serif;padding:14px;cursor:pointer;
+  transition:background .15s;
+}
+.btn-login:active{background:#059669}
+.btn-login:disabled{background:#1f2937;color:#4b5563;cursor:not-allowed}
+
+/* APP */
+#app{display:none;flex-direction:column;height:100dvh}
+#app.visible{display:flex}
+
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;background:#1f2937;border-bottom:1px solid #374151;
+  flex-shrink:0;gap:10px;
+}
+.topbar-left{display:flex;align-items:center;gap:8px;min-width:0}
+.logo{font-size:15px;font-weight:700;color:#f9fafb;white-space:nowrap}
+.logo span{color:#10b981}
+.src-pill{
+  font-size:11px;font-weight:600;background:#064e3b;color:#6ee7b7;
+  border:1px solid #065f46;border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0;
+}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-add-top{
+  background:#10b981;color:#fff;border:none;border-radius:8px;
+  padding:8px 13px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;
+  cursor:pointer;white-space:nowrap;
+}
+.btn-add-top:active{background:#059669}
+.btn-logout{
+  background:transparent;color:#6b7280;border:1px solid #374151;
+  border-radius:8px;padding:8px 12px;font-size:12px;font-weight:500;
+  font-family:'Inter',sans-serif;cursor:pointer;white-space:nowrap;
+}
+.btn-logout:active{background:#1f2937}
+
+.msgs{
+  flex:1;overflow-y:auto;padding:20px 16px 8px;
+  display:flex;flex-direction:column;gap:16px;background:#111827;
+}
+.welcome{display:flex;flex-direction:column;align-items:center;text-align:center;padding:16px 0 8px;gap:10px}
+.welcome-emoji{font-size:40px}
+.welcome h1{font-size:20px;font-weight:700;color:#f9fafb}
+.welcome p{font-size:13px;color:#9ca3af;line-height:1.7;max-width:300px}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-top:6px}
+.qbtn{
+  background:#1f2937;border:1px solid #374151;border-radius:10px;
+  padding:11px 10px;text-align:left;cursor:pointer;font-family:'Inter',sans-serif;
+}
+.qbtn:active{background:#2d3748}
+.qbtn-t{font-size:12px;font-weight:600;color:#f3f4f6;margin-bottom:2px}
+.qbtn-s{font-size:11px;color:#6b7280;line-height:1.4}
+
+.msg{display:flex;gap:9px;align-items:flex-start}
+.msg.user{flex-direction:row-reverse}
+.av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.av.bot{background:#10b981;color:#fff}
+.av.user{background:#374151;color:#d1d5db}
+.msg-col{display:flex;flex-direction:column;max-width:83%;min-width:0}
+.msg.user .msg-col{align-items:flex-end}
+.msg-name{font-size:11px;font-weight:600;color:#6b7280;margin-bottom:3px}
+.bubble{border-radius:16px;padding:11px 14px;font-size:14px;line-height:1.75;word-break:break-word}
+.bubble.bot{background:#1f2937;color:#e5e7eb;border-radius:4px 16px 16px 16px;border:1px solid #374151}
+.bubble.user{background:#065f46;color:#ecfdf5;border-radius:16px 4px 16px 16px}
+.bubble strong{color:#fff;font-weight:600}
+.bubble ul{padding-left:16px;margin:6px 0}
+.bubble li{margin-bottom:4px}
+.bubble p{margin-bottom:8px}
+.bubble p:last-child{margin-bottom:0}
+
+.typing-bubble{background:#1f2937;border:1px solid #374151;border-radius:4px 16px 16px 16px;padding:14px 16px;display:flex;align-items:center;gap:4px}
+.dot{width:7px;height:7px;border-radius:50%;background:#4b5563;animation:blink 1.2s infinite}
+.dot:nth-child(2){animation-delay:.2s}
+.dot:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+.inputbar{padding:10px 14px 16px;background:#1f2937;border-top:1px solid #374151;flex-shrink:0}
+.inputrow{display:flex;gap:8px;align-items:flex-end}
+.chat-inp{
+  flex:1;background:#111827;border:1.5px solid #374151;border-radius:12px;
+  color:#f3f4f6;font-family:'Inter',sans-serif;font-size:15px;line-height:1.5;
+  padding:11px 14px;resize:none;outline:none;max-height:110px;overflow-y:auto;
+}
+.chat-inp::placeholder{color:#4b5563}
+.send-btn{
+  width:42px;height:42px;border-radius:10px;background:#10b981;border:none;
+  color:#fff;font-size:20px;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.send-btn:disabled{background:#1f2937;color:#374151;cursor:not-allowed}
+.send-btn:not(:disabled):active{background:#059669}
+.inp-hint{font-size:11px;color:#374151;text-align:center;margin-top:7px}
+
+.panel-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:50}
+.panel-overlay.open{display:block}
+.panel{
+  position:fixed;bottom:0;left:0;right:0;background:#1f2937;
+  border-radius:22px 22px 0 0;border-top:1px solid #374151;
+  padding:18px 20px 36px;z-index:51;display:flex;flex-direction:column;gap:14px;
+  transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);
+  max-height:88dvh;overflow-y:auto;
+}
+.panel.open{transform:translateY(0)}
+.panel-handle{width:36px;height:4px;background:#374151;border-radius:2px;margin:0 auto 2px}
+.panel-title{font-size:17px;font-weight:700;color:#f9fafb}
+.panel-sub{font-size:13px;color:#9ca3af;line-height:1.6;margin-top:-6px}
+.field-label{font-size:11px;font-weight:600;color:#6b7280;letter-spacing:.06em;margin-bottom:5px}
+.text-field{
+  width:100%;background:#111827;border:1.5px solid #374151;border-radius:10px;
+  color:#f3f4f6;font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;
+  padding:12px 14px;outline:none;transition:border-color .15s;
+}
+.text-field:focus{border-color:#10b981}
+.text-field::placeholder{color:#374151}
+textarea.text-field{resize:vertical;min-height:130px}
+.panel-btns{display:flex;gap:10px}
+.btn-cancel-p{flex:1;background:transparent;border:1px solid #374151;border-radius:10px;color:#9ca3af;font-size:14px;font-weight:500;font-family:'Inter',sans-serif;padding:12px;cursor:pointer}
+.btn-confirm-p{flex:2;background:#10b981;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;padding:12px;cursor:pointer}
+.btn-confirm-p:active{background:#059669}
+.btn-eg{background:none;border:none;color:#6b7280;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;text-decoration:underline;text-align:left}
+.loaded-list{display:flex;flex-direction:column;gap:6px}
+.loaded-item{display:flex;align-items:center;gap:8px;background:#111827;border:1px solid #374151;border-radius:8px;padding:10px 12px}
+.loaded-item-name{flex:1;font-size:13px;color:#d1d5db;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.loaded-item-rm{background:none;border:none;color:#4b5563;font-size:19px;cursor:pointer;padding:0;line-height:1;flex-shrink:0}
+
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#7f1d1d;color:#fecaca;border:1px solid #991b1b;border-radius:10px;padding:10px 18px;font-size:13px;z-index:100;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90%;text-align:center}
+.toast.show{opacity:1}
+
+@media(min-width:640px){
+  .msgs{padding:24px 10% 12px}
+  .panel{left:auto;right:20px;width:400px;border-radius:16px;bottom:20px;border:1px solid #374151}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">💬</div>
+      <div class="login-logo-title">Transcript<span>Chat</span></div>
+      <div class="login-logo-sub">Sign in to continue</div>
+    </div>
+    <div class="login-field">
+      <div class="login-label">USERNAME</div>
+      <input class="login-input" type="text" id="l-user" placeholder="Enter username" autocomplete="username" autocorrect="off" autocapitalize="off"/>
+    </div>
+    <div class="login-field">
+      <div class="login-label">PASSWORD</div>
+      <input class="login-input" type="password" id="l-pass" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <div class="login-error" id="login-error">Incorrect username or password. Please try again.</div>
+    <button class="btn-login" id="btn-login" onclick="doLogin()">Sign in →</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo">Transcript<span>Chat</span></div>
+      <div class="src-pill" id="src-pill">0 sources</div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn-add-top" onclick="openPanel()">+ Add Transcript</button>
+      <button class="btn-logout" onclick="logout()">Sign out</button>
+    </div>
+  </div>
+
+  <div class="msgs" id="msgs">
+    <div id="welcome" class="welcome">
+      <div class="welcome-emoji">💬</div>
+      <h1>What do you want to know?</h1>
+      <p>Add a transcript using the button above, then ask me anything about the candidate.</p>
+      <div class="quick-grid">
+        <button class="qbtn" onclick="ask('Can you give me a summary of this candidate?')">
+          <div class="qbtn-t">📋 Summary</div><div class="qbtn-s">Give me an overview</div>
+        </button>
+        <button class="qbtn" onclick="ask('What is their professional background and experience?')">
+          <div class="qbtn-t">💼 Experience</div><div class="qbtn-s">Career & background</div>
+        </button>
+        <button class="qbtn" onclick="ask('What are their key strengths and what do they specialise in?')">
+          <div class="qbtn-t">⭐ Strengths</div><div class="qbtn-s">Skills & expertise</div>
+        </button>
+        <button class="qbtn" onclick="ask('What are their salary expectations?')">
+          <div class="qbtn-t">💰 Salary</div><div class="qbtn-s">Compensation</div>
+        </button>
+        <button class="qbtn" onclick="ask('Why are they looking to leave their current role?')">
+          <div class="qbtn-t">🚪 Motivation</div><div class="qbtn-s">Why they want to move</div>
+        </button>
+        <button class="qbtn" onclick="ask('Where do they see themselves in 5 years?')">
+          <div class="qbtn-t">🎯 Goals</div><div class="qbtn-s">Future ambitions</div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="inputbar">
+    <div class="inputrow">
+      <textarea class="chat-inp" id="chat-inp" rows="1"
+        placeholder="Ask anything about the candidate..."
+        oninput="onInput(this)" onkeydown="onKey(event)"></textarea>
+      <button class="send-btn" id="send-btn" disabled onclick="send()">↑</button>
+    </div>
+    <div class="inp-hint">Enter to send · Shift+Enter for new line</div>
+  </div>
+</div>
+
+<div class="panel-overlay" id="panel-overlay" onclick="closePanel()"></div>
+<div class="panel" id="panel">
+  <div class="panel-handle"></div>
+  <div class="panel-title">Add Transcript</div>
+  <div class="panel-sub">Give it a name and paste the full transcript below.</div>
+  <div>
+    <div class="field-label">NAME (optional)</div>
+    <input type="text" class="text-field" id="p-name" placeholder="e.g. John Smith — Developer Interview"/>
+  </div>
+  <div>
+    <div class="field-label">TRANSCRIPT TEXT</div>
+    <textarea class="text-field" id="p-text" placeholder="Paste the full transcript here..."></textarea>
+  </div>
+  <button class="btn-eg" onclick="loadExample()">← Load example transcript</button>
+  <div class="panel-btns">
+    <button class="btn-cancel-p" onclick="closePanel()">Cancel</button>
+    <button class="btn-confirm-p" onclick="confirmAdd()">Add Transcript →</button>
+  </div>
+  <div id="loaded-section" style="display:none">
+    <div class="field-label" style="margin-bottom:8px">LOADED TRANSCRIPTS</div>
+    <div class="loaded-list" id="loaded-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let sources = [];
+let history = [];
+let loading = false;
+let uid = 1;
+let authToken = sessionStorage.getItem('tc_token') || '';
+
+const SERVER = window.location.origin;
+
+const EXAMPLE = `Interviewer: Can you walk me through your professional background?
+Sarah: Absolutely. I have over 10 years of experience in product management, primarily in fintech. I started at a small payments startup called PayRoute where I was one of the first product hires. After three years I joined Stripe, where I spent five years leading the checkout and conversion team.
+
+Interviewer: What was your biggest achievement at Stripe?
+Sarah: The checkout redesign we shipped in 2021. We completely overhauled the payment flow based on user research and saw a 22% improvement in conversion rates across the platform.
+
+Interviewer: Why are you looking to leave?
+Sarah: Stripe has been incredible for my growth, but I feel ready to shape product strategy from the ground up. I want to build a team and a product vision.
+
+Interviewer: What are your greatest strengths?
+Sarah: Bridging technical and business perspectives. I'm comfortable going deep with engineers on architecture, but I can also present clearly to a board. I'm also strong at prioritisation.
+
+Interviewer: And areas you're working on?
+Sarah: Delegation. I'm naturally hands-on and it took time to realise doing everything myself was slowing the team down.
+
+Interviewer: What are your salary expectations?
+Sarah: I'm targeting a base between 180 and 210 thousand, depending on equity and the overall package.
+
+Interviewer: Where do you see yourself in five years?
+Sarah: In a VP of Product or CPO role where I've helped build something meaningful.`;
+
+// ── AUTH ───────────────────────────────────────────────────────────────────
+if(authToken) showApp();
+
+async function doLogin(){
+  const u = document.getElementById('l-user').value.trim();
+  const p = document.getElementById('l-pass').value;
+  const btn = document.getElementById('btn-login');
+  const err = document.getElementById('login-error');
+  if(!u||!p) return;
+  btn.disabled = true; btn.textContent = 'Signing in...';
+  err.classList.remove('show');
+
+  try{
+    const res = await fetch(`${SERVER}/api/login`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:u,password:p})
+    });
+    const data = await res.json();
+    if(data.ok){
+      authToken = data.token;
+      sessionStorage.setItem('tc_token', authToken);
+      showApp();
+    } else {
+      err.classList.add('show');
+      btn.disabled = false; btn.textContent = 'Sign in →';
+    }
+  } catch(e){
+    err.textContent = 'Could not reach server. Please try again.';
+    err.classList.add('show');
+    btn.disabled = false; btn.textContent = 'Sign in →';
+  }
+}
+
+function showApp(){
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+}
+
+function logout(){
+  sessionStorage.removeItem('tc_token');
+  authToken = '';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('l-user').value = '';
+  document.getElementById('l-pass').value = '';
+  sources=[]; history=[];
+  document.getElementById('msgs').innerHTML='';
+  document.getElementById('src-pill').textContent='0 sources';
+}
+
+// ── SYSTEM PROMPT ──────────────────────────────────────────────────────────
+function buildSystem(){
+  if(!sources.length) return `You are Transcript Chat. No transcripts are loaded. Tell the user to add one using the "+ Add Transcript" button.`;
+  const block = sources.map(s=>`=== ${s.name} ===\n${s.content}`).join('\n\n');
+  return `You are Transcript Chat — you answer questions about interview transcripts in natural, fluent, conversational English like a knowledgeable colleague.
+
+TRANSCRIPTS:
+${block}
+
+INSTRUCTIONS:
+- Always identify the candidate by name if possible. Use their name naturally in your answers.
+- Compose proper, fluent sentences. Example: "She has a degree in Computer Science" or "He specialises in backend engineering" or "His salary expectation is between 180 and 210 thousand."
+- Never say "according to the transcript" repeatedly — just answer naturally.
+- If something isn't mentioned, say so clearly and briefly.
+- Keep answers concise: 2–5 sentences. Use bullet points only for 3+ items.
+- You can also answer general questions unrelated to the transcript.`;
+}
+
+// ── SEND ───────────────────────────────────────────────────────────────────
+async function send(){
+  const el = document.getElementById('chat-inp');
+  const q = el.value.trim();
+  if(!q||loading) return;
+  el.value=''; el.style.height='auto'; toggleSend();
+  const ws = document.getElementById('welcome');
+  if(ws) ws.remove();
+  addMsg('user',q);
+  loading=true; toggleSend();
+  const typingEl=addTyping();
+  history.push({role:'user',content:q});
+
+  try{
+    const res = await fetch(`${SERVER}/api/chat`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-auth-token':authToken},
+      body:JSON.stringify({system:buildSystem(),messages:history.slice(-12)})
+    });
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      if(res.status===401){logout();return;}
+      throw new Error(err?.error||`Error ${res.status}`);
+    }
+    const data=await res.json();
+    const reply=data.reply||'No response.';
+    history.push({role:'assistant',content:reply});
+    typingEl.remove();
+    addMsg('bot',reply);
+  } catch(e){
+    history.pop();
+    typingEl.remove();
+    showToast('⚠ '+(e.message||'Something went wrong.'));
+  }
+  loading=false; toggleSend(); scrollBottom();
+}
+
+function ask(q){document.getElementById('chat-inp').value=q;onInput(document.getElementById('chat-inp'));send()}
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+function renderMd(text){
+  const e=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return e.split('\n\n').map(block=>{
+    const t=block.trim();
+    if(/^[-•*] /m.test(t)){
+      const lines=t.split('\n').filter(l=>l.trim());
+      return '<ul>'+lines.map(l=>`<li>${fmt(l.replace(/^[-•*]\s*/,''))}</li>`).join('')+'</ul>';
+    }
+    if(/^\d+\. /m.test(t)){
+      const lines=t.split('\n').filter(l=>l.trim());
+      return '<ul>'+lines.map(l=>`<li>${fmt(l.replace(/^\d+\.\s*/,''))}</li>`).join('')+'</ul>';
+    }
+    return `<p>${fmt(t)}</p>`;
+  }).join('');
+}
+function fmt(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>')}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function addMsg(role,text){
+  const msgs=document.getElementById('msgs');
+  const isUser=role==='user';
+  const wrap=document.createElement('div');
+  wrap.className=`msg ${role}`;
+  if(isUser){
+    wrap.innerHTML=`<div class="msg-col"><div class="msg-name">You</div><div class="bubble user">${esc(text)}</div></div><div class="av user">U</div>`;
+  } else {
+    wrap.innerHTML=`<div class="av bot">TC</div><div class="msg-col"><div class="msg-name">Transcript Chat</div><div class="bubble bot">${renderMd(text)}</div></div>`;
+  }
+  msgs.appendChild(wrap); scrollBottom(); return wrap;
+}
+
+function addTyping(){
+  const msgs=document.getElementById('msgs');
+  const w=document.createElement('div');
+  w.className='msg bot';
+  w.innerHTML=`<div class="av bot">TC</div><div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  msgs.appendChild(w); scrollBottom(); return w;
+}
+
+function scrollBottom(){const m=document.getElementById('msgs');setTimeout(()=>m.scrollTop=m.scrollHeight,60)}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4500)}
+function onInput(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,110)+'px';toggleSend()}
+function onKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!document.getElementById('send-btn').disabled)send()}}
+function toggleSend(){const v=document.getElementById('chat-inp').value.trim();document.getElementById('send-btn').disabled=!v||loading}
+
+// ── PANEL ──────────────────────────────────────────────────────────────────
+function openPanel(){
+  document.getElementById('p-name').value='';
+  document.getElementById('p-text').value='';
+  document.getElementById('panel-overlay').classList.add('open');
+  document.getElementById('panel').classList.add('open');
+  renderLoaded();
+  setTimeout(()=>document.getElementById('p-name').focus(),320);
+}
+function closePanel(){
+  document.getElementById('panel-overlay').classList.remove('open');
+  document.getElementById('panel').classList.remove('open');
+}
+function loadExample(){
+  document.getElementById('p-name').value='Sarah Johnson — Product Manager';
+  document.getElementById('p-text').value=EXAMPLE;
+}
+function confirmAdd(){
+  const text=document.getElementById('p-text').value.trim();
+  if(!text){document.getElementById('p-text').focus();return;}
+  const name=document.getElementById('p-name').value.trim()||('Transcript '+(sources.length+1));
+  sources.push({id:uid++,name,content:text});
+  updateBadge(); history=[];
+  document.getElementById('p-name').value='';
+  document.getElementById('p-text').value='';
+  renderLoaded();
+}
+function removeSource(id){sources=sources.filter(s=>s.id!==id);updateBadge();history=[];renderLoaded()}
+function renderLoaded(){
+  const sec=document.getElementById('loaded-section');
+  const list=document.getElementById('loaded-list');
+  if(!sources.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  list.innerHTML=sources.map(s=>`<div class="loaded-item"><span class="loaded-item-name">📄 ${esc(s.name)}</span><button class="loaded-item-rm" onclick="removeSource(${s.id})">×</button></div>`).join('');
+}
+function updateBadge(){const n=sources.length;document.getElementById('src-pill').textContent=n+' source'+(n!==1?'s':'')}
+</script>
+</body>
+</html>
