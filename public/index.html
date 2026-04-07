@@ -424,9 +424,7 @@ textarea.finput{resize:vertical;min-height:120px}
     </div>
 
     <div class="sb-section">RECENTS</div>
-    <div class="sb-history" id="sb-history">
-      <div class="sb-empty" id="sb-empty">No chats yet.<br/>Start a conversation below.</div>
-    </div>
+    <div class="sb-history" id="sb-history"></div>
 
     <div class="sb-foot">
       <button class="btn-sources" onclick="openPanel()">
@@ -588,7 +586,7 @@ let loading   = false;
 let uid       = 1;
 let chatUid   = 1;
 let activeChatId = null;
-let authToken = localStorage.getItem('tc_token') || '';
+let authToken = '';
 
 // Persist chats in localStorage
 let chats = JSON.parse(localStorage.getItem('tc_chats') || '[]');
@@ -618,7 +616,7 @@ Interviewer: Where do you see yourself in five years?
 Sarah: In a VP of Product or CPO role where I have helped build something meaningful.`;
 
 // ── AUTH ───────────────────────────────────────────────────────────────────
-if(authToken) showApp();
+// Always show login screen on page load
 
 async function doLogin(){
   const u = document.getElementById('l-user').value.trim();
@@ -636,7 +634,6 @@ async function doLogin(){
     const data = await res.json();
     if(data.ok){
       authToken=data.token;
-      localStorage.setItem('tc_token',authToken);
       showApp();
     } else {
       err.classList.add('show');
@@ -656,7 +653,6 @@ function showApp(){
 }
 
 function logout(){
-  localStorage.removeItem('tc_token');
   authToken='';
   sources=[]; chatHistory=[]; activeChatId=null;
   document.getElementById('login-screen').style.display='flex';
@@ -751,21 +747,17 @@ function deleteChat(id){
 
 function renderSidebar(){
   const hist = document.getElementById('sb-history');
-  const empty = document.getElementById('sb-empty');
+  if(!hist) return;
   if(!chats.length){
-    hist.innerHTML='';
-    empty.style.display='block';
-    hist.appendChild(empty);
+    hist.innerHTML = '<div class="sb-empty">No chats yet.<br/>Start a conversation below.</div>';
     return;
   }
-  empty.style.display='none';
   hist.innerHTML = chats.map(c=>`
     <div class="hist-item${activeChatId===c.id?' active':''}" data-id="${c.id}">
       <span class="hist-item-text">${esc(c.title)}</span>
       <button class="hist-item-del" data-del="${c.id}" title="Delete">×</button>
     </div>`).join('');
 
-  // Event delegation — handle clicks on the list
   hist.onclick = function(e){
     const delBtn = e.target.closest('[data-del]');
     if(delBtn){ e.stopPropagation(); deleteChat(Number(delBtn.dataset.del)); return; }
