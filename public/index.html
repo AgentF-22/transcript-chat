@@ -77,7 +77,7 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
 }
 .sb-logo:hover{background:#2a2a2a}
 .sb-logo-icon{font-size:20px}
-.sb-logo-text{font-size:15px;font-weight:700;color:#fff}
+.sb-logo-text{font-size:15px;font-weight:700;color:#fff;letter-spacing:0;white-space:nowrap}
 .sb-logo-text span{color:#10a37f}
 .btn-newchat{
   display:flex;align-items:center;gap:9px;
@@ -468,7 +468,7 @@ textarea.finput{resize:vertical;min-height:120px}
       <button class="btn-sources" onclick="createDeliverable()" style="color:#10a37f;background:none">
         🔗 &nbsp;Create deliverable
       </button>
-      <button class="btn-sources" onclick="openInbox()" style="position:relative">
+      <button class="btn-sources" id="btn-inbox" onclick="openInbox()" style="position:relative;display:none">
         ✉️ &nbsp;Inbox
         <span id="unread-badge" style="display:none;background:#ef4444;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:2px 6px;margin-left:4px">0</span>
       </button>
@@ -618,25 +618,46 @@ textarea.finput{resize:vertical;min-height:120px}
 
 <!-- ADMIN PANEL -->
 <div class="overlay" id="admin-overlay" onclick="if(event.target===this)closeAdmin()" style="display:none;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#2f2f2f;border:1px solid #3f3f3f;border-radius:20px;padding:28px;width:100%;max-width:500px;max-height:90dvh;overflow-y:auto;display:flex;flex-direction:column;gap:20px">
+  <div style="background:#2f2f2f;border:1px solid #3f3f3f;border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;display:flex;flex-direction:column;gap:20px">
     <div style="font-size:18px;font-weight:700;color:#fff">⚙️ Admin Panel</div>
 
-    <!-- My inbox (replies from users) -->
-    <div>
-      <div class="flabel" style="margin-bottom:10px">MY INBOX — REPLIES FROM USERS</div>
-      <div id="admin-inbox"><div style="color:#565869;font-size:13px">Loading...</div></div>
+    <!-- Tabs -->
+    <div style="display:flex;gap:0;background:#212121;border-radius:10px;padding:4px">
+      <button id="tab-users-btn" onclick="switchAdminTab('users')" style="flex:1;padding:9px;border:none;border-radius:8px;background:#10a37f;color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Manage Users</button>
+      <button id="tab-inbox-btn" onclick="switchAdminTab('inbox')" style="flex:1;padding:9px;border:none;border-radius:8px;background:transparent;color:#8e8ea0;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;position:relative">
+        Inbox
+        <span id="admin-unread-dot" style="display:none;position:absolute;top:6px;right:10px;width:7px;height:7px;background:#ef4444;border-radius:50%"></span>
+      </button>
     </div>
 
-    <!-- Pending requests -->
-    <div>
-      <div class="flabel" style="margin-bottom:10px">PENDING ACCOUNT REQUESTS</div>
-      <div id="admin-requests"><div style="color:#565869;font-size:13px">Loading...</div></div>
+    <!-- Manage Users tab -->
+    <div id="tab-users" style="display:flex;flex-direction:column;gap:16px">
+      <div>
+        <div class="flabel" style="margin-bottom:8px">PENDING ACCOUNT REQUESTS</div>
+        <div id="admin-requests"><div style="color:#565869;font-size:13px">Loading...</div></div>
+      </div>
+      <div>
+        <div class="flabel" style="margin-bottom:8px">ACTIVE USERS</div>
+        <div id="admin-users"><div style="color:#565869;font-size:13px">Loading...</div></div>
+      </div>
     </div>
 
-    <!-- Users -->
-    <div>
-      <div class="flabel" style="margin-bottom:10px">ACTIVE USERS</div>
-      <div id="admin-users"><div style="color:#565869;font-size:13px">Loading...</div></div>
+    <!-- Inbox tab -->
+    <div id="tab-inbox" style="display:none;flex-direction:column;gap:16px">
+      <!-- Send message -->
+      <div>
+        <div class="flabel" style="margin-bottom:8px">SEND MESSAGE</div>
+        <select id="msg-to" class="finput" style="margin-bottom:8px">
+          <option value="">Select a user...</option>
+        </select>
+        <textarea id="msg-text" class="finput" rows="3" placeholder="Write your message..." style="resize:none"></textarea>
+        <button class="btn-add" onclick="adminSendMsg()" style="margin-top:8px;width:100%">Send →</button>
+      </div>
+      <!-- Replies from users -->
+      <div>
+        <div class="flabel" style="margin-bottom:8px">REPLIES FROM USERS</div>
+        <div id="admin-inbox"><div style="color:#565869;font-size:13px">Loading...</div></div>
+      </div>
     </div>
 
     <button class="btn-cancel" onclick="closeAdmin()">Close</button>
@@ -790,8 +811,13 @@ async function doLogin(){
     if(data.ok){
       authToken=data.token;
       isAdminUser = !!data.isAdmin;
-      if(data.isAdmin) document.getElementById('btn-admin').style.display='flex';
-      else document.getElementById('btn-admin').style.display='none';
+      if(data.isAdmin){
+        document.getElementById('btn-admin').style.display='flex';
+        document.getElementById('btn-inbox').style.display='none';
+      } else {
+        document.getElementById('btn-admin').style.display='none';
+        document.getElementById('btn-inbox').style.display='flex';
+      }
       showApp(u);
       checkUnread();
       setInterval(checkUnread, 30000); // check every 30 seconds
@@ -1390,7 +1416,29 @@ function capitalise(s){ return s.charAt(0).toUpperCase()+s.slice(1).toLowerCase(
 async function openAdmin(){
   document.getElementById('admin-overlay').style.display='flex';
   closeSb();
+  switchAdminTab('users');
   await loadAdminData();
+}
+
+function switchAdminTab(tab){
+  const usersTab  = document.getElementById('tab-users');
+  const inboxTab  = document.getElementById('tab-inbox');
+  const usersBtn  = document.getElementById('tab-users-btn');
+  const inboxBtn  = document.getElementById('tab-inbox-btn');
+  if(tab === 'users'){
+    usersTab.style.display='flex';
+    inboxTab.style.display='none';
+    usersBtn.style.background='#10a37f'; usersBtn.style.color='#fff';
+    inboxBtn.style.background='transparent'; inboxBtn.style.color='#8e8ea0';
+  } else {
+    usersTab.style.display='none';
+    inboxTab.style.display='flex';
+    inboxBtn.style.background='#10a37f'; inboxBtn.style.color='#fff';
+    usersBtn.style.background='transparent'; usersBtn.style.color='#8e8ea0';
+    document.getElementById('admin-unread-dot').style.display='none';
+    loadAdminInbox();
+    loadUserDropdown();
+  }
 }
 function closeAdmin(){
   document.getElementById('admin-overlay').style.display='none';
@@ -1400,20 +1448,79 @@ async function loadAdminData(){
   try{
     const iRes = await fetch(`${SERVER}/api/messages/inbox`,{headers:{'x-auth-token':authToken}});
     const iData = await iRes.json();
-    const iEl = document.getElementById('admin-inbox');
-    if(!iData.messages.length){
-      iEl.innerHTML='<div style="color:#565869;font-size:13px">No replies yet.</div>';
+    if(iData.messages && iData.messages.length > 0){
+      document.getElementById('admin-unread-dot').style.display='block';
+    }
+  } catch(e){}
+
+  // Load pending requests
+  try{
+    const rRes = await fetch(`${SERVER}/api/admin/requests`,{headers:{'x-auth-token':authToken}});
+    const rData = await rRes.json();
+    const rEl = document.getElementById('admin-requests');
+    if(!rData.requests.length){
+      rEl.innerHTML='<div style="color:#565869;font-size:13px">No pending requests.</div>';
     } else {
-      iEl.innerHTML = iData.messages.map(m=>`
-        <div style="background:#212121;border:1px solid #3f3f3f;border-radius:9px;padding:12px 14px;margin-bottom:6px">
-          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-            <span style="font-size:12px;font-weight:600;color:#10a37f">👤 ${esc(m.from)}</span>
-            <span style="font-size:11px;color:#565869">${new Date(m.sentAt).toLocaleString()}</span>
-          </div>
-          <div style="font-size:13px;color:#ececec;line-height:1.6">${esc(m.text)}</div>
+      rEl.innerHTML = rData.requests.map(r=>`
+        <div style="display:flex;align-items:center;gap:10px;background:#212121;border:1px solid #3f3f3f;border-radius:8px;padding:11px 13px;margin-bottom:6px">
+          <span style="flex:1;font-size:14px;color:#ececec;font-weight:600">👤 ${esc(r.username)}</span>
+          <span style="font-size:11px;color:#565869">${new Date(r.requestedAt).toLocaleDateString()}</span>
+          <button onclick="adminApprove('${r.id}')" style="background:#10a37f;border:none;color:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;font-family:'Inter',sans-serif">✅ Approve</button>
+          <button onclick="adminDecline('${r.id}')" style="background:#3f3f3f;border:none;color:#f87171;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">❌ Decline</button>
         </div>`).join('');
     }
+  } catch(e){ document.getElementById('admin-requests').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
+
+  // Load users
+  try{
+    const uRes = await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});
+    const uData = await uRes.json();
+    const uEl = document.getElementById('admin-users');
+    if(!uData.users.length){
+      uEl.innerHTML='<div style="color:#565869;font-size:13px">No users yet.</div>';
+    } else {
+      uEl.innerHTML = uData.users.map(u=>`
+        <div style="display:flex;align-items:center;gap:10px;background:#212121;border:1px solid #3f3f3f;border-radius:8px;padding:11px 13px;margin-bottom:6px">
+          <span style="flex:1;font-size:14px;color:${u.blocked?'#f87171':'#ececec'};font-weight:600">👤 ${esc(u.username)}${u.blocked?' <span style="font-size:11px">(blocked)</span>':''}</span>
+          ${u.blocked
+            ?`<button onclick="adminUnblock('${u.username}')" style="background:#3f3f3f;border:none;color:#6ee7b7;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">Unblock</button>`
+            :`<button onclick="adminBlock('${u.username}')" style="background:#3f3f3f;border:none;color:#fbbf24;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">Block</button>`
+          }
+          <button onclick="adminDelete('${u.username}')" style="background:#3f3f3f;border:none;color:#f87171;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">Delete</button>
+        </div>`).join('');
+    }
+  } catch(e){ document.getElementById('admin-users').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
+}
+
+async function loadAdminInbox(){
+  try{
+    const iRes = await fetch(`${SERVER}/api/messages/inbox`,{headers:{'x-auth-token':authToken}});
+    const iData = await iRes.json();
+    const iEl = document.getElementById('admin-inbox');
+    if(!iData.messages || !iData.messages.length){
+      iEl.innerHTML='<div style="color:#565869;font-size:13px">No replies yet.</div>';
+      return;
+    }
+    iEl.innerHTML = iData.messages.map(m=>`
+      <div style="background:#212121;border:1px solid #3f3f3f;border-radius:9px;padding:12px 14px;margin-bottom:6px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-size:12px;font-weight:600;color:#10a37f">👤 ${esc(m.from)}</span>
+          <span style="font-size:11px;color:#565869">${new Date(m.sentAt).toLocaleString()}</span>
+        </div>
+        <div style="font-size:13px;color:#ececec;line-height:1.6">${esc(m.text)}</div>
+      </div>`).join('');
   } catch(e){ document.getElementById('admin-inbox').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
+}
+
+async function loadUserDropdown(){
+  try{
+    const uRes = await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});
+    const uData = await uRes.json();
+    const sel = document.getElementById('msg-to');
+    sel.innerHTML = '<option value="">Select a user...</option>' +
+      uData.users.map(u=>`<option value="${esc(u.username)}">${esc(u.username)}</option>`).join('');
+  } catch(e){}
+}
   try{
     const rRes = await fetch(`${SERVER}/api/admin/requests`,{headers:{'x-auth-token':authToken}});
     const rData = await rRes.json();
