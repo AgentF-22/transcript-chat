@@ -1128,23 +1128,16 @@ function readAsText(file){
   });
 }
 async function readDocx(file){
-  if(!window.mammoth){
-    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.11.0/mammoth.browser.min.js');
-  }
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = function(e){
-      const arrayBuffer = e.target.result;
-      window.mammoth.extractRawText({arrayBuffer})
-        .then(result => {
-          if(!result.value) reject(new Error('No text found'));
-          else resolve(result.value);
-        })
-        .catch(reject);
-    };
-    reader.onerror = () => reject(new Error('Could not read file'));
-    reader.readAsArrayBuffer(file);
+  // Send file to server for text extraction using mammoth
+  const arrayBuffer = await file.arrayBuffer();
+  const res = await fetch(`${SERVER}/api/extract-docx`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/octet-stream' },
+    body: arrayBuffer
   });
+  const data = await res.json();
+  if(!data.ok) throw new Error(data.error || 'Could not read document');
+  return data.text;
 }
 async function readPDF(file){
   if(!window.pdfjsLib){

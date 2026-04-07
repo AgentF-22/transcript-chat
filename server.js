@@ -28,9 +28,26 @@ const pendingRequests = new Map();
 // deliverables: id -> { id, code, sources, title, createdAt }
 const deliverables = new Map();
 
+const mammoth = require('mammoth');
+
 app.use(cors());
-app.use(express.json({ limit: '5mb' }));
+app.use(express.json({ limit: '20mb' }));
+app.use(express.raw({ type: 'application/octet-stream', limit: '20mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// ── Extract docx text ──────────────────────────────────────────────────────
+app.post('/api/extract-docx', async (req, res) => {
+  try {
+    const buffer = req.body; // raw bytes
+    if(!buffer || !buffer.length) return res.status(400).json({ error: 'No file data' });
+    const result = await mammoth.extractRawText({ buffer });
+    if(!result.value) return res.status(400).json({ error: 'No text found in document' });
+    res.json({ ok: true, text: result.value });
+  } catch(e) {
+    console.error('Docx extract error:', e.message);
+    res.status(500).json({ error: 'Failed to read docx: ' + e.message });
+  }
+});
 
 // ── Auth helpers ───────────────────────────────────────────────────────────
 function getUsername(auth){
