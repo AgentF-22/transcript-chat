@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Transcript Chat</title>
+<title>Finger Post Echo</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -385,8 +385,8 @@ textarea.finput{resize:vertical;min-height:120px}
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">
-      <div class="login-icon">💬</div>
-      <div class="login-title">Transcript<span>Chat</span></div>
+      <div class="login-icon">🔬</div>
+      <div class="login-title">Finger Post <span>Echo</span></div>
       <div class="login-sub">Sign in to continue</div>
     </div>
     <div class="lfield">
@@ -415,7 +415,7 @@ textarea.finput{resize:vertical;min-height:120px}
     <div class="sb-head">
       <div class="sb-logo" onclick="goHome()">
         <span class="sb-logo-icon">💬</span>
-        <span class="sb-logo-text">Transcript<span>Chat</span></span>
+        <span class="sb-logo-text">Finger Post <span>Echo</span></span>
       </div>
       <button class="btn-newchat" onclick="newChat()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
@@ -446,7 +446,7 @@ textarea.finput{resize:vertical;min-height:120px}
     <!-- Mobile top bar -->
     <div class="mob-bar">
       <button class="btn-menu" onclick="openSb()">☰</button>
-      <div class="mob-logo" onclick="goHome()">Transcript<span>Chat</span></div>
+      <div class="mob-logo" onclick="goHome()">Finger Post <span>Echo</span></div>
       <button class="btn-mob-add" onclick="openPanel()">+ Add</button>
     </div>
 
@@ -455,31 +455,31 @@ textarea.finput{resize:vertical;min-height:120px}
       <div id="welcome" class="welcome">
         <div class="w-icon">💬</div>
         <div class="w-title">What do you want to know?</div>
-        <div class="w-sub">Add a transcript using the sidebar, then ask me anything about the candidate.</div>
+        <div class="w-sub">Add an interview transcript using the sidebar, then ask anything about the expert's views.</div>
         <div class="w-cards">
-          <button class="wcard" onclick="ask('Give me a full summary of this candidate')">
+          <button class="wcard" onclick="ask('Give me a full summary of this expert\\'s views')">
             <div class="wcard-t">📋 Summary</div>
-            <div class="wcard-s">Full overview of the candidate</div>
+            <div class="wcard-s">Overview of key opinions</div>
           </button>
-          <button class="wcard" onclick="ask('What is their professional background and experience?')">
-            <div class="wcard-t">💼 Experience</div>
-            <div class="wcard-s">Career history & background</div>
+          <button class="wcard" onclick="ask('What is the expert\\'s overall opinion of the product?')">
+            <div class="wcard-t">💊 Product Opinion</div>
+            <div class="wcard-s">Their view on the product</div>
           </button>
-          <button class="wcard" onclick="ask('What are their key strengths and what do they specialise in?')">
-            <div class="wcard-t">⭐ Strengths</div>
-            <div class="wcard-s">Skills & areas of expertise</div>
+          <button class="wcard" onclick="ask('What are the expert\\'s main concerns or reservations?')">
+            <div class="wcard-t">⚠️ Concerns</div>
+            <div class="wcard-s">Reservations & risks</div>
           </button>
-          <button class="wcard" onclick="ask('What are their salary expectations?')">
-            <div class="wcard-t">💰 Salary</div>
-            <div class="wcard-s">Compensation expectations</div>
+          <button class="wcard" onclick="ask('What does the expert see as the main clinical benefits?')">
+            <div class="wcard-t">✅ Benefits</div>
+            <div class="wcard-s">Clinical advantages</div>
           </button>
-          <button class="wcard" onclick="ask('Why are they looking to leave their current role?')">
-            <div class="wcard-t">🚪 Motivation</div>
-            <div class="wcard-s">Why they want to move on</div>
+          <button class="wcard" onclick="ask('How does the expert compare this to current alternatives?')">
+            <div class="wcard-t">⚖️ Comparison</div>
+            <div class="wcard-s">vs. existing options</div>
           </button>
-          <button class="wcard" onclick="ask('Where do they see themselves in 5 years?')">
-            <div class="wcard-t">🎯 Goals</div>
-            <div class="wcard-s">Future ambitions & plans</div>
+          <button class="wcard" onclick="ask('Would the expert recommend or adopt this product?')">
+            <div class="wcard-t">🏥 Adoption</div>
+            <div class="wcard-s">Likelihood to use</div>
           </button>
         </div>
       </div>
@@ -489,7 +489,7 @@ textarea.finput{resize:vertical;min-height:120px}
     <div class="inp-area">
       <div class="inp-box">
         <textarea class="chat-inp" id="chat-inp" rows="1"
-          placeholder="Ask anything about the candidate..."
+          placeholder="Ask anything about the expert's views..."
           oninput="onInp(this)" onkeydown="onKey(event)"></textarea>
         <button class="send-btn" id="send-btn" disabled onclick="send()">↑</button>
       </div>
@@ -707,14 +707,14 @@ function showWelcome(){
   w.innerHTML = `
     <div class="w-icon">💬</div>
     <div class="w-title">What do you want to know?</div>
-    <div class="w-sub">Add a transcript using the sidebar, then ask me anything about the candidate.</div>
+    <div class="w-sub">Add an interview transcript using the sidebar, then ask anything about the expert's views.</div>
     <div class="w-cards">
-      <button class="wcard" onclick="ask('Give me a full summary of this candidate')"><div class="wcard-t">📋 Summary</div><div class="wcard-s">Full overview</div></button>
-      <button class="wcard" onclick="ask('What is their professional background?')"><div class="wcard-t">💼 Experience</div><div class="wcard-s">Career history</div></button>
-      <button class="wcard" onclick="ask('What are their key strengths?')"><div class="wcard-t">⭐ Strengths</div><div class="wcard-s">Skills & expertise</div></button>
-      <button class="wcard" onclick="ask('What are their salary expectations?')"><div class="wcard-t">💰 Salary</div><div class="wcard-s">Compensation</div></button>
-      <button class="wcard" onclick="ask('Why are they looking to leave?')"><div class="wcard-t">🚪 Motivation</div><div class="wcard-s">Why moving on</div></button>
-      <button class="wcard" onclick="ask('Where do they see themselves in 5 years?')"><div class="wcard-t">🎯 Goals</div><div class="wcard-s">Future plans</div></button>
+      <button class="wcard" onclick="ask('Give me a full summary of this expert\\'s views')"><div class="wcard-t">📋 Summary</div><div class="wcard-s">Overview of key opinions</div></button>
+      <button class="wcard" onclick="ask('What is the expert\\'s overall opinion of the product?')"><div class="wcard-t">💊 Product Opinion</div><div class="wcard-s">Their view on the product</div></button>
+      <button class="wcard" onclick="ask('What are the expert\\'s main concerns or reservations?')"><div class="wcard-t">⚠️ Concerns</div><div class="wcard-s">Reservations & risks</div></button>
+      <button class="wcard" onclick="ask('What does the expert see as the main clinical benefits?')"><div class="wcard-t">✅ Benefits</div><div class="wcard-s">Clinical advantages</div></button>
+      <button class="wcard" onclick="ask('How does the expert compare this to current alternatives?')"><div class="wcard-t">⚖️ Comparison</div><div class="wcard-s">vs. existing options</div></button>
+      <button class="wcard" onclick="ask('Would the expert recommend or adopt this product?')"><div class="wcard-t">🏥 Adoption</div><div class="wcard-s">Likelihood to use</div></button>
     </div>`;
   msgs.appendChild(w);
 }
@@ -769,20 +769,21 @@ function renderSidebar(){
 // ── SYSTEM PROMPT ──────────────────────────────────────────────────────────
 function buildSystem(){
   if(!sources.length){
-    return `You are Transcript Chat. No transcripts are loaded. Tell the user to add one via the sidebar. Answer general questions helpfully.`;
+    return `You are Finger Post Echo. No transcripts are loaded. Tell the user to add one via the sidebar. Answer general questions helpfully.`;
   }
   const block = sources.map(s=>`=== ${s.name} ===\n${s.content}`).join('\n\n');
-  return `You are Transcript Chat — you answer questions about interview transcripts in natural, fluent, conversational English like a knowledgeable colleague.
+  return `You are Finger Post Echo — an expert intelligence tool that answers questions about medical and research expert interviews conducted by Finger Post. You help clients understand the opinions, insights and views expressed by doctors and researchers in these interviews.
 
 TRANSCRIPTS:
 ${block}
 
 INSTRUCTIONS:
-- Identify the candidate by name from the transcript and use it naturally.
-- Write proper fluent sentences: "She specialises in product management", "He has 8 years of experience in fintech", "Her salary expectation is 180–210k."
-- Never repeat "according to the transcript" — just answer naturally as if you know the person.
-- If something is not mentioned, say so briefly and move on.
+- Identify the expert by name and specialty where possible. Use their name naturally.
+- Write fluent, professional sentences: "Dr. Smith expressed strong support for the product", "The expert highlighted concerns around long-term safety data."
+- Never say "according to the transcript" repeatedly — just answer naturally as if you know the expert's views.
+- If something is not mentioned in the transcript, say so clearly and briefly.
 - Keep answers concise: 2–5 sentences for simple questions. Use bullet points only for 3+ items.
+- Focus on clinical opinions, product assessments, concerns, benefits and expert recommendations.
 - You can also answer general questions not related to the transcript.`;
 }
 
@@ -869,7 +870,7 @@ function appendBotMsg(text){
   const msgs = document.getElementById('msgs');
   const row = document.createElement('div');
   row.className='msg-row bot';
-  row.innerHTML=`<div class="msg-inner"><div class="av bot">TC</div><div class="msg-body"><div class="msg-name">Transcript Chat</div><div class="msg-text">${renderMd(text)}</div></div></div>`;
+  row.innerHTML=`<div class="msg-inner"><div class="av bot">TC</div><div class="msg-body"><div class="msg-name">Finger Post Echo</div><div class="msg-text">${renderMd(text)}</div></div></div>`;
   msgs.appendChild(row);
   scrollBottom();
 }
