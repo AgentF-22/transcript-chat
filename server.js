@@ -212,7 +212,7 @@ async function callGroq(system, messages, res){
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_API_KEY}` },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'meta-llama/llama-4-scout-17b-16e-instruct',
         messages: [{ role: 'system', content: system }, ...messages],
         max_tokens: 512,
         temperature: 0.4,

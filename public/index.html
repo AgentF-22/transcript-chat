@@ -906,6 +906,7 @@ async function send(){
   const el = document.getElementById('chat-inp');
   const q = el.value.trim();
   if(!q||loading) return;
+  loading=true; // set loading FIRST before anything else
   el.value=''; el.style.height='auto'; toggleSend();
 
   try{
@@ -914,7 +915,6 @@ async function send(){
   } catch(e){}
 
   appendUserMsg(q);
-  loading=true; toggleSend();
   const typingEl = addTyping();
   chatHistory.push({role:'user',content:q});
 
@@ -922,7 +922,7 @@ async function send(){
     const res = await fetch(`${SERVER}/api/chat`,{
       method:'POST',
       headers:{'Content-Type':'application/json','x-auth-token':authToken},
-      body:JSON.stringify({system:buildSystem(),messages:chatHistory.slice(-14)})
+      body:JSON.stringify({system:buildSystem(),messages:chatHistory.slice(-12)})
     });
     if(!res.ok){
       const ed = await res.json().catch(()=>({}));
