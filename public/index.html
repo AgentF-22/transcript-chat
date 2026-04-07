@@ -293,11 +293,12 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
   padding:18px 22px;
   padding-bottom:max(32px,env(safe-area-inset-bottom));
   z-index:51;display:flex;flex-direction:column;gap:16px;
-  transform:translateY(100%);
+  transform:translateY(110%);
   transition:transform .3s cubic-bezier(.4,0,.2,1);
   max-height:92dvh;overflow-y:auto;
+  visibility:hidden;
 }
-.panel.open{transform:translateY(0)}
+.panel.open{transform:translateY(0);visibility:visible}
 .panel-handle{width:40px;height:4px;background:#3f3f3f;border-radius:2px;margin:0 auto 4px}
 .panel-title{font-size:18px;font-weight:700;color:#fff}
 .panel-sub{font-size:13px;color:#8e8ea0;line-height:1.6;margin-top:-8px}
@@ -672,19 +673,18 @@ function saveChats(){
 }
 
 function newChat(){
+  if(loading) return; // don't interrupt mid-request
   activeChatId = null;
   chatHistory  = [];
   sources      = [];
   updateBadge();
-  // Clear msgs and show welcome
   const msgs = document.getElementById('msgs');
   msgs.innerHTML = '';
   showWelcome();
   renderSidebar();
   closeSb();
-  // Clear input
   const inp = document.getElementById('chat-inp');
-  inp.value = ''; inp.style.height = 'auto';
+  if(inp){ inp.value=''; inp.style.height='auto'; }
   toggleSend();
 }
 
@@ -782,8 +782,10 @@ async function send(){
   if(!q||loading) return;
   el.value=''; el.style.height='auto'; toggleSend();
 
-  const ws = document.getElementById('welcome');
-  if(ws) ws.remove();
+  try{
+    const welcome = document.getElementById('welcome');
+    if(welcome) welcome.remove();
+  } catch(e){}
 
   appendUserMsg(q);
   loading=true; toggleSend();
