@@ -171,13 +171,47 @@ app.post('/api/request-account', async (req, res) => {
 });
 
 // ── Approve account ────────────────────────────────────────────────────────
-app.get('/api/approve-account/:token', (req, res) => {
+app.get('/api/approve-account/:token', async (req, res) => {
   const data = pendingRequests.get(req.params.token);
   if(!data) return res.send(`<html><body style="font-family:sans-serif;padding:40px;text-align:center"><h2>❌ Request not found or already handled.</h2></body></html>`);
+  
   users.set(data.username, data.password);
   pendingRequests.delete(req.params.token);
   console.log(`[Approved] User: ${data.username}`);
-  res.send(`<html><body style="font-family:sans-serif;padding:40px;text-align:center;background:#f0fdf4"><h2 style="color:#10a37f">✅ Account approved!</h2><p><strong>${data.username}</strong> can now log in to Finger Post Echo.</p></body></html>`);
+
+  // Email the user to tell them their account is ready
+  try {
+    const fetch = globalThis.fetch || require('node-fetch');
+    const appUrl = `${req.protocol}://${req.get('host')}`;
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer re_SmaEXzSk_KVDq66uwDnZPmJuvCMqr3uvG`
+      },
+      body: JSON.stringify({
+        from: 'onboarding@resend.dev',
+        to: [data.email],
+        subject: 'Your Finger Post Echo account is ready',
+        html: `
+          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
+            <h2 style="color:#10a37f">Your account is ready ✅</h2>
+            <p style="color:#555">Your Finger Post Echo account has been approved. Here are your login details:</p>
+            <div style="background:#f9f9f9;border:1px solid #e5e5e5;border-radius:8px;padding:16px;margin:20px 0">
+              <p style="margin:6px 0"><strong>Username:</strong> ${data.username}</p>
+              <p style="margin:6px 0"><strong>Password:</strong> ${data.password}</p>
+            </div>
+            <a href="${appUrl}" style="display:inline-block;background:#10a37f;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px">Open Finger Post Echo →</a>
+            <p style="color:#aaa;font-size:12px;margin-top:24px">Finger Post Echo · Powered by Finger Post</p>
+          </div>
+        `
+      })
+    });
+  } catch(e) {
+    console.error('User email failed:', e.message);
+  }
+
+  res.send(`<html><body style="font-family:sans-serif;padding:40px;text-align:center;background:#f0fdf4"><h2 style="color:#10a37f">✅ Account approved!</h2><p><strong>${data.username}</strong> has been notified by email and can now log in.</p></body></html>`);
 });
 
 // ── Decline account ────────────────────────────────────────────────────────
