@@ -6,231 +6,192 @@ const crypto  = require('crypto');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
-const GROQ_API_KEY = process.env.GROQ_API_KEY || 'YOUR_GROQ_KEY_HERE';
+const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
 
-// ── Multi-user store ───────────────────────────────────────────────────────
-// Start with the hardcoded admin account, approved users get added here
+const ADMIN_USERNAME = process.env.APP_USERNAME || 'DasaultRafale';
+const ADMIN_PASSWORD = process.env.APP_PASSWORD || '654321';
+
+// users: username -> { password, blocked, createdAt, isAdmin }
 const users = new Map();
-users.set(process.env.APP_USERNAME || 'DasaultRafale', process.env.APP_PASSWORD || '654321');
+users.set(ADMIN_USERNAME, {
+  password: ADMIN_PASSWORD,
+  blocked: false,
+  createdAt: new Date().toISOString(),
+  isAdmin: true
+});
 
-// Pending account requests: token -> { username, password, email }
+// pendingRequests: id -> { id, username, password, requestedAt }
 const pendingRequests = new Map();
+
+// deliverables: id -> { id, code, sources, title, createdAt }
+const deliverables = new Map();
 
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// In-memory store for deliverables (survives until server restart)
-// For production persistence you'd use a DB, but this works great for now
-const deliverables = new Map();
-// key = id (random hex), value = { id, code, sources, createdAt, title }
-
 // ── Auth helpers ───────────────────────────────────────────────────────────
-function makeToken(u, p) {
-  return Buffer.from(`${u}:${p}`).toString('base64');
-}
-function checkToken(auth) {
+function getUsername(auth){
   try {
     const decoded = Buffer.from(auth, 'base64').toString('utf8');
-    const colonIdx = decoded.indexOf(':');
-    const u = decoded.slice(0, colonIdx);
-    const p = decoded.slice(colonIdx + 1);
-    return users.has(u) && users.get(u) === p;
+    return decoded.slice(0, decoded.indexOf(':'));
+  } catch { return null; }
+}
+
+function checkToken(auth){
+  try {
+    const decoded = Buffer.from(auth, 'base64').toString('utf8');
+    const i = decoded.indexOf(':');
+    const u = decoded.slice(0, i);
+    const p = decoded.slice(i + 1);
+    const user = users.get(u);
+    return user && user.password === p && !user.blocked;
   } catch { return false; }
 }
-function requireAuth(req, res, next) {
+
+function requireAuth(req, res, next){
   const auth = req.headers['x-auth-token'];
-  if (!auth || !checkToken(auth)) return res.status(401).json({ error: 'Not authenticated' });
+  if(!auth || !checkToken(auth)) return res.status(401).json({ error: 'Not authenticated' });
+  next();
+}
+
+function requireAdmin(req, res, next){
+  const auth = req.headers['x-auth-token'];
+  if(!auth || !checkToken(auth)) return res.status(401).json({ error: 'Not authenticated' });
+  const u = getUsername(auth);
+  if(!users.get(u)?.isAdmin) return res.status(403).json({ error: 'Admin only' });
   next();
 }
 
 // ── Login ──────────────────────────────────────────────────────────────────
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
-  if (users.has(username) && users.get(username) === password) {
-    res.json({ ok: true, token: makeToken(username, password) });
-  } else {
-    res.status(401).json({ ok: false, error: 'Invalid credentials' });
-  }
+  const user = users.get(username);
+  if(!user || user.password !== password)
+    return res.status(401).json({ ok: false, error: 'Invalid credentials' });
+  if(user.blocked)
+    return res.status(403).json({ ok: false, error: 'This account has been suspended.' });
+  const token = Buffer.from(`${username}:${password}`).toString('base64');
+  res.json({ ok: true, token, isAdmin: !!user.isAdmin });
 });
 
-// ── Chat (main app) ────────────────────────────────────────────────────────
+// ── Chat ───────────────────────────────────────────────────────────────────
 app.post('/api/chat', requireAuth, async (req, res) => {
   const { messages, system } = req.body;
-  if (!messages || !system) return res.status(400).json({ error: 'Missing fields' });
+  if(!messages || !system) return res.status(400).json({ error: 'Missing fields' });
   await callGroq(system, messages, res);
 });
 
-// ── Create deliverable ─────────────────────────────────────────────────────
+// ── Deliverables ───────────────────────────────────────────────────────────
 app.post('/api/deliverable/create', requireAuth, (req, res) => {
   const { sources, title } = req.body;
-  if (!sources || !sources.length) return res.status(400).json({ error: 'No sources provided' });
-
-  const id   = crypto.randomBytes(12).toString('hex');       // unique URL id
-  const code = Math.random().toString(36).slice(2,8).toUpperCase(); // 6-char access code
-
-  deliverables.set(id, {
-    id,
-    code,
-    sources,
-    title: title || 'Candidate Chat',
-    createdAt: new Date().toISOString(),
-  });
-
-  const url = `${req.protocol}://${req.get('host')}/d/${id}`;
-  res.json({ ok: true, url, code, id });
+  if(!sources || !sources.length) return res.status(400).json({ error: 'No sources' });
+  const id   = crypto.randomBytes(12).toString('hex');
+  const code = Math.random().toString(36).slice(2,8).toUpperCase();
+  deliverables.set(id, { id, code, sources, title: title || 'Expert Interview', createdAt: new Date().toISOString() });
+  res.json({ ok: true, url: `${req.protocol}://${req.get('host')}/d/${id}`, code, id });
 });
 
-// ── Deliverable access ─────────────────────────────────────────────────────
 app.post('/api/deliverable/access', (req, res) => {
   const { id, code } = req.body;
   const d = deliverables.get(id);
-  if (!d) return res.status(404).json({ error: 'Deliverable not found or expired' });
-  if (d.code !== code.toUpperCase().trim()) return res.status(401).json({ error: 'Wrong access code' });
-  // Return sources and title but not the code
+  if(!d) return res.status(404).json({ error: 'Not found or expired' });
+  if(d.code !== code.toUpperCase().trim()) return res.status(401).json({ error: 'Wrong access code' });
   res.json({ ok: true, title: d.title, sources: d.sources });
 });
 
-// ── Deliverable chat (no main auth needed — uses deliverable id) ───────────
 app.post('/api/deliverable/chat', async (req, res) => {
   const { id, code, messages, system } = req.body;
   const d = deliverables.get(id);
-  if (!d) return res.status(404).json({ error: 'Deliverable not found' });
-  if (d.code !== code.toUpperCase().trim()) return res.status(401).json({ error: 'Invalid code' });
-  if (!messages || !system) return res.status(400).json({ error: 'Missing fields' });
+  if(!d) return res.status(404).json({ error: 'Not found' });
+  if(d.code !== code.toUpperCase().trim()) return res.status(401).json({ error: 'Invalid code' });
   await callGroq(system, messages, res);
 });
 
-// ── List deliverables (for main app) ──────────────────────────────────────
-app.get('/api/deliverable/list', requireAuth, (req, res) => {
-  const list = [...deliverables.values()].map(d => ({
-    id: d.id, code: d.code, title: d.title, createdAt: d.createdAt,
-    url: `${req.protocol}://${req.get('host')}/d/${d.id}`
-  })).reverse();
-  res.json({ list });
-});
-
-// ── Delete deliverable ─────────────────────────────────────────────────────
-app.delete('/api/deliverable/:id', requireAuth, (req, res) => {
-  deliverables.delete(req.params.id);
-  res.json({ ok: true });
-});
-
-// ── Serve deliverable page ─────────────────────────────────────────────────
 app.get('/d/:id', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'deliverable.html'));
 });
 
-// ── Account request ────────────────────────────────────────────────────────
-const accountRequests = [];
-
-app.post('/api/request-account', async (req, res) => {
-  const { email, username, password } = req.body;
-  if(!email || !username || !password){
-    return res.status(400).json({ error: 'All fields required' });
+// ── Account requests ───────────────────────────────────────────────────────
+app.post('/api/request-account', (req, res) => {
+  const { username, password } = req.body;
+  if(!username || !password) return res.status(400).json({ error: 'All fields required' });
+  if(users.has(username)) return res.status(400).json({ error: 'Username already taken.' });
+  // Check if already pending
+  for(const r of pendingRequests.values()){
+    if(r.username === username) return res.status(400).json({ error: 'Request already pending for this username.' });
   }
-
-  // Generate a unique token for this request
-  const token = crypto.randomBytes(16).toString('hex');
-  pendingRequests.set(token, { username, password, email });
-
-  const host = `${req.protocol}://${req.get('host')}`;
-  const approveUrl = `${host}/api/approve-account/${token}`;
-  const declineUrl = `${host}/api/decline-account/${token}`;
-
-  try {
-    const fetch = globalThis.fetch || require('node-fetch');
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer re_SmaEXzSk_KVDq66uwDnZPmJuvCMqr3uvG`
-      },
-      body: JSON.stringify({
-        from: 'onboarding@resend.dev',
-        to: ['khzsum2019@gmail.com'],
-        subject: `Account request: ${username}`,
-        html: `
-          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
-            <h2 style="margin-bottom:4px">New Account Request</h2>
-            <p style="color:#555;margin-top:0">Someone wants access to Finger Post Echo.</p>
-            <p style="font-size:18px;margin:20px 0">👤 <strong>${username}</strong></p>
-            <div style="display:flex;gap:12px;margin-top:24px">
-              <a href="${approveUrl}" style="background:#10a37f;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px">✅ Approve</a>
-              <a href="${declineUrl}" style="background:#ef4444;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px">❌ Decline</a>
-            </div>
-          </div>
-        `
-      })
-    });
-  } catch(e) {
-    console.error('Email failed:', e.message);
-  }
-
+  const id = crypto.randomBytes(8).toString('hex');
+  pendingRequests.set(id, { id, username, password, requestedAt: new Date().toISOString() });
+  console.log(`[Account request] ${username}`);
   res.json({ ok: true });
 });
 
-// ── Approve account ────────────────────────────────────────────────────────
-app.get('/api/approve-account/:token', async (req, res) => {
-  const data = pendingRequests.get(req.params.token);
-  if(!data) return res.send(`<html><body style="font-family:sans-serif;padding:40px;text-align:center"><h2>❌ Request not found or already handled.</h2></body></html>`);
-  
-  users.set(data.username, data.password);
-  pendingRequests.delete(req.params.token);
-  console.log(`[Approved] User: ${data.username}`);
-
-  // Email the user to tell them their account is ready
-  try {
-    const fetch = globalThis.fetch || require('node-fetch');
-    const appUrl = `${req.protocol}://${req.get('host')}`;
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer re_SmaEXzSk_KVDq66uwDnZPmJuvCMqr3uvG`
-      },
-      body: JSON.stringify({
-        from: 'onboarding@resend.dev',
-        to: [data.email],
-        subject: 'Your Finger Post Echo account is ready',
-        html: `
-          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
-            <h2 style="color:#10a37f">Your account is ready ✅</h2>
-            <p style="color:#555">Your Finger Post Echo account has been approved. Here are your login details:</p>
-            <div style="background:#f9f9f9;border:1px solid #e5e5e5;border-radius:8px;padding:16px;margin:20px 0">
-              <p style="margin:6px 0"><strong>Username:</strong> ${data.username}</p>
-              <p style="margin:6px 0"><strong>Password:</strong> ${data.password}</p>
-            </div>
-            <a href="${appUrl}" style="display:inline-block;background:#10a37f;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px">Open Finger Post Echo →</a>
-            <p style="color:#aaa;font-size:12px;margin-top:24px">Finger Post Echo · Powered by Finger Post</p>
-          </div>
-        `
-      })
-    });
-  } catch(e) {
-    console.error('User email failed:', e.message);
-  }
-
-  res.send(`<html><body style="font-family:sans-serif;padding:40px;text-align:center;background:#f0fdf4"><h2 style="color:#10a37f">✅ Account approved!</h2><p><strong>${data.username}</strong> has been notified by email and can now log in.</p></body></html>`);
+// ── Admin: list pending requests ───────────────────────────────────────────
+app.get('/api/admin/requests', requireAdmin, (req, res) => {
+  res.json({ requests: [...pendingRequests.values()].map(r => ({ id: r.id, username: r.username, requestedAt: r.requestedAt })) });
 });
 
-// ── Decline account ────────────────────────────────────────────────────────
-app.get('/api/decline-account/:token', (req, res) => {
-  const data = pendingRequests.get(req.params.token);
-  if(!data) return res.send(`<html><body style="font-family:sans-serif;padding:40px;text-align:center"><h2>❌ Request not found or already handled.</h2></body></html>`);
-  pendingRequests.delete(req.params.token);
-  console.log(`[Declined] User: ${data.username}`);
-  res.send(`<html><body style="font-family:sans-serif;padding:40px;text-align:center;background:#fef2f2"><h2 style="color:#ef4444">❌ Request declined.</h2><p>The request from <strong>${data.username}</strong> has been declined.</p></body></html>`);
+// ── Admin: approve request ─────────────────────────────────────────────────
+app.post('/api/admin/approve/:id', requireAdmin, (req, res) => {
+  const r = pendingRequests.get(req.params.id);
+  if(!r) return res.status(404).json({ error: 'Request not found' });
+  users.set(r.username, { password: r.password, blocked: false, createdAt: new Date().toISOString(), isAdmin: false });
+  pendingRequests.delete(req.params.id);
+  console.log(`[Approved] ${r.username}`);
+  res.json({ ok: true, username: r.username });
 });
-async function callGroq(system, messages, res) {
+
+// ── Admin: decline request ─────────────────────────────────────────────────
+app.delete('/api/admin/decline/:id', requireAdmin, (req, res) => {
+  const r = pendingRequests.get(req.params.id);
+  if(!r) return res.status(404).json({ error: 'Request not found' });
+  pendingRequests.delete(req.params.id);
+  console.log(`[Declined] ${r.username}`);
+  res.json({ ok: true });
+});
+
+// ── Admin: list users ──────────────────────────────────────────────────────
+app.get('/api/admin/users', requireAdmin, (req, res) => {
+  const list = [...users.entries()]
+    .filter(([u]) => u !== ADMIN_USERNAME)
+    .map(([username, data]) => ({ username, blocked: data.blocked, createdAt: data.createdAt }));
+  res.json({ users: list });
+});
+
+// ── Admin: block user ──────────────────────────────────────────────────────
+app.post('/api/admin/block/:username', requireAdmin, (req, res) => {
+  const user = users.get(req.params.username);
+  if(!user) return res.status(404).json({ error: 'User not found' });
+  if(user.isAdmin) return res.status(400).json({ error: 'Cannot block admin' });
+  user.blocked = true;
+  res.json({ ok: true });
+});
+
+// ── Admin: unblock user ────────────────────────────────────────────────────
+app.post('/api/admin/unblock/:username', requireAdmin, (req, res) => {
+  const user = users.get(req.params.username);
+  if(!user) return res.status(404).json({ error: 'User not found' });
+  user.blocked = false;
+  res.json({ ok: true });
+});
+
+// ── Admin: delete user ─────────────────────────────────────────────────────
+app.delete('/api/admin/delete/:username', requireAdmin, (req, res) => {
+  const user = users.get(req.params.username);
+  if(!user) return res.status(404).json({ error: 'User not found' });
+  if(user.isAdmin) return res.status(400).json({ error: 'Cannot delete admin' });
+  users.delete(req.params.username);
+  res.json({ ok: true });
+});
+
+// ── Groq ───────────────────────────────────────────────────────────────────
+async function callGroq(system, messages, res){
   try {
     const fetch = globalThis.fetch || require('node-fetch');
-    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROQ_API_KEY}`,
-      },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${GROQ_API_KEY}` },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         messages: [{ role: 'system', content: system }, ...messages],
@@ -238,18 +199,12 @@ async function callGroq(system, messages, res) {
         temperature: 0.4,
       }),
     });
-    if (!groqRes.ok) {
-      const err = await groqRes.json().catch(() => ({}));
-      return res.status(groqRes.status).json({ error: err?.error?.message || 'Groq error' });
-    }
-    const data = await groqRes.json();
+    if(!r.ok){ const e = await r.json().catch(()=>({})); return res.status(r.status).json({ error: e?.error?.message || 'Groq error' }); }
+    const data = await r.json();
     res.json({ reply: data.choices?.[0]?.message?.content || 'No response.' });
-  } catch (e) {
-    console.error('Groq error:', e.message);
+  } catch(e) {
     res.status(500).json({ error: 'Server error: ' + e.message });
   }
 }
 
-app.listen(PORT, () => {
-  console.log(`✅ Transcript Chat running at http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`✅ Finger Post Echo running at http://localhost:${PORT}`));

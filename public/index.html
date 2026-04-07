@@ -416,12 +416,7 @@ textarea.finput{resize:vertical;min-height:120px}
     <div class="login-logo">
       <div class="login-icon">✉️</div>
       <div class="login-title" style="font-size:18px">Request Access</div>
-      <div class="login-sub">Fill in your details and we'll review your request.</div>
-    </div>
-    <div class="lfield">
-      <div class="llabel">YOUR EMAIL</div>
-      <input class="linput" type="email" id="r-email" placeholder="your@email.com"
-        autocomplete="email" autocorrect="off" autocapitalize="off"/>
+      <div class="login-sub">Choose a username and password. Your request will be reviewed.</div>
     </div>
     <div class="lfield">
       <div class="llabel">DESIRED USERNAME</div>
@@ -434,7 +429,7 @@ textarea.finput{resize:vertical;min-height:120px}
     </div>
     <div class="lerr" id="rerr">Please fill in all fields.</div>
     <div id="rsuccess" style="display:none;font-size:13px;color:#6ee7b7;background:#022c22;border:1px solid #065f46;border-radius:8px;padding:13px;text-align:center;line-height:1.7">
-      ✅ Request sent!<br/>You'll receive an email when your account is ready.
+      ✅ Request sent!<br/>Please wait while we review your request. We'll be in touch soon.
     </div>
     <button class="btn-signin" id="btn-request" onclick="doRequestAccount()">Send request →</button>
     <div style="text-align:center;margin-top:-6px">
@@ -472,6 +467,9 @@ textarea.finput{resize:vertical;min-height:120px}
       </button>
       <button class="btn-sources" onclick="createDeliverable()" style="color:#10a37f;background:none">
         🔗 &nbsp;Create deliverable
+      </button>
+      <button class="btn-sources" id="btn-admin" onclick="openAdmin()" style="display:none;color:#f59e0b;background:none">
+        ⚙️ &nbsp;Admin panel
       </button>
       <button class="btn-signout" onclick="logout()">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
@@ -579,6 +577,27 @@ textarea.finput{resize:vertical;min-height:120px}
 
 <div class="toast" id="toast"></div>
 
+<!-- ADMIN PANEL -->
+<div class="overlay" id="admin-overlay" onclick="if(event.target===this)closeAdmin()" style="display:none;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#2f2f2f;border:1px solid #3f3f3f;border-radius:20px;padding:28px;width:100%;max-width:500px;max-height:90dvh;overflow-y:auto;display:flex;flex-direction:column;gap:20px">
+    <div style="font-size:18px;font-weight:700;color:#fff">⚙️ Admin Panel</div>
+
+    <!-- Pending requests -->
+    <div>
+      <div class="flabel" style="margin-bottom:10px">PENDING REQUESTS</div>
+      <div id="admin-requests"><div style="color:#565869;font-size:13px">Loading...</div></div>
+    </div>
+
+    <!-- Users -->
+    <div>
+      <div class="flabel" style="margin-bottom:10px">ACTIVE USERS</div>
+      <div id="admin-users"><div style="color:#565869;font-size:13px">Loading...</div></div>
+    </div>
+
+    <button class="btn-cancel" onclick="closeAdmin()">Close</button>
+  </div>
+</div>
+
 <!-- DELIVERABLE MODAL -->
 <div class="overlay" id="deliv-overlay" onclick="if(event.target===this)closeDelivModal()" style="display:none;align-items:center;justify-content:center;padding:20px">
   <div style="background:#2f2f2f;border:1px solid #3f3f3f;border-radius:20px;padding:28px;width:100%;max-width:460px;display:flex;flex-direction:column;gap:18px;max-height:90dvh;overflow-y:auto">
@@ -675,19 +694,14 @@ function showSignIn(){
 }
 
 async function doRequestAccount(){
-  const email = document.getElementById('r-email').value.trim();
-  const user  = document.getElementById('r-user').value.trim();
-  const pass  = document.getElementById('r-pass').value.trim();
-  const err   = document.getElementById('rerr');
-  const btn   = document.getElementById('btn-request');
+  const user = document.getElementById('r-user').value.trim();
+  const pass = document.getElementById('r-pass').value.trim();
+  const err  = document.getElementById('rerr');
+  const btn  = document.getElementById('btn-request');
   err.classList.remove('show');
 
-  if(!email || !user || !pass){
+  if(!user || !pass){
     err.textContent='Please fill in all fields.';
-    err.classList.add('show'); return;
-  }
-  if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){
-    err.textContent='Please enter a valid email address.';
     err.classList.add('show'); return;
   }
 
@@ -696,7 +710,7 @@ async function doRequestAccount(){
     const res = await fetch(`${SERVER}/api/request-account`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email, username:user, password:pass})
+      body:JSON.stringify({username:user, password:pass})
     });
     const data = await res.json();
     if(data.ok){
@@ -708,7 +722,7 @@ async function doRequestAccount(){
       btn.disabled=false; btn.textContent='Send request →';
     }
   } catch(e){
-    err.textContent='Could not reach server. Please try again.';
+    err.textContent='Could not reach server.';
     err.classList.add('show');
     btn.disabled=false; btn.textContent='Send request →';
   }
@@ -730,6 +744,8 @@ async function doLogin(){
     const data = await res.json();
     if(data.ok){
       authToken=data.token;
+      if(data.isAdmin) document.getElementById('btn-admin').style.display='flex';
+      else document.getElementById('btn-admin').style.display='none';
       showApp(u);
     } else {
       err.classList.add('show');
@@ -1175,6 +1191,75 @@ function generateChatTitle(sources, fallbackQ){
 }
 
 function capitalise(s){ return s.charAt(0).toUpperCase()+s.slice(1).toLowerCase(); }
+// ── ADMIN PANEL ────────────────────────────────────────────────────────────
+async function openAdmin(){
+  document.getElementById('admin-overlay').style.display='flex';
+  closeSb();
+  await loadAdminData();
+}
+function closeAdmin(){
+  document.getElementById('admin-overlay').style.display='none';
+}
+async function loadAdminData(){
+  try{
+    const rRes = await fetch(`${SERVER}/api/admin/requests`,{headers:{'x-auth-token':authToken}});
+    const rData = await rRes.json();
+    const rEl = document.getElementById('admin-requests');
+    if(!rData.requests.length){
+      rEl.innerHTML='<div style="color:#565869;font-size:13px">No pending requests.</div>';
+    } else {
+      rEl.innerHTML = rData.requests.map(r=>`
+        <div style="display:flex;align-items:center;gap:10px;background:#212121;border:1px solid #3f3f3f;border-radius:8px;padding:11px 13px;margin-bottom:6px">
+          <span style="flex:1;font-size:14px;color:#ececec;font-weight:600">👤 ${esc(r.username)}</span>
+          <span style="font-size:11px;color:#565869">${new Date(r.requestedAt).toLocaleDateString()}</span>
+          <button onclick="adminApprove('${r.id}')" style="background:#10a37f;border:none;color:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;font-family:'Inter',sans-serif">✅ Approve</button>
+          <button onclick="adminDecline('${r.id}')" style="background:#3f3f3f;border:none;color:#f87171;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">❌ Decline</button>
+        </div>`).join('');
+    }
+  } catch(e){ document.getElementById('admin-requests').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
+  try{
+    const uRes = await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});
+    const uData = await uRes.json();
+    const uEl = document.getElementById('admin-users');
+    if(!uData.users.length){
+      uEl.innerHTML='<div style="color:#565869;font-size:13px">No users yet.</div>';
+    } else {
+      uEl.innerHTML = uData.users.map(u=>`
+        <div style="display:flex;align-items:center;gap:10px;background:#212121;border:1px solid #3f3f3f;border-radius:8px;padding:11px 13px;margin-bottom:6px">
+          <span style="flex:1;font-size:14px;color:${u.blocked?'#f87171':'#ececec'};font-weight:600">👤 ${esc(u.username)}${u.blocked?' <span style="font-size:11px">(blocked)</span>':''}</span>
+          ${u.blocked
+            ?`<button onclick="adminUnblock('${u.username}')" style="background:#3f3f3f;border:none;color:#6ee7b7;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">Unblock</button>`
+            :`<button onclick="adminBlock('${u.username}')" style="background:#3f3f3f;border:none;color:#fbbf24;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">Block</button>`
+          }
+          <button onclick="adminDelete('${u.username}')" style="background:#3f3f3f;border:none;color:#f87171;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">Delete</button>
+        </div>`).join('');
+    }
+  } catch(e){ document.getElementById('admin-users').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
+}
+async function adminApprove(id){
+  const res=await fetch(`${SERVER}/api/admin/approve/${id}`,{method:'POST',headers:{'x-auth-token':authToken}});
+  const data=await res.json();
+  if(data.ok){showToast('✅ '+data.username+' approved');await loadAdminData();}
+  else showToast('⚠ '+data.error);
+}
+async function adminDecline(id){
+  await fetch(`${SERVER}/api/admin/decline/${id}`,{method:'DELETE',headers:{'x-auth-token':authToken}});
+  showToast('Declined');await loadAdminData();
+}
+async function adminBlock(username){
+  await fetch(`${SERVER}/api/admin/block/${username}`,{method:'POST',headers:{'x-auth-token':authToken}});
+  showToast('🚫 '+username+' blocked');await loadAdminData();
+}
+async function adminUnblock(username){
+  await fetch(`${SERVER}/api/admin/unblock/${username}`,{method:'POST',headers:{'x-auth-token':authToken}});
+  showToast('✅ '+username+' unblocked');await loadAdminData();
+}
+async function adminDelete(username){
+  if(!confirm('Delete '+username+'? This cannot be undone.')) return;
+  await fetch(`${SERVER}/api/admin/delete/${username}`,{method:'DELETE',headers:{'x-auth-token':authToken}});
+  showToast('🗑 '+username+' deleted');await loadAdminData();
+}
+
 let lastDelivUrl = '';
 let lastDelivCode = '';
 
