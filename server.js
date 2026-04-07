@@ -7,8 +7,14 @@ const crypto  = require('crypto');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 const GROQ_API_KEY = process.env.GROQ_API_KEY || 'YOUR_GROQ_KEY_HERE';
-const USERNAME = process.env.APP_USERNAME || 'DasaultRafale';
-const PASSWORD = process.env.APP_PASSWORD || '654321';
+
+// ── Multi-user store ───────────────────────────────────────────────────────
+// Start with the hardcoded admin account, approved users get added here
+const users = new Map();
+users.set(process.env.APP_USERNAME || 'DasaultRafale', process.env.APP_PASSWORD || '654321');
+
+// Pending account requests: token -> { username, password, email }
+const pendingRequests = new Map();
 
 app.use(cors());
 app.use(express.json({ limit: '5mb' }));
@@ -25,8 +31,11 @@ function makeToken(u, p) {
 }
 function checkToken(auth) {
   try {
-    const [u, p] = Buffer.from(auth, 'base64').toString('utf8').split(':');
-    return u === USERNAME && p === PASSWORD;
+    const decoded = Buffer.from(auth, 'base64').toString('utf8');
+    const colonIdx = decoded.indexOf(':');
+    const u = decoded.slice(0, colonIdx);
+    const p = decoded.slice(colonIdx + 1);
+    return users.has(u) && users.get(u) === p;
   } catch { return false; }
 }
 function requireAuth(req, res, next) {
@@ -38,7 +47,7 @@ function requireAuth(req, res, next) {
 // ── Login ──────────────────────────────────────────────────────────────────
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
-  if (username === USERNAME && password === PASSWORD) {
+  if (users.has(username) && users.get(username) === password) {
     res.json({ ok: true, token: makeToken(username, password) });
   } else {
     res.status(401).json({ ok: false, error: 'Invalid credentials' });
@@ -121,7 +130,13 @@ app.post('/api/request-account', async (req, res) => {
     return res.status(400).json({ error: 'All fields required' });
   }
 
-  accountRequests.push({ email, username, password, createdAt: new Date().toISOString() });
+  // Generate a unique token for this request
+  const token = crypto.randomBytes(16).toString('hex');
+  pendingRequests.set(token, { username, password, email });
+
+  const host = `${req.protocol}://${req.get('host')}`;
+  const approveUrl = `${host}/api/approve-account/${token}`;
+  const declineUrl = `${host}/api/decline-account/${token}`;
 
   try {
     const fetch = globalThis.fetch || require('node-fetch');
@@ -134,28 +149,44 @@ app.post('/api/request-account', async (req, res) => {
       body: JSON.stringify({
         from: 'onboarding@resend.dev',
         to: ['khzsum2019@gmail.com'],
-        subject: `New account request: ${username}`,
+        subject: `Account request: ${username}`,
         html: `
-          <h2 style="font-family:sans-serif">New Account Request — Finger Post Echo</h2>
-          <p style="font-family:sans-serif;color:#555">Someone has requested access.</p>
-          <table style="border-collapse:collapse;font-family:sans-serif;margin-top:12px">
-            <tr><td style="padding:8px;font-weight:bold;color:#555">Username:</td><td style="padding:8px"><strong>${username}</strong></td></tr>
-            <tr><td style="padding:8px;font-weight:bold;color:#555">Their email:</td><td style="padding:8px">${email}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold;color:#555">Requested at:</td><td style="padding:8px">${new Date().toLocaleString()}</td></tr>
-          </table>
-          <p style="font-family:sans-serif;color:#555;margin-top:16px">
-            To approve: add their username and password to your Railway environment variables.<br/>
-            To decline: reply to their email at ${email}.
-          </p>
+          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
+            <h2 style="margin-bottom:4px">New Account Request</h2>
+            <p style="color:#555;margin-top:0">Someone wants access to Finger Post Echo.</p>
+            <p style="font-size:18px;margin:20px 0">👤 <strong>${username}</strong></p>
+            <div style="display:flex;gap:12px;margin-top:24px">
+              <a href="${approveUrl}" style="background:#10a37f;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px">✅ Approve</a>
+              <a href="${declineUrl}" style="background:#ef4444;color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px">❌ Decline</a>
+            </div>
+          </div>
         `
       })
     });
-    console.log(`[Account request] Sent email for: ${username}`);
   } catch(e) {
-    console.error('Email send failed:', e.message);
+    console.error('Email failed:', e.message);
   }
 
   res.json({ ok: true });
+});
+
+// ── Approve account ────────────────────────────────────────────────────────
+app.get('/api/approve-account/:token', (req, res) => {
+  const data = pendingRequests.get(req.params.token);
+  if(!data) return res.send(`<html><body style="font-family:sans-serif;padding:40px;text-align:center"><h2>❌ Request not found or already handled.</h2></body></html>`);
+  users.set(data.username, data.password);
+  pendingRequests.delete(req.params.token);
+  console.log(`[Approved] User: ${data.username}`);
+  res.send(`<html><body style="font-family:sans-serif;padding:40px;text-align:center;background:#f0fdf4"><h2 style="color:#10a37f">✅ Account approved!</h2><p><strong>${data.username}</strong> can now log in to Finger Post Echo.</p></body></html>`);
+});
+
+// ── Decline account ────────────────────────────────────────────────────────
+app.get('/api/decline-account/:token', (req, res) => {
+  const data = pendingRequests.get(req.params.token);
+  if(!data) return res.send(`<html><body style="font-family:sans-serif;padding:40px;text-align:center"><h2>❌ Request not found or already handled.</h2></body></html>`);
+  pendingRequests.delete(req.params.token);
+  console.log(`[Declined] User: ${data.username}`);
+  res.send(`<html><body style="font-family:sans-serif;padding:40px;text-align:center;background:#fef2f2"><h2 style="color:#ef4444">❌ Request declined.</h2><p>The request from <strong>${data.username}</strong> has been declined.</p></body></html>`);
 });
 async function callGroq(system, messages, res) {
   try {
