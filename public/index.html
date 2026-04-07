@@ -1099,6 +1099,7 @@ async function handleFiles(input){
       let text='';
       const ext=file.name.split('.').pop().toLowerCase();
       if(ext==='pdf') text=await readPDF(file);
+      else if(ext==='docx'||ext==='doc') text=await readDocx(file);
       else text=await readAsText(file);
       if(text.trim()){
         const name=file.name.replace(/\.[^.]+$/,'');
@@ -1125,6 +1126,15 @@ function readAsText(file){
     r.onerror=()=>rej(new Error('Read failed'));
     r.readAsText(file,'utf-8');
   });
+}
+async function readDocx(file){
+  if(!window.mammoth){
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');
+  }
+  const arrayBuffer=await file.arrayBuffer();
+  const result=await window.mammoth.extractRawText({arrayBuffer});
+  if(!result.value) throw new Error('No text found');
+  return result.value;
 }
 async function readPDF(file){
   if(!window.pdfjsLib){
