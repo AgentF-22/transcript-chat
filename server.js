@@ -112,7 +112,51 @@ app.get('/d/:id', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'deliverable.html'));
 });
 
-// ── Groq helper ────────────────────────────────────────────────────────────
+// ── Account request ────────────────────────────────────────────────────────
+const accountRequests = [];
+
+app.post('/api/request-account', async (req, res) => {
+  const { email, username, password } = req.body;
+  if(!email || !username || !password){
+    return res.status(400).json({ error: 'All fields required' });
+  }
+
+  accountRequests.push({ email, username, password, createdAt: new Date().toISOString() });
+
+  try {
+    const fetch = globalThis.fetch || require('node-fetch');
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer re_SmaEXzSk_KVDq66uwDnZPmJuvCMqr3uvG`
+      },
+      body: JSON.stringify({
+        from: 'onboarding@resend.dev',
+        to: ['khzsum2019@gmail.com'],
+        subject: `New account request: ${username}`,
+        html: `
+          <h2 style="font-family:sans-serif">New Account Request — Finger Post Echo</h2>
+          <p style="font-family:sans-serif;color:#555">Someone has requested access.</p>
+          <table style="border-collapse:collapse;font-family:sans-serif;margin-top:12px">
+            <tr><td style="padding:8px;font-weight:bold;color:#555">Username:</td><td style="padding:8px"><strong>${username}</strong></td></tr>
+            <tr><td style="padding:8px;font-weight:bold;color:#555">Their email:</td><td style="padding:8px">${email}</td></tr>
+            <tr><td style="padding:8px;font-weight:bold;color:#555">Requested at:</td><td style="padding:8px">${new Date().toLocaleString()}</td></tr>
+          </table>
+          <p style="font-family:sans-serif;color:#555;margin-top:16px">
+            To approve: add their username and password to your Railway environment variables.<br/>
+            To decline: reply to their email at ${email}.
+          </p>
+        `
+      })
+    });
+    console.log(`[Account request] Sent email for: ${username}`);
+  } catch(e) {
+    console.error('Email send failed:', e.message);
+  }
+
+  res.json({ ok: true });
+});
 async function callGroq(system, messages, res) {
   try {
     const fetch = globalThis.fetch || require('node-fetch');

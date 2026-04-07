@@ -383,10 +383,11 @@ textarea.finput{resize:vertical;min-height:120px}
 
 <!-- ══ LOGIN ══ -->
 <div id="login-screen">
-  <div class="login-box">
+  <!-- SIGN IN BOX -->
+  <div class="login-box" id="signin-box">
     <div class="login-logo">
       <div class="login-icon">🔬</div>
-      <div class="login-title">Finger Post <span>Echo</span></div>
+      <div class="login-title">Finger&nbsp;Post <span>Echo</span></div>
       <div class="login-sub">Sign in to continue</div>
     </div>
     <div class="lfield">
@@ -403,6 +404,44 @@ textarea.finput{resize:vertical;min-height:120px}
     </div>
     <div class="lerr" id="lerr">Incorrect username or password.</div>
     <button class="btn-signin" id="btn-signin" onclick="doLogin()">Sign in →</button>
+    <div style="text-align:center;margin-top:-6px">
+      <button onclick="showRequestForm()" style="background:none;border:none;color:#565869;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;text-decoration:underline">
+        Request an account
+      </button>
+    </div>
+  </div>
+
+  <!-- REQUEST ACCOUNT BOX -->
+  <div class="login-box" id="request-box" style="display:none">
+    <div class="login-logo">
+      <div class="login-icon">✉️</div>
+      <div class="login-title" style="font-size:18px">Request Access</div>
+      <div class="login-sub">Fill in your details and we'll review your request.</div>
+    </div>
+    <div class="lfield">
+      <div class="llabel">YOUR EMAIL</div>
+      <input class="linput" type="email" id="r-email" placeholder="your@email.com"
+        autocomplete="email" autocorrect="off" autocapitalize="off"/>
+    </div>
+    <div class="lfield">
+      <div class="llabel">DESIRED USERNAME</div>
+      <input class="linput" type="text" id="r-user" placeholder="Choose a username"
+        autocorrect="off" autocapitalize="off" spellcheck="false"/>
+    </div>
+    <div class="lfield">
+      <div class="llabel">DESIRED PASSWORD</div>
+      <input class="linput" type="password" id="r-pass" placeholder="Choose a password"/>
+    </div>
+    <div class="lerr" id="rerr">Please fill in all fields.</div>
+    <div id="rsuccess" style="display:none;font-size:13px;color:#6ee7b7;background:#022c22;border:1px solid #065f46;border-radius:8px;padding:11px;text-align:center;line-height:1.6">
+      ✅ Request sent! We'll be in touch soon.
+    </div>
+    <button class="btn-signin" id="btn-request" onclick="doRequestAccount()">Send request →</button>
+    <div style="text-align:center;margin-top:-6px">
+      <button onclick="showSignIn()" style="background:none;border:none;color:#565869;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;text-decoration:underline">
+        ← Back to sign in
+      </button>
+    </div>
   </div>
 </div>
 
@@ -415,7 +454,7 @@ textarea.finput{resize:vertical;min-height:120px}
     <div class="sb-head">
       <div class="sb-logo" onclick="goHome()">
         <span class="sb-logo-icon">💬</span>
-        <span class="sb-logo-text">Finger Post <span>Echo</span></span>
+        <span class="sb-logo-text">Finger&nbsp;Post <span>Echo</span></span>
       </div>
       <button class="btn-newchat" onclick="newChat()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
@@ -446,7 +485,7 @@ textarea.finput{resize:vertical;min-height:120px}
     <!-- Mobile top bar -->
     <div class="mob-bar">
       <button class="btn-menu" onclick="openSb()">☰</button>
-      <div class="mob-logo" onclick="goHome()">Finger Post <span>Echo</span></div>
+      <div class="mob-logo" onclick="goHome()">Finger&nbsp;Post <span>Echo</span></div>
       <button class="btn-mob-add" onclick="openPanel()">+ Add</button>
     </div>
 
@@ -617,6 +656,63 @@ Sarah: In a VP of Product or CPO role where I have helped build something meanin
 
 // ── AUTH ───────────────────────────────────────────────────────────────────
 // Always show login screen on page load
+
+function showRequestForm(){
+  document.getElementById('signin-box').style.display='none';
+  document.getElementById('request-box').style.display='flex';
+  document.getElementById('rsuccess').style.display='none';
+  document.getElementById('rerr').classList.remove('show');
+  document.getElementById('r-email').value='';
+  document.getElementById('r-user').value='';
+  document.getElementById('r-pass').value='';
+  document.getElementById('btn-request').disabled=false;
+  document.getElementById('btn-request').textContent='Send request →';
+}
+
+function showSignIn(){
+  document.getElementById('request-box').style.display='none';
+  document.getElementById('signin-box').style.display='flex';
+}
+
+async function doRequestAccount(){
+  const email = document.getElementById('r-email').value.trim();
+  const user  = document.getElementById('r-user').value.trim();
+  const pass  = document.getElementById('r-pass').value.trim();
+  const err   = document.getElementById('rerr');
+  const btn   = document.getElementById('btn-request');
+  err.classList.remove('show');
+
+  if(!email || !user || !pass){
+    err.textContent='Please fill in all fields.';
+    err.classList.add('show'); return;
+  }
+  if(!/^[^@]+@[^@]+\.[^@]+$/.test(email)){
+    err.textContent='Please enter a valid email address.';
+    err.classList.add('show'); return;
+  }
+
+  btn.disabled=true; btn.textContent='Sending...';
+  try{
+    const res = await fetch(`${SERVER}/api/request-account`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email, username:user, password:pass})
+    });
+    const data = await res.json();
+    if(data.ok){
+      document.getElementById('rsuccess').style.display='block';
+      btn.style.display='none';
+    } else {
+      err.textContent = data.error || 'Something went wrong.';
+      err.classList.add('show');
+      btn.disabled=false; btn.textContent='Send request →';
+    }
+  } catch(e){
+    err.textContent='Could not reach server. Please try again.';
+    err.classList.add('show');
+    btn.disabled=false; btn.textContent='Send request →';
+  }
+}
 
 async function doLogin(){
   const u = document.getElementById('l-user').value.trim();
