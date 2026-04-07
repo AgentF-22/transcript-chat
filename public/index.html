@@ -542,33 +542,35 @@ textarea.finput{resize:vertical;min-height:120px}
 <div class="toast" id="toast"></div>
 
 <!-- DELIVERABLE MODAL -->
-<div class="overlay" id="deliv-overlay" onclick="if(event.target===this)closeDelivModal()" style="display:none">
-  <div class="panel" id="deliv-modal" style="transform:none;position:relative;bottom:auto;left:auto;right:auto;max-width:460px;margin:auto;border-radius:18px;display:flex">
-    <div class="panel-handle"></div>
-    <div class="panel-title">🔗 Create Deliverable</div>
-    <div class="panel-sub">Generate a shareable link with a unique access code. The recipient can only chat with the loaded transcript — they cannot add or change anything.</div>
+<div class="overlay" id="deliv-overlay" onclick="if(event.target===this)closeDelivModal()" style="display:none;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#2f2f2f;border:1px solid #3f3f3f;border-radius:20px;padding:28px;width:100%;max-width:460px;display:flex;flex-direction:column;gap:18px;max-height:90dvh;overflow-y:auto">
+    <div style="font-size:18px;font-weight:700;color:#fff">🔗 Create Deliverable</div>
+    <div style="font-size:13px;color:#8e8ea0;line-height:1.6;margin-top:-8px">Generate a shareable link + access code. The recipient can only chat with the loaded transcript — they cannot add or change anything.</div>
+
     <div>
-      <div class="flabel">DELIVERABLE TITLE</div>
+      <div class="flabel">TITLE (shown to the recipient)</div>
       <input type="text" class="finput" id="deliv-title" placeholder="e.g. John Smith — Senior Developer" autocorrect="off"/>
     </div>
-    <div id="deliv-result" style="display:none;background:#212121;border:1px solid #3f3f3f;border-radius:12px;padding:18px;display:none;flex-direction:column;gap:12px">
-      <div style="font-size:13px;color:#8e8ea0">Share this link and code with your client:</div>
+
+    <div id="deliv-result" style="display:none;background:#212121;border:1px solid #3f3f3f;border-radius:12px;padding:18px;flex-direction:column;gap:14px">
+      <div style="font-size:13px;color:#8e8ea0">Send both of these to your client:</div>
       <div>
         <div class="flabel">LINK</div>
         <div style="display:flex;gap:8px;align-items:center">
-          <div id="deliv-url" style="flex:1;font-size:13px;color:#ececec;background:#171717;border:1px solid #3f3f3f;border-radius:8px;padding:10px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-          <button onclick="copyUrl()" style="background:#3f3f3f;border:none;color:#ececec;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;white-space:nowrap">Copy</button>
+          <div id="deliv-url" style="flex:1;font-size:13px;color:#ececec;background:#171717;border:1px solid #3f3f3f;border-radius:8px;padding:10px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0"></div>
+          <button onclick="copyUrl()" style="background:#3f3f3f;border:none;color:#ececec;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;white-space:nowrap;flex-shrink:0">Copy</button>
         </div>
       </div>
       <div>
         <div class="flabel">ACCESS CODE</div>
         <div style="display:flex;gap:8px;align-items:center">
-          <div id="deliv-code" style="flex:1;font-size:28px;font-weight:700;color:#10a37f;letter-spacing:.2em;text-align:center;background:#171717;border:1px solid #3f3f3f;border-radius:8px;padding:14px"></div>
-          <button onclick="copyCode()" style="background:#3f3f3f;border:none;color:#ececec;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;white-space:nowrap">Copy</button>
+          <div id="deliv-code" style="flex:1;font-size:30px;font-weight:700;color:#10a37f;letter-spacing:.25em;text-align:center;background:#171717;border:1px solid #3f3f3f;border-radius:8px;padding:14px"></div>
+          <button onclick="copyCode()" style="background:#3f3f3f;border:none;color:#ececec;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;white-space:nowrap;flex-shrink:0">Copy</button>
         </div>
       </div>
-      <div style="font-size:12px;color:#565869;line-height:1.6">⚠ Save this code — it cannot be retrieved later. The link will work as long as your server is running.</div>
+      <div style="font-size:12px;color:#565869;line-height:1.6">⚠ Save the code now — it won't be shown again. The link works as long as your server is running.</div>
     </div>
+
     <div class="panel-btns" id="deliv-btns">
       <button class="btn-cancel" onclick="closeDelivModal()">Cancel</button>
       <button class="btn-add" id="btn-create-deliv" onclick="confirmCreateDeliverable()">Generate link →</button>
@@ -674,9 +676,16 @@ function newChat(){
   chatHistory  = [];
   sources      = [];
   updateBadge();
-  renderSidebar();
+  // Clear msgs and show welcome
+  const msgs = document.getElementById('msgs');
+  msgs.innerHTML = '';
   showWelcome();
+  renderSidebar();
   closeSb();
+  // Clear input
+  const inp = document.getElementById('chat-inp');
+  inp.value = ''; inp.style.height = 'auto';
+  toggleSend();
 }
 
 function goHome(){
@@ -807,7 +816,7 @@ async function send(){
     // Save to chat history
     if(!activeChatId){
       activeChatId = chatUid++;
-      const title = q.length>45 ? q.slice(0,45)+'…' : q;
+      const title = generateChatTitle(sources, q);
       chats.unshift({id:activeChatId, title, messages:[], sources:[]});
     }
     const chat = chats.find(c=>c.id===activeChatId);
@@ -1004,7 +1013,56 @@ async function readPDF(file){
   }
   return text;
 }
-// ── DELIVERABLE ────────────────────────────────────────────────────────────
+// ── SMART CHAT TITLE ──────────────────────────────────────────────────────
+function generateChatTitle(sources, fallbackQ){
+  if(!sources.length) return fallbackQ.length>45 ? fallbackQ.slice(0,45)+'…' : fallbackQ;
+
+  // Try to extract candidate name(s) from transcript speaker labels
+  // e.g. "Sarah:" or "John Smith:" at the start of a line
+  const names = [];
+  const roles = [];
+
+  for(const src of sources){
+    const lines = src.content.split('\n').slice(0, 40); // only check first 40 lines
+    for(const line of lines){
+      // Match "Name:" speaker label — not "Interviewer" or "Question"
+      const m = line.match(/^([A-Z][a-z]+(?:\s[A-Z][a-z]+)?):/);
+      if(m){
+        const n = m[1];
+        if(!['Interviewer','Interviewer1','Interviewer2','Question','Q','Recruiter','Hiring'].includes(n)){
+          if(!names.includes(n)) names.push(n);
+        }
+      }
+      // Detect job title mentions
+      const roleMatch = line.match(/\b(software engineer|product manager|developer|designer|data scientist|analyst|director|manager|cto|ceo|vp|nurse|doctor|surgeon|lawyer|accountant|architect|consultant|teacher|professor)\b/i);
+      if(roleMatch && !roles.includes(roleMatch[1])) roles.push(roleMatch[1]);
+    }
+  }
+
+  if(names.length === 1){
+    // Single candidate — use their name + role if found
+    const role = roles.length ? ' — ' + capitalise(roles[0]) : '';
+    return names[0] + role;
+  }
+  if(names.length > 1 && names.length <= 4){
+    // Multiple candidates — try to find common role
+    if(roles.length){
+      return names.join(', ') + ' — ' + capitalise(roles[0]) + 's';
+    }
+    return names.join(', ');
+  }
+  if(names.length > 4){
+    // Many candidates — use role or source name
+    if(roles.length) return capitalise(roles[0]) + ' Interviews';
+    return sources.length > 1 ? `${sources.length} Interviews` : (src.name || 'Interview');
+  }
+
+  // No names found — use source file name or fallback to question
+  if(sources.length === 1 && sources[0].name) return sources[0].name;
+  return fallbackQ.length>45 ? fallbackQ.slice(0,45)+'…' : fallbackQ;
+}
+
+function capitalise(s){ return s.charAt(0).toUpperCase()+s.slice(1).toLowerCase(); }
 let lastDelivUrl = '';
 let lastDelivCode = '';
 
@@ -1020,7 +1078,7 @@ function createDeliverable(){
   document.getElementById('btn-create-deliv').disabled = false;
   document.getElementById('btn-create-deliv').textContent = 'Generate link →';
   document.getElementById('deliv-overlay').style.display = 'flex';
-  document.getElementById('deliv-modal').style.display = 'flex';
+  document.getElementById('deliv-result').style.display = 'none';
   closeSb();
 }
 
