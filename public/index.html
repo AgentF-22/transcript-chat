@@ -432,6 +432,9 @@ textarea.finput{resize:vertical;min-height:120px}
         📎 &nbsp;Add transcripts
         <span class="src-badge" id="src-badge">0</span>
       </button>
+      <button class="btn-sources" onclick="createDeliverable()" style="color:#10a37f">
+        🔗 &nbsp;Create deliverable
+      </button>
       <button class="btn-signout" onclick="logout()">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
         Sign out
@@ -537,6 +540,42 @@ textarea.finput{resize:vertical;min-height:120px}
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- DELIVERABLE MODAL -->
+<div class="overlay" id="deliv-overlay" onclick="if(event.target===this)closeDelivModal()" style="display:none">
+  <div class="panel" id="deliv-modal" style="transform:none;position:relative;bottom:auto;left:auto;right:auto;max-width:460px;margin:auto;border-radius:18px;display:flex">
+    <div class="panel-handle"></div>
+    <div class="panel-title">🔗 Create Deliverable</div>
+    <div class="panel-sub">Generate a shareable link with a unique access code. The recipient can only chat with the loaded transcript — they cannot add or change anything.</div>
+    <div>
+      <div class="flabel">DELIVERABLE TITLE</div>
+      <input type="text" class="finput" id="deliv-title" placeholder="e.g. John Smith — Senior Developer" autocorrect="off"/>
+    </div>
+    <div id="deliv-result" style="display:none;background:#212121;border:1px solid #3f3f3f;border-radius:12px;padding:18px;display:none;flex-direction:column;gap:12px">
+      <div style="font-size:13px;color:#8e8ea0">Share this link and code with your client:</div>
+      <div>
+        <div class="flabel">LINK</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div id="deliv-url" style="flex:1;font-size:13px;color:#ececec;background:#171717;border:1px solid #3f3f3f;border-radius:8px;padding:10px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+          <button onclick="copyUrl()" style="background:#3f3f3f;border:none;color:#ececec;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;white-space:nowrap">Copy</button>
+        </div>
+      </div>
+      <div>
+        <div class="flabel">ACCESS CODE</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div id="deliv-code" style="flex:1;font-size:28px;font-weight:700;color:#10a37f;letter-spacing:.2em;text-align:center;background:#171717;border:1px solid #3f3f3f;border-radius:8px;padding:14px"></div>
+          <button onclick="copyCode()" style="background:#3f3f3f;border:none;color:#ececec;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;white-space:nowrap">Copy</button>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#565869;line-height:1.6">⚠ Save this code — it cannot be retrieved later. The link will work as long as your server is running.</div>
+    </div>
+    <div class="panel-btns" id="deliv-btns">
+      <button class="btn-cancel" onclick="closeDelivModal()">Cancel</button>
+      <button class="btn-add" id="btn-create-deliv" onclick="confirmCreateDeliverable()">Generate link →</button>
+    </div>
+    <button class="btn-cancel" id="btn-close-deliv" onclick="closeDelivModal()" style="display:none">Close</button>
+  </div>
+</div>
 
 <script>
 // ── STATE ──────────────────────────────────────────────────────────────────
@@ -965,12 +1004,64 @@ async function readPDF(file){
   }
   return text;
 }
-function loadScript(src){
-  return new Promise((res,rej)=>{
-    const s=document.createElement('script');
-    s.src=src;s.onload=res;s.onerror=rej;
-    document.head.appendChild(s);
-  });
+// ── DELIVERABLE ────────────────────────────────────────────────────────────
+let lastDelivUrl = '';
+let lastDelivCode = '';
+
+function createDeliverable(){
+  if(!sources.length){
+    showToast('⚠ Add at least one transcript first before creating a deliverable.');
+    return;
+  }
+  document.getElementById('deliv-title').value = '';
+  document.getElementById('deliv-result').style.display = 'none';
+  document.getElementById('deliv-btns').style.display = 'flex';
+  document.getElementById('btn-close-deliv').style.display = 'none';
+  document.getElementById('btn-create-deliv').disabled = false;
+  document.getElementById('btn-create-deliv').textContent = 'Generate link →';
+  document.getElementById('deliv-overlay').style.display = 'flex';
+  document.getElementById('deliv-modal').style.display = 'flex';
+  closeSb();
+}
+
+function closeDelivModal(){
+  document.getElementById('deliv-overlay').style.display = 'none';
+}
+
+async function confirmCreateDeliverable(){
+  const title = document.getElementById('deliv-title').value.trim() ||
+    (sources[0]?.name || 'Candidate Profile');
+  const btn = document.getElementById('btn-create-deliv');
+  btn.disabled = true; btn.textContent = 'Generating...';
+
+  try{
+    const res = await fetch(`${SERVER}/api/deliverable/create`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-auth-token':authToken},
+      body:JSON.stringify({sources, title})
+    });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error||'Failed');
+
+    lastDelivUrl  = data.url;
+    lastDelivCode = data.code;
+
+    document.getElementById('deliv-url').textContent  = data.url;
+    document.getElementById('deliv-code').textContent = data.code;
+    document.getElementById('deliv-result').style.display = 'flex';
+    document.getElementById('deliv-btns').style.display   = 'none';
+    document.getElementById('btn-close-deliv').style.display = 'block';
+  } catch(e){
+    showToast('⚠ '+(e.message||'Could not create deliverable'));
+    btn.disabled=false; btn.textContent='Generate link →';
+  }
+}
+
+function copyUrl(){
+  navigator.clipboard.writeText(lastDelivUrl).then(()=>showToast('✅ Link copied!')).catch(()=>{});
+}
+function copyCode(){
+  navigator.clipboard.writeText(lastDelivCode).then(()=>showToast('✅ Code copied!')).catch(()=>{});
 }
 </script>
 </body>

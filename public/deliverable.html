@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Candidate Chat</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%;background:#212121}
+body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:100dvh;display:flex;flex-direction:column}
+
+/* ACCESS SCREEN */
+#access-screen{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:24px;min-height:100dvh;
+}
+.access-box{
+  width:100%;max-width:380px;
+  background:#2f2f2f;border:1px solid #3f3f3f;
+  border-radius:20px;padding:36px 28px;
+  display:flex;flex-direction:column;gap:22px;
+}
+.access-icon{text-align:center;font-size:38px;margin-bottom:4px}
+.access-title{font-size:21px;font-weight:700;color:#fff;text-align:center}
+.access-title span{color:#10a37f}
+.access-sub{font-size:13px;color:#8e8ea0;text-align:center;line-height:1.6;margin-top:-10px}
+.afield{display:flex;flex-direction:column;gap:7px}
+.alabel{font-size:11px;font-weight:600;color:#8e8ea0;letter-spacing:.08em}
+.ainput{
+  background:#212121;border:1.5px solid #3f3f3f;
+  border-radius:10px;color:#ececec;
+  font-family:'Inter',sans-serif;font-size:20px;font-weight:600;
+  padding:13px 15px;outline:none;width:100%;text-align:center;
+  letter-spacing:.2em;text-transform:uppercase;
+  transition:border-color .15s;-webkit-appearance:none;
+}
+.ainput:focus{border-color:#10a37f}
+.ainput::placeholder{color:#565869;font-size:14px;letter-spacing:normal;font-weight:400}
+.aerr{
+  font-size:13px;color:#f87171;background:#2d1212;
+  border:1px solid #7f1d1d;border-radius:8px;
+  padding:11px;display:none;text-align:center;
+}
+.aerr.show{display:block}
+.btn-access{
+  width:100%;background:#10a37f;color:#fff;border:none;
+  border-radius:12px;font-size:16px;font-weight:600;
+  font-family:'Inter',sans-serif;padding:14px;cursor:pointer;
+  transition:background .15s;-webkit-appearance:none;
+}
+.btn-access:active{background:#0d8c6d}
+.btn-access:disabled{background:#3f3f3f;color:#565869;cursor:not-allowed}
+.powered{text-align:center;font-size:11px;color:#3f3f3f;margin-top:-8px}
+.powered span{color:#565869}
+
+/* CHAT SCREEN */
+#chat-screen{display:none;flex-direction:column;height:100dvh}
+#chat-screen.visible{display:flex}
+
+.topbar{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 20px;
+  padding-top:max(13px,env(safe-area-inset-top));
+  background:#171717;border-bottom:1px solid #2a2a2a;
+  flex-shrink:0;
+}
+.tb-logo{font-size:14px;font-weight:700;color:#fff}
+.tb-logo span{color:#10a37f}
+.tb-title{font-size:14px;color:#8e8ea0;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-badge{
+  font-size:11px;font-weight:600;
+  background:#064e3b;color:#6ee7b7;
+  border:1px solid #065f46;border-radius:20px;
+  padding:3px 10px;white-space:nowrap;flex-shrink:0;
+}
+
+.msgs{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:28px 0 16px;display:flex;flex-direction:column;
+  background:#212121;
+}
+.msgs::-webkit-scrollbar{width:5px}
+.msgs::-webkit-scrollbar-thumb{background:#3f3f3f;border-radius:4px}
+
+.welcome{
+  max-width:660px;margin:0 auto;padding:32px 24px 24px;
+  display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;
+}
+.w-icon{font-size:42px}
+.w-title{font-size:22px;font-weight:700;color:#fff}
+.w-sub{font-size:14px;color:#8e8ea0;line-height:1.7;max-width:360px}
+.w-cards{display:grid;grid-template-columns:1fr 1fr;gap:9px;width:100%;margin-top:8px;text-align:left}
+.wcard{
+  background:#2f2f2f;border:1px solid #3f3f3f;border-radius:12px;
+  padding:13px 14px;cursor:pointer;font-family:'Inter',sans-serif;
+  transition:background .15s;-webkit-appearance:none;
+}
+.wcard:hover{background:#3a3a3a}
+.wcard:active{background:#444}
+.wcard-t{font-size:13px;font-weight:600;color:#fff;margin-bottom:3px}
+.wcard-s{font-size:11px;color:#8e8ea0;line-height:1.4}
+
+.msg-row{width:100%;padding:5px 0}
+.msg-inner{max-width:660px;margin:0 auto;padding:0 20px;display:flex;gap:13px;align-items:flex-start}
+.msg-row.user .msg-inner{flex-direction:row-reverse}
+.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px}
+.av.bot{background:#10a37f;color:#fff}
+.av.user{background:#3f3f3f;color:#c5c5d2}
+.msg-body{flex:1;min-width:0}
+.msg-name{font-size:11px;font-weight:600;color:#8e8ea0;margin-bottom:5px}
+.msg-row.user .msg-body{display:flex;flex-direction:column;align-items:flex-end}
+.msg-text{font-size:15px;line-height:1.75;color:#ececec;word-break:break-word;max-width:560px}
+.msg-text p{margin-bottom:9px}
+.msg-text p:last-child{margin-bottom:0}
+.msg-text ul{padding-left:20px;margin:8px 0}
+.msg-text li{margin-bottom:5px}
+.msg-text strong{color:#fff;font-weight:600}
+.user-bubble{
+  background:#2f2f2f;border-radius:18px 18px 4px 18px;
+  padding:11px 15px;font-size:15px;line-height:1.65;color:#ececec;
+  max-width:85%;word-break:break-word;
+}
+
+.typing-row{max-width:660px;margin:0 auto;padding:6px 20px;display:flex;gap:13px;align-items:center}
+.typing-dots{display:flex;gap:5px;padding:13px 16px;background:#2f2f2f;border-radius:16px}
+.dot{width:7px;height:7px;border-radius:50%;background:#565869;animation:blink 1.2s infinite}
+.dot:nth-child(2){animation-delay:.2s}
+.dot:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+.inp-area{
+  flex-shrink:0;padding:12px 20px;
+  padding-bottom:max(16px,env(safe-area-inset-bottom));
+  background:#212121;
+}
+.inp-box{
+  max-width:660px;margin:0 auto;
+  background:#2f2f2f;border:1px solid #3f3f3f;
+  border-radius:16px;padding:11px 13px;
+  display:flex;gap:10px;align-items:flex-end;
+  transition:border-color .15s;
+}
+.inp-box:focus-within{border-color:#565869}
+.chat-inp{
+  flex:1;background:transparent;border:none;outline:none;
+  color:#ececec;font-family:'Inter',sans-serif;
+  font-size:15px;line-height:1.55;resize:none;
+  max-height:130px;overflow-y:auto;-webkit-appearance:none;
+}
+.chat-inp::placeholder{color:#565869}
+.send-btn{
+  width:36px;height:36px;border-radius:9px;
+  background:#10a37f;border:none;color:#fff;
+  font-size:18px;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  -webkit-appearance:none;
+}
+.send-btn:disabled{background:#3f3f3f;color:#565869;cursor:not-allowed}
+.send-btn:not(:disabled):active{background:#0d8c6d}
+.inp-hint{text-align:center;font-size:11px;color:#3f3f3f;margin-top:7px;max-width:660px;margin-left:auto;margin-right:auto}
+
+.toast{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
+  background:#1a0a0a;color:#fca5a5;border:1px solid #7f1d1d;
+  border-radius:10px;padding:11px 20px;font-size:13px;
+  z-index:200;opacity:0;transition:opacity .2s;pointer-events:none;
+  max-width:90%;text-align:center;
+}
+.toast.show{opacity:1}
+
+@media(max-width:600px){
+  .w-cards{grid-template-columns:1fr 1fr}
+  .welcome{padding:20px 16px 16px}
+  .msg-inner{padding:0 14px}
+  .typing-row{padding:6px 14px}
+  .inp-area{padding:10px 14px;padding-bottom:max(14px,env(safe-area-inset-bottom))}
+}
+</style>
+</head>
+<body>
+
+<!-- ACCESS SCREEN -->
+<div id="access-screen">
+  <div class="access-box">
+    <div class="access-icon">🔐</div>
+    <div>
+      <div class="access-title">Transcript<span>Chat</span></div>
+      <div class="access-sub">Enter the access code provided by your recruiter to start chatting with the candidate profile.</div>
+    </div>
+    <div class="afield">
+      <div class="alabel">ACCESS CODE</div>
+      <input class="ainput" type="text" id="code-inp" maxlength="6"
+        placeholder="XXXXXX"
+        autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+        oninput="this.value=this.value.toUpperCase()"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();doAccess()}"/>
+    </div>
+    <div class="aerr" id="aerr">Invalid code. Please check and try again.</div>
+    <button class="btn-access" id="btn-access" onclick="doAccess()">Enter →</button>
+    <div class="powered">Powered by <span>TranscriptChat</span></div>
+  </div>
+</div>
+
+<!-- CHAT SCREEN -->
+<div id="chat-screen">
+  <div class="topbar">
+    <div class="tb-logo">Transcript<span>Chat</span></div>
+    <div class="tb-title" id="tb-title">Candidate Profile</div>
+    <div class="tb-badge">Read only</div>
+  </div>
+
+  <div class="msgs" id="msgs">
+    <div id="welcome" class="welcome">
+      <div class="w-icon">💬</div>
+      <div class="w-title" id="w-title">Candidate Profile</div>
+      <div class="w-sub">Ask me anything about this candidate. I'll answer based on their interview transcript.</div>
+      <div class="w-cards">
+        <button class="wcard" onclick="ask('Give me a full summary of this candidate')"><div class="wcard-t">📋 Summary</div><div class="wcard-s">Full overview</div></button>
+        <button class="wcard" onclick="ask('What is their professional background?')"><div class="wcard-t">💼 Experience</div><div class="wcard-s">Career history</div></button>
+        <button class="wcard" onclick="ask('What are their key strengths?')"><div class="wcard-t">⭐ Strengths</div><div class="wcard-s">Skills & expertise</div></button>
+        <button class="wcard" onclick="ask('What are their salary expectations?')"><div class="wcard-t">💰 Salary</div><div class="wcard-s">Compensation</div></button>
+        <button class="wcard" onclick="ask('Why are they looking to leave their current role?')"><div class="wcard-t">🚪 Motivation</div><div class="wcard-s">Why moving on</div></button>
+        <button class="wcard" onclick="ask('Where do they see themselves in 5 years?')"><div class="wcard-t">🎯 Goals</div><div class="wcard-s">Future plans</div></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="inp-area">
+    <div class="inp-box">
+      <textarea class="chat-inp" id="chat-inp" rows="1"
+        placeholder="Ask anything about this candidate..."
+        oninput="onInp(this)" onkeydown="onKey(event)"></textarea>
+      <button class="send-btn" id="send-btn" disabled onclick="send()">↑</button>
+    </div>
+    <div class="inp-hint">Tap Send · Enter on desktop</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SERVER = window.location.origin;
+const delivId = window.location.pathname.split('/d/')[1];
+let accessCode = '';
+let sources    = [];
+let history    = [];
+let loading    = false;
+
+async function doAccess(){
+  const code = document.getElementById('code-inp').value.trim().toUpperCase();
+  if(code.length < 4) return;
+  const btn = document.getElementById('btn-access');
+  const err = document.getElementById('aerr');
+  btn.disabled=true; btn.textContent='Checking...';
+  err.classList.remove('show');
+
+  try{
+    const res  = await fetch(`${SERVER}/api/deliverable/access`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:delivId, code})
+    });
+    const data = await res.json();
+    if(data.ok){
+      accessCode = code;
+      sources    = data.sources;
+      const title = data.title || 'Candidate Profile';
+      document.getElementById('tb-title').textContent = title;
+      document.getElementById('w-title').textContent  = title;
+      document.getElementById('access-screen').style.display='none';
+      document.getElementById('chat-screen').classList.add('visible');
+    } else {
+      err.textContent = data.error || 'Invalid code.';
+      err.classList.add('show');
+      btn.disabled=false; btn.textContent='Enter →';
+    }
+  } catch(e){
+    err.textContent='Could not reach server. Please try again.';
+    err.classList.add('show');
+    btn.disabled=false; btn.textContent='Enter →';
+  }
+}
+
+function buildSystem(){
+  const block = sources.map(s=>`=== ${s.name} ===\n${s.content}`).join('\n\n');
+  return `You are a helpful assistant that answers questions about an interview candidate based on their transcript.
+
+TRANSCRIPT:
+${block}
+
+INSTRUCTIONS:
+- Identify the candidate by name and use it naturally.
+- Write fluent natural sentences: "She specialises in...", "He has X years of experience in..."
+- Do not say "according to the transcript" repeatedly — just answer naturally.
+- If something is not in the transcript, say so briefly.
+- Keep answers concise: 2–5 sentences. Use bullet points only for 3+ items.`;
+}
+
+async function send(){
+  const el = document.getElementById('chat-inp');
+  const q  = el.value.trim();
+  if(!q||loading) return;
+  el.value=''; el.style.height='auto'; toggleSend();
+
+  const ws = document.getElementById('welcome');
+  if(ws) ws.remove();
+
+  appendUserMsg(q);
+  loading=true; toggleSend();
+  const typingEl = addTyping();
+  history.push({role:'user',content:q});
+
+  try{
+    const res = await fetch(`${SERVER}/api/deliverable/chat`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:delivId, code:accessCode, system:buildSystem(), messages:history.slice(-12)})
+    });
+    if(!res.ok){
+      const ed = await res.json().catch(()=>({}));
+      throw new Error(ed?.error||`Error ${res.status}`);
+    }
+    const data  = await res.json();
+    const reply = data.reply||'No response.';
+    history.push({role:'assistant',content:reply});
+    typingEl.remove();
+    appendBotMsg(reply);
+  } catch(e){
+    history.pop();
+    typingEl.remove();
+    showToast('⚠ '+(e.message||'Something went wrong.'));
+  }
+  loading=false; toggleSend(); scrollBottom();
+}
+
+function ask(q){
+  document.getElementById('chat-inp').value=q;
+  onInp(document.getElementById('chat-inp'));
+  send();
+}
+
+function appendUserMsg(text){
+  const msgs=document.getElementById('msgs');
+  const row=document.createElement('div');
+  row.className='msg-row user';
+  row.innerHTML=`<div class="msg-inner"><div class="av user">U</div><div class="msg-body"><div class="msg-name">You</div><div class="user-bubble">${esc(text)}</div></div></div>`;
+  msgs.appendChild(row); scrollBottom();
+}
+
+function appendBotMsg(text){
+  const msgs=document.getElementById('msgs');
+  const row=document.createElement('div');
+  row.className='msg-row bot';
+  row.innerHTML=`<div class="msg-inner"><div class="av bot">TC</div><div class="msg-body"><div class="msg-name">Transcript Chat</div><div class="msg-text">${renderMd(text)}</div></div></div>`;
+  msgs.appendChild(row); scrollBottom();
+}
+
+function addTyping(){
+  const msgs=document.getElementById('msgs');
+  const w=document.createElement('div');
+  w.className='typing-row';
+  w.innerHTML=`<div class="av bot">TC</div><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  msgs.appendChild(w); scrollBottom(); return w;
+}
+
+function renderMd(text){
+  const e=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return e.split('\n\n').map(block=>{
+    const t=block.trim();
+    if(!t) return '';
+    if(/^[-•*] /m.test(t)){const lines=t.split('\n').filter(l=>l.trim());return '<ul>'+lines.map(l=>`<li>${fmt(l.replace(/^[-•*]\s*/,''))}</li>`).join('')+'</ul>'}
+    if(/^\d+\. /m.test(t)){const lines=t.split('\n').filter(l=>l.trim());return '<ul>'+lines.map(l=>`<li>${fmt(l.replace(/^\d+\.\s*/,''))}</li>`).join('')+'</ul>'}
+    return `<p>${fmt(t)}</p>`;
+  }).join('');
+}
+function fmt(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>')}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function scrollBottom(){const m=document.getElementById('msgs');setTimeout(()=>m.scrollTop=m.scrollHeight,80)}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),5000)}
+function onInp(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,130)+'px';toggleSend()}
+function onKey(e){if(e.key==='Enter'&&!e.shiftKey&&!('ontouchstart' in window)){e.preventDefault();if(!document.getElementById('send-btn').disabled)send()}}
+function toggleSend(){const v=document.getElementById('chat-inp').value.trim();document.getElementById('send-btn').disabled=!v||loading}
+</script>
+</body>
+</html>
