@@ -673,19 +673,28 @@ function saveChats(){
 }
 
 function newChat(){
-  if(loading) return; // don't interrupt mid-request
+  // Force stop any loading
+  loading = false;
   activeChatId = null;
   chatHistory  = [];
   sources      = [];
+
+  // Reset UI
   updateBadge();
+  toggleSend();
+
+  // Nuke the messages area completely and rebuild welcome
   const msgs = document.getElementById('msgs');
-  msgs.innerHTML = '';
+  while(msgs.firstChild) msgs.removeChild(msgs.firstChild);
   showWelcome();
-  renderSidebar();
-  closeSb();
+
+  // Reset input
   const inp = document.getElementById('chat-inp');
   if(inp){ inp.value=''; inp.style.height='auto'; }
-  toggleSend();
+
+  // Update sidebar highlight
+  renderSidebar();
+  closeSb();
 }
 
 function goHome(){
@@ -694,7 +703,9 @@ function goHome(){
 
 function showWelcome(){
   const msgs = document.getElementById('msgs');
-  msgs.innerHTML = '';
+  // Remove any existing welcome first
+  const old = document.getElementById('welcome');
+  if(old) old.remove();
   const w = document.createElement('div');
   w.id='welcome'; w.className='welcome';
   w.innerHTML = `
