@@ -498,15 +498,15 @@ textarea.finput{resize:vertical;min-height:120px}
         <div class="w-title">What do you want to know?</div>
         <div class="w-sub">Add an interview transcript using the sidebar, then ask anything about the expert's views.</div>
         <div class="w-cards">
-          <button class="wcard" onclick="ask('Give me a full summary of this expert\\'s views')">
+          <button class="wcard" onclick="ask('Give me a full summary of this expert')">
             <div class="wcard-t">📋 Summary</div>
             <div class="wcard-s">Overview of key opinions</div>
           </button>
-          <button class="wcard" onclick="ask('What is the expert\\'s overall opinion of the product?')">
+          <button class="wcard" onclick="ask('What is the expert overall opinion of the product?')">
             <div class="wcard-t">💊 Product Opinion</div>
             <div class="wcard-s">Their view on the product</div>
           </button>
-          <button class="wcard" onclick="ask('What are the expert\\'s main concerns or reservations?')">
+          <button class="wcard" onclick="ask('What are the main concerns or reservations?')">
             <div class="wcard-t">⚠️ Concerns</div>
             <div class="wcard-s">Reservations & risks</div>
           </button>
@@ -621,9 +621,15 @@ textarea.finput{resize:vertical;min-height:120px}
   <div style="background:#2f2f2f;border:1px solid #3f3f3f;border-radius:20px;padding:28px;width:100%;max-width:500px;max-height:90dvh;overflow-y:auto;display:flex;flex-direction:column;gap:20px">
     <div style="font-size:18px;font-weight:700;color:#fff">⚙️ Admin Panel</div>
 
+    <!-- My inbox (replies from users) -->
+    <div>
+      <div class="flabel" style="margin-bottom:10px">MY INBOX — REPLIES FROM USERS</div>
+      <div id="admin-inbox"><div style="color:#565869;font-size:13px">Loading...</div></div>
+    </div>
+
     <!-- Pending requests -->
     <div>
-      <div class="flabel" style="margin-bottom:10px">PENDING REQUESTS</div>
+      <div class="flabel" style="margin-bottom:10px">PENDING ACCOUNT REQUESTS</div>
       <div id="admin-requests"><div style="color:#565869;font-size:13px">Loading...</div></div>
     </div>
 
@@ -865,9 +871,9 @@ function showWelcome(){
     <div class="w-title">What do you want to know?</div>
     <div class="w-sub">Add an interview transcript using the sidebar, then ask anything about the expert's views.</div>
     <div class="w-cards">
-      <button class="wcard" onclick="ask('Give me a full summary of this expert\\'s views')"><div class="wcard-t">📋 Summary</div><div class="wcard-s">Overview of key opinions</div></button>
-      <button class="wcard" onclick="ask('What is the expert\\'s overall opinion of the product?')"><div class="wcard-t">💊 Product Opinion</div><div class="wcard-s">Their view on the product</div></button>
-      <button class="wcard" onclick="ask('What are the expert\\'s main concerns or reservations?')"><div class="wcard-t">⚠️ Concerns</div><div class="wcard-s">Reservations & risks</div></button>
+      <button class="wcard" onclick="ask('Give me a full summary of this expert')"><div class="wcard-t">📋 Summary</div><div class="wcard-s">Overview of key opinions</div></button>
+      <button class="wcard" onclick="ask('What is the expert overall opinion of the product?')"><div class="wcard-t">💊 Product Opinion</div><div class="wcard-s">Their view on the product</div></button>
+      <button class="wcard" onclick="ask('What are the main concerns or reservations?')"><div class="wcard-t">⚠️ Concerns</div><div class="wcard-s">Reservations & risks</div></button>
       <button class="wcard" onclick="ask('What does the expert see as the main clinical benefits?')"><div class="wcard-t">✅ Benefits</div><div class="wcard-s">Clinical advantages</div></button>
       <button class="wcard" onclick="ask('How does the expert compare this to current alternatives?')"><div class="wcard-t">⚖️ Comparison</div><div class="wcard-s">vs. existing options</div></button>
       <button class="wcard" onclick="ask('Would the expert recommend or adopt this product?')"><div class="wcard-t">🏥 Adoption</div><div class="wcard-s">Likelihood to use</div></button>
@@ -1009,8 +1015,10 @@ async function send(){
 }
 
 function ask(q){
-  document.getElementById('chat-inp').value=q;
-  onInp(document.getElementById('chat-inp'));
+  loading = false; // reset in case it got stuck
+  const inp = document.getElementById('chat-inp');
+  inp.value = q;
+  onInp(inp);
   send();
 }
 
@@ -1388,6 +1396,24 @@ function closeAdmin(){
   document.getElementById('admin-overlay').style.display='none';
 }
 async function loadAdminData(){
+  // Load admin's own inbox (replies from users)
+  try{
+    const iRes = await fetch(`${SERVER}/api/messages/inbox`,{headers:{'x-auth-token':authToken}});
+    const iData = await iRes.json();
+    const iEl = document.getElementById('admin-inbox');
+    if(!iData.messages.length){
+      iEl.innerHTML='<div style="color:#565869;font-size:13px">No replies yet.</div>';
+    } else {
+      iEl.innerHTML = iData.messages.map(m=>`
+        <div style="background:#212121;border:1px solid #3f3f3f;border-radius:9px;padding:12px 14px;margin-bottom:6px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+            <span style="font-size:12px;font-weight:600;color:#10a37f">👤 ${esc(m.from)}</span>
+            <span style="font-size:11px;color:#565869">${new Date(m.sentAt).toLocaleString()}</span>
+          </div>
+          <div style="font-size:13px;color:#ececec;line-height:1.6">${esc(m.text)}</div>
+        </div>`).join('');
+    }
+  } catch(e){ document.getElementById('admin-inbox').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
   try{
     const rRes = await fetch(`${SERVER}/api/admin/requests`,{headers:{'x-auth-token':authToken}});
     const rData = await rRes.json();
