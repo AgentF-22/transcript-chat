@@ -468,6 +468,10 @@ textarea.finput{resize:vertical;min-height:120px}
       <button class="btn-sources" onclick="createDeliverable()" style="color:#10a37f;background:none">
         🔗 &nbsp;Create deliverable
       </button>
+      <button class="btn-sources" onclick="openInbox()" style="position:relative">
+        ✉️ &nbsp;Inbox
+        <span id="unread-badge" style="display:none;background:#ef4444;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:2px 6px;margin-left:4px">0</span>
+      </button>
       <button class="btn-sources" id="btn-admin" onclick="openAdmin()" style="display:none;color:#f59e0b;background:none">
         ⚙️ &nbsp;Admin panel
       </button>
@@ -575,6 +579,41 @@ textarea.finput{resize:vertical;min-height:120px}
   </div>
 </div>
 
+<!-- INBOX MODAL -->
+<div class="overlay" id="inbox-overlay" onclick="if(event.target===this)closeInbox()" style="display:none;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#2f2f2f;border:1px solid #3f3f3f;border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;display:flex;flex-direction:column;gap:16px">
+    <div style="font-size:18px;font-weight:700;color:#fff" id="inbox-title">✉️ Inbox</div>
+
+    <!-- Admin view: conversations list + compose -->
+    <div id="inbox-admin-view" style="display:none;flex-direction:column;gap:14px">
+      <div>
+        <div class="flabel" style="margin-bottom:8px">SEND MESSAGE TO USER</div>
+        <select id="msg-to" class="finput" style="margin-bottom:8px">
+          <option value="">Select a user...</option>
+        </select>
+        <textarea id="msg-text" class="finput" rows="3" placeholder="Write your message..." style="resize:none"></textarea>
+        <button class="btn-add" onclick="adminSendMsg()" style="margin-top:8px;width:100%">Send →</button>
+      </div>
+      <div>
+        <div class="flabel" style="margin-bottom:8px">CONVERSATIONS</div>
+        <div id="admin-convos"><div style="color:#565869;font-size:13px">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- User view: messages + reply -->
+    <div id="inbox-user-view" style="display:none;flex-direction:column;gap:14px">
+      <div id="user-messages" style="display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto"></div>
+      <div>
+        <div class="flabel" style="margin-bottom:8px">REPLY TO FINGER POST</div>
+        <textarea id="reply-text" class="finput" rows="3" placeholder="Write your reply..." style="resize:none"></textarea>
+        <button class="btn-add" onclick="userSendReply()" style="margin-top:8px;width:100%">Send reply →</button>
+      </div>
+    </div>
+
+    <button class="btn-cancel" onclick="closeInbox()">Close</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <!-- ADMIN PANEL -->
@@ -642,7 +681,7 @@ let sources   = [];
 let chatHistory = []; // AI message history for current chat
 let loading   = false;
 let uid       = 1;
-let chatUid   = 1;
+function newChatId(){ return Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
 let activeChatId = null;
 let authToken = '';
 let currentUser = ''; // track logged in username
@@ -744,9 +783,12 @@ async function doLogin(){
     const data = await res.json();
     if(data.ok){
       authToken=data.token;
+      isAdminUser = !!data.isAdmin;
       if(data.isAdmin) document.getElementById('btn-admin').style.display='flex';
       else document.getElementById('btn-admin').style.display='none';
       showApp(u);
+      checkUnread();
+      setInterval(checkUnread, 30000); // check every 30 seconds
     } else {
       err.classList.add('show');
       btn.disabled=false; btn.textContent='Sign in →';
@@ -834,7 +876,8 @@ function showWelcome(){
 }
 
 function loadChat(id){
-  const chat = chats.find(c=>c.id===id);
+  id = String(id);
+  const chat = chats.find(c=>String(c.id)===id);
   if(!chat) return;
   activeChatId = id;
   chatHistory  = chat.messages.map(m=>({role:m.role,content:m.content}));
@@ -853,9 +896,10 @@ function loadChat(id){
 }
 
 function deleteChat(id){
-  chats = chats.filter(c=>c.id!==id);
+  id = String(id);
+  chats = chats.filter(c=>String(c.id)!==id);
   saveChats();
-  if(activeChatId===id) newChat();
+  if(String(activeChatId)===id) newChat();
   else renderSidebar();
 }
 
@@ -874,9 +918,9 @@ function renderSidebar(){
 
   hist.onclick = function(e){
     const delBtn = e.target.closest('[data-del]');
-    if(delBtn){ e.stopPropagation(); deleteChat(Number(delBtn.dataset.del)); return; }
+    if(delBtn){ e.stopPropagation(); deleteChat(delBtn.dataset.del); return; }
     const item = e.target.closest('[data-id]');
-    if(item) loadChat(Number(item.dataset.id));
+    if(item) loadChat(item.dataset.id);
   };
 }
 
@@ -943,7 +987,7 @@ async function send(){
 
     // Save to chat history
     if(!activeChatId){
-      activeChatId = chatUid++;
+      activeChatId = newChatId();
       const title = generateChatTitle(sources, q);
       chats.unshift({id:activeChatId, title, messages:[], sources:[]});
     }
@@ -1081,6 +1125,136 @@ function renderSrcList(){
       <button class="src-item-rm" onclick="removeSource(${s.id})">×</button>
     </div>`).join('');
 }
+// ── INBOX ──────────────────────────────────────────────────────────────────
+let isAdminUser = false;
+
+async function checkUnread(){
+  if(!authToken) return;
+  try{
+    const res = await fetch(`${SERVER}/api/messages/unread`,{headers:{'x-auth-token':authToken}});
+    const data = await res.json();
+    const badge = document.getElementById('unread-badge');
+    if(data.count > 0){
+      badge.textContent = data.count;
+      badge.style.display = 'inline';
+    } else {
+      badge.style.display = 'none';
+    }
+  } catch(e){}
+}
+
+async function openInbox(){
+  document.getElementById('inbox-overlay').style.display = 'flex';
+  document.getElementById('unread-badge').style.display = 'none';
+  closeSb();
+
+  if(isAdminUser){
+    document.getElementById('inbox-title').textContent = '✉️ Messages';
+    document.getElementById('inbox-admin-view').style.display = 'flex';
+    document.getElementById('inbox-user-view').style.display = 'none';
+    await loadAdminConvos();
+  } else {
+    document.getElementById('inbox-title').textContent = '✉️ Inbox';
+    document.getElementById('inbox-admin-view').style.display = 'none';
+    document.getElementById('inbox-user-view').style.display = 'flex';
+    await loadUserInbox();
+  }
+}
+
+function closeInbox(){
+  document.getElementById('inbox-overlay').style.display = 'none';
+}
+
+async function loadAdminConvos(){
+  // Populate user dropdown
+  try{
+    const uRes = await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});
+    const uData = await uRes.json();
+    const sel = document.getElementById('msg-to');
+    sel.innerHTML = '<option value="">Select a user...</option>' +
+      uData.users.map(u=>`<option value="${esc(u.username)}">${esc(u.username)}</option>`).join('');
+  } catch(e){}
+
+  // Load conversations
+  try{
+    const cRes = await fetch(`${SERVER}/api/admin/conversations`,{headers:{'x-auth-token':authToken}});
+    const cData = await cRes.json();
+    const el = document.getElementById('admin-convos');
+    const active = cData.conversations.filter(c=>c.hasMessages);
+    if(!active.length){
+      el.innerHTML = '<div style="color:#565869;font-size:13px">No conversations yet.</div>';
+      return;
+    }
+    el.innerHTML = active.map(c=>`
+      <div style="background:#212121;border:1px solid #3f3f3f;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:13px;font-weight:600;color:#ececec">👤 ${esc(c.username)} ${c.unread?`<span style="background:#ef4444;color:#fff;font-size:10px;border-radius:8px;padding:2px 7px">${c.unread} new</span>`:''}</div>
+        <div style="display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto">
+          ${c.messages.map(m=>`
+            <div style="display:flex;gap:8px;align-items:flex-start;flex-direction:${m.dir==='to_user'?'row-reverse':'row'}">
+              <div style="background:${m.dir==='to_user'?'#065f46':'#2f2f2f'};border-radius:10px;padding:8px 12px;font-size:13px;color:#ececec;max-width:85%">
+                <div>${esc(m.text)}</div>
+                <div style="font-size:10px;color:#565869;margin-top:4px">${new Date(m.sentAt).toLocaleString()}</div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+  } catch(e){ document.getElementById('admin-convos').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
+}
+
+async function adminSendMsg(){
+  const to   = document.getElementById('msg-to').value;
+  const text = document.getElementById('msg-text').value.trim();
+  if(!to){ showToast('⚠ Select a user first'); return; }
+  if(!text){ showToast('⚠ Write a message first'); return; }
+  try{
+    const res = await fetch(`${SERVER}/api/messages/send`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-auth-token':authToken},
+      body:JSON.stringify({to, text})
+    });
+    const data = await res.json();
+    if(data.ok){
+      document.getElementById('msg-text').value='';
+      showToast('✅ Message sent to '+to);
+      await loadAdminConvos();
+    } else showToast('⚠ '+data.error);
+  } catch(e){ showToast('⚠ Failed to send'); }
+}
+
+async function loadUserInbox(){
+  try{
+    const res = await fetch(`${SERVER}/api/messages/inbox`,{headers:{'x-auth-token':authToken}});
+    const data = await res.json();
+    const el = document.getElementById('user-messages');
+    if(!data.messages.length){
+      el.innerHTML='<div style="color:#565869;font-size:13px;text-align:center;padding:16px">No messages yet.</div>';
+      return;
+    }
+    el.innerHTML = data.messages.map(m=>`
+      <div style="background:#212121;border:1px solid #3f3f3f;border-radius:10px;padding:12px 14px">
+        <div style="font-size:11px;color:#565869;margin-bottom:6px">From Finger Post · ${new Date(m.sentAt).toLocaleString()}</div>
+        <div style="font-size:14px;color:#ececec;line-height:1.6">${esc(m.text)}</div>
+      </div>`).join('');
+  } catch(e){ document.getElementById('user-messages').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
+}
+
+async function userSendReply(){
+  const text = document.getElementById('reply-text').value.trim();
+  if(!text){ showToast('⚠ Write a message first'); return; }
+  try{
+    const res = await fetch(`${SERVER}/api/messages/reply`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-auth-token':authToken},
+      body:JSON.stringify({text})
+    });
+    const data = await res.json();
+    if(data.ok){
+      document.getElementById('reply-text').value='';
+      showToast('✅ Reply sent');
+    } else showToast('⚠ '+data.error);
+  } catch(e){ showToast('⚠ Failed to send'); }
+}
+
 function updateBadge(){
   document.getElementById('src-badge').textContent=sources.length;
 }

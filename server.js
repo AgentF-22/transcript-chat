@@ -1,8 +1,9 @@
 require('dotenv').config();
-const express = require('express');
-const cors    = require('cors');
-const path    = require('path');
-const crypto  = require('crypto');
+const express  = require('express');
+const cors     = require('cors');
+const path     = require('path');
+const crypto   = require('crypto');
+const fs       = require('fs');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -10,17 +11,35 @@ const GROQ_API_KEY   = process.env.GROQ_API_KEY || '';
 const ADMIN_USERNAME = process.env.APP_USERNAME || 'DasaultRafale';
 const ADMIN_PASSWORD = process.env.APP_PASSWORD || '654321';
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
-const NOTIFY_EMAIL   = process.env.NOTIFY_EMAIL || '';
+// ── Persistent user storage ────────────────────────────────────────────────
+const USERS_FILE = path.join(__dirname, 'users.json');
 
-// users: username -> { password, blocked, createdAt, isAdmin }
-const users = new Map();
+function loadUsers(){
+  try {
+    if(fs.existsSync(USERS_FILE)){
+      const data = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
+      return new Map(Object.entries(data));
+    }
+  } catch(e){ console.error('Failed to load users.json:', e.message); }
+  return new Map();
+}
+
+function saveUsers(){
+  try {
+    const obj = Object.fromEntries(users);
+    fs.writeFileSync(USERS_FILE, JSON.stringify(obj, null, 2));
+  } catch(e){ console.error('Failed to save users.json:', e.message); }
+}
+
+// Load saved users, then ensure admin account always exists
+const users = loadUsers();
 users.set(ADMIN_USERNAME, {
   password: ADMIN_PASSWORD,
   blocked: false,
-  createdAt: new Date().toISOString(),
+  createdAt: users.get(ADMIN_USERNAME)?.createdAt || new Date().toISOString(),
   isAdmin: true
 });
+saveUsers();
 
 // pendingRequests: id -> { id, username, password, requestedAt }
 const pendingRequests = new Map();
@@ -157,6 +176,7 @@ app.post('/api/admin/approve/:id', requireAdmin, (req, res) => {
   if(!r) return res.status(404).json({ error: 'Request not found' });
   users.set(r.username, { password: r.password, blocked: false, createdAt: new Date().toISOString(), isAdmin: false });
   pendingRequests.delete(req.params.id);
+  saveUsers();
   console.log(`[Approved] ${r.username}`);
   res.json({ ok: true, username: r.username });
 });
@@ -184,6 +204,7 @@ app.post('/api/admin/block/:username', requireAdmin, (req, res) => {
   if(!user) return res.status(404).json({ error: 'User not found' });
   if(user.isAdmin) return res.status(400).json({ error: 'Cannot block admin' });
   user.blocked = true;
+  saveUsers();
   res.json({ ok: true });
 });
 
@@ -192,6 +213,7 @@ app.post('/api/admin/unblock/:username', requireAdmin, (req, res) => {
   const user = users.get(req.params.username);
   if(!user) return res.status(404).json({ error: 'User not found' });
   user.blocked = false;
+  saveUsers();
   res.json({ ok: true });
 });
 
@@ -201,10 +223,102 @@ app.delete('/api/admin/delete/:username', requireAdmin, (req, res) => {
   if(!user) return res.status(404).json({ error: 'User not found' });
   if(user.isAdmin) return res.status(400).json({ error: 'Cannot delete admin' });
   users.delete(req.params.username);
+  saveUsers();
   res.json({ ok: true });
 });
 
-// ── Groq ───────────────────────────────────────────────────────────────────
+// ── Persistent messages storage ────────────────────────────────────────────
+// messages.json: { "username": [{ id, from, text, sentAt, read }] }
+const MESSAGES_FILE = path.join(__dirname, 'messages.json');
+
+function loadMessages(){
+  try {
+    if(fs.existsSync(MESSAGES_FILE)){
+      return JSON.parse(fs.readFileSync(MESSAGES_FILE, 'utf8'));
+    }
+  } catch(e){ console.error('Failed to load messages.json:', e.message); }
+  return {};
+}
+
+function saveMessages(){
+  try {
+    fs.writeFileSync(MESSAGES_FILE, JSON.stringify(messages, null, 2));
+  } catch(e){ console.error('Failed to save messages.json:', e.message); }
+}
+
+const messages = loadMessages();
+
+// Get or create inbox for a user
+function getInbox(username){
+  if(!messages[username]) messages[username] = [];
+  return messages[username];
+}
+
+// ── Send message (admin only) ──────────────────────────────────────────────
+app.post('/api/messages/send', requireAdmin, (req, res) => {
+  const { to, text } = req.body;
+  const from = getUsername(req.headers['x-auth-token']);
+  if(!to || !text) return res.status(400).json({ error: 'Missing fields' });
+  if(!users.has(to)) return res.status(404).json({ error: 'User not found' });
+  const msg = { id: crypto.randomBytes(6).toString('hex'), from, to, text, sentAt: new Date().toISOString(), read: false };
+  getInbox(to).push(msg);
+  // Also keep a copy in admin's sent view (stored under admin's inbox with type 'sent')
+  getInbox(from).push({ ...msg, type: 'sent' });
+  saveMessages();
+  res.json({ ok: true });
+});
+
+// ── Reply (any user, to admin only) ───────────────────────────────────────
+app.post('/api/messages/reply', requireAuth, (req, res) => {
+  const { text } = req.body;
+  const from = getUsername(req.headers['x-auth-token']);
+  if(!text) return res.status(400).json({ error: 'Missing text' });
+  // Users can only reply to admin
+  const msg = { id: crypto.randomBytes(6).toString('hex'), from, to: ADMIN_USERNAME, text, sentAt: new Date().toISOString(), read: false };
+  getInbox(ADMIN_USERNAME).push(msg);
+  // Copy in sender's outbox
+  getInbox(from).push({ ...msg, type: 'sent' });
+  saveMessages();
+  res.json({ ok: true });
+});
+
+// ── Get my inbox ───────────────────────────────────────────────────────────
+app.get('/api/messages/inbox', requireAuth, (req, res) => {
+  const username = getUsername(req.headers['x-auth-token']);
+  const inbox = getInbox(username)
+    .filter(m => m.type !== 'sent')
+    .sort((a,b) => new Date(b.sentAt) - new Date(a.sentAt));
+  // Mark all as read
+  getInbox(username).forEach(m => { if(m.type !== 'sent') m.read = true; });
+  saveMessages();
+  res.json({ messages: inbox });
+});
+
+// ── Get unread count ───────────────────────────────────────────────────────
+app.get('/api/messages/unread', requireAuth, (req, res) => {
+  const username = getUsername(req.headers['x-auth-token']);
+  const count = getInbox(username).filter(m => m.type !== 'sent' && !m.read).length;
+  res.json({ count });
+});
+
+// ── Admin: get all conversations ───────────────────────────────────────────
+app.get('/api/admin/conversations', requireAdmin, (req, res) => {
+  // Return list of users who have messages with admin
+  const convos = [...users.keys()]
+    .filter(u => u !== ADMIN_USERNAME)
+    .map(username => {
+      const theirInbox = getInbox(username).filter(m => m.type !== 'sent');
+      const adminInbox = getInbox(ADMIN_USERNAME).filter(m => m.from === username);
+      const allMsgs = [...theirInbox.map(m=>({...m, dir:'to_user'})), ...adminInbox.map(m=>({...m, dir:'from_user'}))]
+        .sort((a,b) => new Date(a.sentAt) - new Date(b.sentAt));
+      const unread = adminInbox.filter(m => !m.read).length;
+      return { username, messages: allMsgs, unread, hasMessages: allMsgs.length > 0 };
+    });
+  // Mark admin's inbox from users as read
+  getInbox(ADMIN_USERNAME).forEach(m => { m.read = true; });
+  saveMessages();
+  res.json({ conversations: convos });
+});
 async function callGroq(system, messages, res){
   try {
     const fetch = globalThis.fetch || require('node-fetch');
