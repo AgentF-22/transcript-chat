@@ -433,7 +433,7 @@ textarea.finput{resize:vertical;min-height:120px}
         📎 &nbsp;Add transcripts
         <span class="src-badge" id="src-badge">0</span>
       </button>
-      <button class="btn-sources" onclick="createDeliverable()" style="color:#10a37f">
+      <button class="btn-sources" onclick="createDeliverable()" style="color:#10a37f;background:none">
         🔗 &nbsp;Create deliverable
       </button>
       <button class="btn-signout" onclick="logout()">
@@ -717,7 +717,8 @@ function loadChat(id){
   if(!chat) return;
   activeChatId = id;
   chatHistory  = chat.messages.map(m=>({role:m.role,content:m.content}));
-  sources      = chat.sources || [];
+  // Restore sources fully including content so AI can use them
+  sources = (chat.sources || []).map(s=>({id:s.id||uid++, name:s.name, content:s.content}));
   updateBadge();
   renderSidebar();
   const msgs = document.getElementById('msgs');
@@ -730,8 +731,7 @@ function loadChat(id){
   closeSb();
 }
 
-function deleteChat(id, e){
-  e.stopPropagation();
+function deleteChat(id){
   chats = chats.filter(c=>c.id!==id);
   saveChats();
   if(activeChatId===id) newChat();
@@ -742,17 +742,25 @@ function renderSidebar(){
   const hist = document.getElementById('sb-history');
   const empty = document.getElementById('sb-empty');
   if(!chats.length){
-    empty.style.display='block';
     hist.innerHTML='';
+    empty.style.display='block';
     hist.appendChild(empty);
     return;
   }
   empty.style.display='none';
   hist.innerHTML = chats.map(c=>`
-    <div class="hist-item${activeChatId===c.id?' active':''}" onclick="loadChat(${c.id})">
+    <div class="hist-item${activeChatId===c.id?' active':''}" data-id="${c.id}">
       <span class="hist-item-text">${esc(c.title)}</span>
-      <button class="hist-item-del" onclick="deleteChat(${c.id},event)" title="Delete">×</button>
+      <button class="hist-item-del" data-del="${c.id}" title="Delete">×</button>
     </div>`).join('');
+
+  // Event delegation — handle clicks on the list
+  hist.onclick = function(e){
+    const delBtn = e.target.closest('[data-del]');
+    if(delBtn){ e.stopPropagation(); deleteChat(Number(delBtn.dataset.del)); return; }
+    const item = e.target.closest('[data-id]');
+    if(item) loadChat(Number(item.dataset.id));
+  };
 }
 
 // ── SYSTEM PROMPT ──────────────────────────────────────────────────────────
@@ -1056,7 +1064,7 @@ function generateChatTitle(sources, fallbackQ){
   if(names.length > 4){
     // Many candidates — use role or source name
     if(roles.length) return capitalise(roles[0]) + ' Interviews';
-    return sources.length > 1 ? `${sources.length} Interviews` : (src.name || 'Interview');
+    return sources.length > 1 ? `${sources.length} Interviews` : (sources[0]?.name || 'Interview');
   }
 
   // No names found — use source file name or fallback to question
