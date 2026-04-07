@@ -6,10 +6,12 @@ const crypto  = require('crypto');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
-const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
-
+const GROQ_API_KEY   = process.env.GROQ_API_KEY || '';
 const ADMIN_USERNAME = process.env.APP_USERNAME || 'DasaultRafale';
 const ADMIN_PASSWORD = process.env.APP_PASSWORD || '654321';
+
+const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+const NOTIFY_EMAIL   = process.env.NOTIFY_EMAIL || '';
 
 // users: username -> { password, blocked, createdAt, isAdmin }
 const users = new Map();
