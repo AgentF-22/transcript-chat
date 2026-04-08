@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Finger Post Echo</title>
+<title>FingerPost Echo</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -185,8 +185,8 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
   <div class="access-box">
     <div class="access-icon">🔐</div>
     <div>
-      <div class="access-title">Finger Post <span>Echo</span></div>
-      <div class="access-sub">Enter the access code provided by your Finger Post contact to access the expert interview insights.</div>
+      <div class="access-title">FingerPost <span>Echo</span></div>
+      <div class="access-sub">Enter the access code provided by your FingerPost contact to access the expert interview insights.</div>
     </div>
     <div class="afield">
       <div class="alabel">ACCESS CODE</div>
@@ -198,14 +198,14 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
     </div>
     <div class="aerr" id="aerr">Invalid code. Please check and try again.</div>
     <button class="btn-access" id="btn-access" onclick="doAccess()">Enter →</button>
-    <div class="powered">Powered by <span>Finger Post Echo</span></div>
+    <div class="powered">Powered by <span>FingerPost Echo</span></div>
   </div>
 </div>
 
 <!-- CHAT SCREEN -->
 <div id="chat-screen">
   <div class="topbar">
-    <div class="tb-logo">Finger Post <span>Echo</span></div>
+    <div class="tb-logo">FingerPost <span>Echo</span></div>
     <div class="tb-title" id="tb-title">Candidate Profile</div>
     <div class="tb-badge">Read only</div>
   </div>
@@ -283,7 +283,7 @@ async function doAccess(){
 
 function buildSystem(){
   const block = sources.map(s=>`=== ${s.name} ===\n${s.content}`).join('\n\n');
-  return `You are Finger Post Echo — an expert intelligence tool that helps clients understand the opinions and insights of doctors and researchers interviewed by Finger Post.
+  return `You are FingerPost Echo — an expert intelligence tool that helps clients understand the opinions and insights of doctors and researchers interviewed by FingerPost.
 
 TRANSCRIPT:
 ${block}
@@ -352,7 +352,7 @@ function appendBotMsg(text){
   const msgs=document.getElementById('msgs');
   const row=document.createElement('div');
   row.className='msg-row bot';
-  row.innerHTML=`<div class="msg-inner"><div class="av bot">TC</div><div class="msg-body"><div class="msg-name">Finger Post Echo</div><div class="msg-text">${renderMd(text)}</div></div></div>`;
+  row.innerHTML=`<div class="msg-inner"><div class="av bot">TC</div><div class="msg-body"><div class="msg-name">FingerPost Echo</div><div class="msg-text">${renderMd(text)}</div></div></div>`;
   msgs.appendChild(row); scrollBottom();
 }
 

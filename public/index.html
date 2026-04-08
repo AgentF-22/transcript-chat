@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Finger Post Echo</title>
+<title>FingerPost Echo</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -387,7 +387,7 @@ textarea.finput{resize:vertical;min-height:120px}
   <div class="login-box" id="signin-box">
     <div class="login-logo">
       <div class="login-icon">🔬</div>
-      <div class="login-title">Finger&nbsp;Post <span>Echo</span></div>
+      <div class="login-title">FingerPost <span>Echo</span></div>
       <div class="login-sub">Sign in to continue</div>
     </div>
     <div class="lfield">
@@ -449,7 +449,7 @@ textarea.finput{resize:vertical;min-height:120px}
     <div class="sb-head">
       <div class="sb-logo" onclick="goHome()">
         <span class="sb-logo-icon">💬</span>
-        <span class="sb-logo-text">Finger&nbsp;Post <span>Echo</span></span>
+        <span class="sb-logo-text">FingerPost <span>Echo</span></span>
       </div>
       <button class="btn-newchat" onclick="newChat()">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
@@ -487,7 +487,7 @@ textarea.finput{resize:vertical;min-height:120px}
     <!-- Mobile top bar -->
     <div class="mob-bar">
       <button class="btn-menu" onclick="openSb()">☰</button>
-      <div class="mob-logo" onclick="goHome()">Finger&nbsp;Post <span>Echo</span></div>
+      <div class="mob-logo" onclick="goHome()">FingerPost <span>Echo</span></div>
       <button class="btn-mob-add" onclick="openPanel()">+ Add</button>
     </div>
 
@@ -959,10 +959,10 @@ function renderSidebar(){
 // ── SYSTEM PROMPT ──────────────────────────────────────────────────────────
 function buildSystem(){
   if(!sources.length){
-    return `You are Finger Post Echo. No transcripts are loaded. Tell the user to add one via the sidebar. Answer general questions helpfully.`;
+    return `You are FingerPost Echo. No transcripts are loaded. Tell the user to add one via the sidebar. Answer general questions helpfully.`;
   }
   const block = sources.map(s=>`=== ${s.name} ===\n${s.content}`).join('\n\n');
-  return `You are Finger Post Echo — an expert intelligence tool that answers questions about medical and research expert interviews conducted by Finger Post. You help clients understand the opinions, insights and views expressed by doctors and researchers in these interviews.
+  return `You are FingerPost Echo — an expert intelligence tool that answers questions about medical and research expert interviews conducted by FingerPost. You help clients understand the opinions, insights and views expressed by doctors and researchers in these interviews.
 
 TRANSCRIPTS:
 ${block}
@@ -1062,7 +1062,7 @@ function appendBotMsg(text){
   const msgs = document.getElementById('msgs');
   const row = document.createElement('div');
   row.className='msg-row bot';
-  row.innerHTML=`<div class="msg-inner"><div class="av bot">TC</div><div class="msg-body"><div class="msg-name">Finger Post Echo</div><div class="msg-text">${renderMd(text)}</div></div></div>`;
+  row.innerHTML=`<div class="msg-inner"><div class="av bot">TC</div><div class="msg-body"><div class="msg-name">FingerPost Echo</div><div class="msg-text">${renderMd(text)}</div></div></div>`;
   msgs.appendChild(row);
   scrollBottom();
 }
@@ -1266,7 +1266,7 @@ async function loadUserInbox(){
     }
     el.innerHTML = data.messages.map(m=>`
       <div style="background:#212121;border:1px solid #3f3f3f;border-radius:10px;padding:12px 14px">
-        <div style="font-size:11px;color:#565869;margin-bottom:6px">From Finger Post · ${new Date(m.sentAt).toLocaleString()}</div>
+        <div style="font-size:11px;color:#565869;margin-bottom:6px">From FingerPost · ${new Date(m.sentAt).toLocaleString()}</div>
         <div style="font-size:14px;color:#ececec;line-height:1.6">${esc(m.text)}</div>
       </div>`).join('');
   } catch(e){ document.getElementById('user-messages').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
