@@ -222,51 +222,80 @@ textarea.finput{resize:vertical;min-height:120px}
   .panel{left:auto;right:24px;width:440px;border-radius:18px;bottom:24px;border:1px solid var(--border);max-height:88vh}
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <!-- LOGIN -->
 <div id="login-screen">
-  <div class="login-wrap">
-    <div class="login-brand">
-      <div class="login-mark">🔬</div>
-      <div class="login-product">Noted</div>
-      <div class="login-tagline">AI-powered expert interview analysis</div>
+  <div class="login-box" style="max-width:400px">
+    <div class="login-logo" style="text-align:center;margin-bottom:4px">
+      <div style="font-size:36px;font-weight:800;font-family:'DM Serif Display',serif;color:#2563eb;margin-bottom:10px">N</div>
+      <div class="login-title">Noted</div>
+      <div class="login-sub">Turn any transcript into a conversation</div>
     </div>
-    <div class="login-box" id="signin-box">
-      <div class="login-box-title">Sign in to your account</div>
+
+    <!-- Email step -->
+    <div id="email-form" style="display:flex;flex-direction:column;gap:16px">
       <div class="lfield">
-        <div class="llabel">Username</div>
-        <input class="linput" type="text" id="l-user" placeholder="Enter your username" autocomplete="username" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();doLogin()}"/>
+        <div class="llabel">EMAIL</div>
+        <input class="linput" type="email" id="l-email" placeholder="you@example.com"
+          autocomplete="email" autocorrect="off" autocapitalize="off" spellcheck="false"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();tryEmailNext()}"/>
       </div>
-      <div class="lfield">
-        <div class="llabel">Password</div>
-        <input class="linput" type="password" id="l-pass" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter'){event.preventDefault();doLogin()}"/>
+      <div class="lfield" id="pass-field" style="display:none">
+        <div class="llabel">PASSWORD</div>
+        <input class="linput" type="password" id="l-pass" placeholder="Enter password"
+          autocomplete="current-password"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();doEmailLogin()}"/>
+        <div style="text-align:right;margin-top:6px">
+          <button onclick="doForgotPassword()" style="background:none;border:none;color:#6b7280;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline">Forgot password?</button>
+        </div>
       </div>
-      <div class="lerr" id="lerr">Incorrect username or password.</div>
-      <button class="btn-primary" id="btn-signin" onclick="doLogin()">Sign in</button>
-      <div class="login-link"><button onclick="showRequestForm()">Don't have an account? Request access</button></div>
+      <div class="lerr" id="lerr"></div>
+      <button class="btn-signin" id="btn-continue" onclick="tryEmailNext()">Continue →</button>
+      <div id="back-wrap" style="display:none;text-align:center">
+        <button onclick="backToEmail()" style="background:none;border:none;color:#6b7280;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline">← Different email</button>
+      </div>
     </div>
-    <div class="login-box" id="request-box" style="display:none">
-      <div class="login-box-title">Request access</div>
-      <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-top:-8px">Choose a username and password. Your request will be reviewed and we'll activate your account.</div>
-      <div class="lfield">
-        <div class="llabel">Username</div>
-        <input class="linput" type="text" id="r-user" placeholder="Choose a username" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+
+    <!-- OTP / 2FA step -->
+    <div id="otp-form" style="display:none;flex-direction:column;gap:16px">
+      <div style="font-size:13px;color:#9ca3af;text-align:center;line-height:1.8">
+        We sent a 6-digit code to<br/><strong style="color:#f3f4f6" id="otp-email-label"></strong>
       </div>
       <div class="lfield">
-        <div class="llabel">Password</div>
-        <input class="linput" type="password" id="r-pass" placeholder="Choose a password"/>
+        <div class="llabel">VERIFICATION CODE</div>
+        <input class="linput" type="text" id="l-otp" placeholder="123456"
+          maxlength="6" autocomplete="one-time-code" inputmode="numeric"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();doOtpVerify()}"/>
       </div>
-      <div class="lerr" id="rerr">Please fill in all fields.</div>
-      <div id="rsuccess" style="display:none;font-size:13px;color:var(--success);background:var(--success-dim);border:1px solid rgba(52,211,153,.2);border-radius:8px;padding:13px;text-align:center;line-height:1.7">✅ Request sent! We'll review it and be in touch soon.</div>
-      <button class="btn-primary" id="btn-request" onclick="doRequestAccount()">Send request</button>
-      <div class="login-link"><button onclick="showSignIn()">← Back to sign in</button></div>
+      <div class="lerr" id="otp-err"></div>
+      <button class="btn-signin" id="btn-verify" onclick="doOtpVerify()">Verify & sign in →</button>
+      <div style="text-align:center">
+        <button onclick="resendOtp()" style="background:none;border:none;color:#6b7280;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline">Resend code</button>
+        &nbsp;·&nbsp;
+        <button onclick="showEmailForm()" style="background:none;border:none;color:#6b7280;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline">← Back</button>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div style="display:flex;align-items:center;gap:10px;color:#374151;font-size:12px;margin:4px 0">
+      <div style="flex:1;height:1px;background:#374151"></div>OR<div style="flex:1;height:1px;background:#374151"></div>
+    </div>
+
+    <!-- Google -->
+    <button class="btn-signin" onclick="doGoogleLogin()" style="background:#1f2937;border:1px solid #374151;display:flex;align-items:center;justify-content:center;gap:10px">
+      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Continue with Google
+    </button>
+
+    <div style="text-align:center;font-size:12px;color:#6b7280;line-height:1.6">
+      New users get free access automatically.
     </div>
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
   <div class="sb-overlay" id="sb-overlay" onclick="closeSb()"></div>
   <div class="sb" id="sb">
@@ -477,63 +506,146 @@ textarea.finput{resize:vertical;min-height:120px}
 <div class="toast" id="toast"></div>
 
 <script>
-let sources=[],chatHistory=[],loading=false,uid=1,activeChatId=null,authToken='',currentUser='',isAdminUser=false,currentPlan='free',chats=[];
+// ── SUPABASE ──────────────────────────────────────────────────────────────
+const { createClient } = supabase;
+const _supa = createClient('https://fprgzafskzurjlqdouei.supabase.co', 'sb_publishable_bvorSTMP9eZ8S48evYusEQ_df2PqsXj');
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+let sources=[],chatHistory=[],loading=false,uid=1,activeChatId=null;
+let authToken='',currentUser='',isAdminUser=false,currentPlan='free',chats=[];
+let pendingEmail='';
 const SERVER=window.location.origin;
 function newChatId(){return Math.random().toString(36).slice(2,10)+Date.now().toString(36)}
-const EXAMPLE=`Interviewer: Can you walk me through your professional background?\nSarah: Absolutely. I have over 10 years of experience in product management, primarily in fintech. I started at PayRoute then joined Stripe, where I spent five years leading the checkout and conversion team.\n\nInterviewer: What was your biggest achievement at Stripe?\nSarah: The checkout redesign in 2021. We saw a 22% improvement in conversion rates across the platform.\n\nInterviewer: What are your greatest strengths?\nSarah: Bridging technical and business perspectives. I am comfortable going deep with engineers but can also present clearly to a board.\n\nInterviewer: And areas you are working on?\nSarah: Delegation. I am naturally hands-on and it took time to realise doing everything myself was slowing the team down.`;
 
-// AUTH
-function showRequestForm(){document.getElementById('signin-box').style.display='none';document.getElementById('request-box').style.display='flex';document.getElementById('rsuccess').style.display='none';document.getElementById('rerr').classList.remove('show');document.getElementById('r-user').value='';document.getElementById('r-pass').value='';document.getElementById('btn-request').disabled=false;document.getElementById('btn-request').textContent='Send request'}
-function showSignIn(){document.getElementById('request-box').style.display='none';document.getElementById('signin-box').style.display='flex'}
+// ── EXAMPLE ───────────────────────────────────────────────────────────────
+const EXAMPLE=`Interviewer: Can you walk me through your professional background?
+Sarah: Absolutely. I have over 10 years of experience in product management, primarily in fintech. I started at a small payments startup called PayRoute where I was one of the first product hires. After three years I joined Stripe, where I spent five years leading the checkout and conversion team.
 
-async function doRequestAccount(){
-  const user=document.getElementById('r-user').value.trim(),pass=document.getElementById('r-pass').value.trim(),err=document.getElementById('rerr'),btn=document.getElementById('btn-request');
+Interviewer: What was your biggest achievement at Stripe?
+Sarah: The checkout redesign we shipped in 2021. We completely overhauled the payment flow based on user research and saw a 22% improvement in conversion rates across the platform.
+
+Interviewer: Why are you looking to leave?
+Sarah: Stripe has been incredible for my growth, but I feel ready to shape product strategy from the ground up. I want to build a team and a product vision.
+
+Interviewer: What are your greatest strengths?
+Sarah: Bridging technical and business perspectives. I am comfortable going deep with engineers on architecture, but I can also present clearly to a board. I am also strong at prioritisation.
+
+Interviewer: And areas you are working on?
+Sarah: Delegation. I am naturally hands-on and it took time to realise doing everything myself was slowing the team down.
+
+Interviewer: What are your salary expectations?
+Sarah: I am targeting a base between 180 and 210 thousand, depending on equity and the overall package.
+
+Interviewer: Where do you see yourself in five years?
+Sarah: In a VP of Product or CPO role where I have helped build something meaningful.`;
+
+// ── SUPABASE AUTH ─────────────────────────────────────────────────────────
+window.addEventListener('load', async () => {
+  const { data: { session } } = await _supa.auth.getSession();
+  if(session) {
+    authToken = session.access_token;
+    await afterLogin(session.user);
+    return;
+  }
+  _supa.auth.onAuthStateChange(async (event, session) => {
+    if(session && (event==='SIGNED_IN'||event==='TOKEN_REFRESHED')) {
+      authToken = session.access_token;
+      await afterLogin(session.user);
+    }
+  });
+});
+
+async function afterLogin(supaUser) {
+  try {
+    const res  = await fetch(`${SERVER}/api/me`, {headers:{'x-auth-token':authToken}});
+    const data = await res.json();
+    if(!data.ok) { showLoginError('Account error. Please contact support.'); return; }
+    isAdminUser = !!data.isAdmin;
+    document.getElementById('btn-admin').style.display   = isAdminUser ? 'flex' : 'none';
+    document.getElementById('btn-support').style.display = isAdminUser ? 'none' : 'flex';
+    showApp(data.email);
+    checkUnread();
+    loadUsage();
+    setInterval(checkUnread, 30000);
+    setInterval(loadUsage, 60000);
+  } catch(e) { showLoginError('Could not reach server.'); }
+}
+
+async function tryEmailNext() {
+  const email = document.getElementById('l-email').value.trim();
+  if(!email) return;
+  const btn = document.getElementById('btn-continue');
+  btn.disabled=true; btn.textContent='Sending code...';
+  clearLoginError();
+  const { error } = await _supa.auth.signInWithOtp({email, options:{shouldCreateUser:true}});
+  if(error) { showLoginError(error.message); btn.disabled=false; btn.textContent='Continue →'; return; }
+  pendingEmail = email;
+  document.getElementById('otp-email-label').textContent = email;
+  document.getElementById('email-form').style.display = 'none';
+  document.getElementById('otp-form').style.display   = 'flex';
+  btn.disabled=false; btn.textContent='Continue →';
+}
+
+async function doOtpVerify() {
+  const otp = document.getElementById('l-otp').value.trim();
+  const btn = document.getElementById('btn-verify');
+  const err = document.getElementById('otp-err');
   err.classList.remove('show');
-  if(!user||!pass){err.textContent='Please fill in all fields.';err.classList.add('show');return}
-  btn.disabled=true;btn.textContent='Sending…';
-  try{
-    const res=await fetch(`${SERVER}/api/request-account`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:user,password:pass})});
-    const d=await res.json();
-    if(d.ok){document.getElementById('rsuccess').style.display='block';btn.style.display='none'}
-    else{err.textContent=d.error||'Something went wrong.';err.classList.add('show');btn.disabled=false;btn.textContent='Send request'}
-  }catch(e){err.textContent='Could not reach server.';err.classList.add('show');btn.disabled=false;btn.textContent='Send request'}
+  if(!otp||otp.length<6) { err.textContent='Enter the 6-digit code.'; err.classList.add('show'); return; }
+  btn.disabled=true; btn.textContent='Verifying...';
+  const { data, error } = await _supa.auth.verifyOtp({email:pendingEmail, token:otp, type:'email'});
+  if(error) { err.textContent=error.message||'Invalid code.'; err.classList.add('show'); btn.disabled=false; btn.textContent='Verify & sign in →'; return; }
+  authToken = data.session.access_token;
+  await afterLogin(data.user);
 }
 
-async function doLogin(){
-  const u=document.getElementById('l-user').value.trim(),p=document.getElementById('l-pass').value,btn=document.getElementById('btn-signin'),err=document.getElementById('lerr');
-  if(!u||!p)return;
-  btn.disabled=true;btn.textContent='Signing in…';err.classList.remove('show');
-  try{
-    const res=await fetch(`${SERVER}/api/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
-    const d=await res.json();
-    if(d.ok){
-      authToken=d.token;isAdminUser=!!d.isAdmin;currentPlan=d.plan||'free';
-      document.getElementById('btn-admin').style.display=d.isAdmin?'flex':'none';
-      document.getElementById('btn-support').style.display=d.isAdmin?'none':'flex';
-      showApp(u);checkUnread();loadUsage();
-      setInterval(checkUnread,30000);setInterval(loadUsage,60000);
-    }else{err.classList.add('show');btn.disabled=false;btn.textContent='Sign in'}
-  }catch(e){err.textContent='Could not reach server.';err.classList.add('show');btn.disabled=false;btn.textContent='Sign in'}
+async function resendOtp() {
+  await _supa.auth.signInWithOtp({email:pendingEmail,options:{shouldCreateUser:true}});
+  showToast('✅ New code sent!');
 }
 
-function showApp(username){
-  currentUser=username||currentUser;
-  chats=JSON.parse(localStorage.getItem('noted_chats_'+currentUser)||'[]');
+function showEmailForm() {
+  document.getElementById('otp-form').style.display='none';
+  document.getElementById('email-form').style.display='flex';
+}
+
+async function doGoogleLogin() {
+  const { error } = await _supa.auth.signInWithOAuth({
+    provider:'google',
+    options:{redirectTo: window.location.origin}
+  });
+  if(error) showLoginError(error.message);
+}
+
+async function logout() {
+  await _supa.auth.signOut();
+  authToken=''; currentUser=''; chats=[];
+  sources=[]; chatHistory=[]; activeChatId=null;
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('email-form').style.display='flex';
+  document.getElementById('otp-form').style.display='none';
+  document.getElementById('l-email').value='';
+  document.getElementById('usage-wrap').style.display='none';
+  clearLoginError();
+}
+
+function showApp(email) {
+  currentUser = email||currentUser;
+  chats = JSON.parse(localStorage.getItem('noted_chats_'+currentUser)||'[]');
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').classList.add('visible');
   renderSidebar();
 }
 
-function logout(){
-  authToken='';currentUser='';chats=[];sources=[];chatHistory=[];activeChatId=null;
-  document.getElementById('login-screen').style.display='flex';
-  document.getElementById('app').classList.remove('visible');
-  document.getElementById('usage-wrap').style.display='none';
-  document.getElementById('l-user').value='';document.getElementById('l-pass').value='';
-  document.getElementById('btn-signin').disabled=false;document.getElementById('btn-signin').textContent='Sign in';
+function showLoginError(msg) {
+  const err=document.getElementById('lerr');
+  err.textContent=msg; err.classList.add('show');
+}
+function clearLoginError() {
+  document.getElementById('lerr').classList.remove('show');
 }
 
-// CHATS
 function saveChats(){localStorage.setItem('noted_chats_'+currentUser,JSON.stringify(chats.slice(0,50)))}
 function newChat(){loading=false;activeChatId=null;chatHistory=[];sources=[];updateBadge();toggleSend();const msgs=document.getElementById('msgs');while(msgs.firstChild)msgs.removeChild(msgs.firstChild);showWelcome();const inp=document.getElementById('chat-inp');if(inp){inp.value='';inp.style.height='auto'}renderSidebar();closeSb()}
 function goHome(){newChat()}
@@ -647,7 +759,7 @@ async function openSupport(){
 function closeSupport(){document.getElementById('support-bg').style.display='none';document.getElementById('support-wrap').classList.remove('open')}
 
 async function loadSupportAdminView(){
-  try{const uRes=await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});const uData=await uRes.json();const sel=document.getElementById('msg-to');sel.innerHTML='<option value="">Select a user…</option>'+uData.users.map(u=>`<option value="${esc(u.username)}">${esc(u.username)}</option>`).join('')}catch(e){}
+  try{const uRes=await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});const uData=await uRes.json();const sel=document.getElementById('msg-to');sel.innerHTML='<option value="">Select a user…</option>'+uData.users.map(u=>`<option value="${esc(u.id)}|${esc(u.email)}">${esc(u.email)}</option>`).join('')}catch(e){}
   try{
     const cRes=await fetch(`${SERVER}/api/admin/conversations`,{headers:{'x-auth-token':authToken}});const cData=await cRes.json();
     const el=document.getElementById('admin-convos');const active=cData.conversations.filter(c=>c.hasMessages);
@@ -658,7 +770,7 @@ async function loadSupportAdminView(){
 async function adminSendMsg(){
   const to=document.getElementById('msg-to').value,text=document.getElementById('msg-text').value.trim();
   if(!to){showToast('⚠ Select a user first');return}if(!text){showToast('⚠ Write a message first');return}
-  try{const res=await fetch(`${SERVER}/api/messages/send`,{method:'POST',headers:{'Content-Type':'application/json','x-auth-token':authToken},body:JSON.stringify({to,text})});const d=await res.json();if(d.ok){document.getElementById('msg-text').value='';showToast('✅ Message sent to '+to);await loadSupportAdminView()}else showToast('⚠ '+d.error)}catch(e){showToast('⚠ Failed to send')}
+  try{const res=await fetch(`${SERVER}/api/messages/send`,{method:'POST',headers:{'Content-Type':'application/json','x-auth-token':authToken},body:JSON.stringify({to,text})});const d=await res.json();if(d.ok){document.getElementById('msg-text').value='';showToast('✅ Message sent!');await loadSupportAdminView()}else showToast('⚠ '+d.error)}catch(e){showToast('⚠ Failed to send')}
 }
 async function loadUserMessages(){
   try{
@@ -683,10 +795,10 @@ function switchAdminTab(tab){
 }
 async function loadAdminData(){
   try{const rRes=await fetch(`${SERVER}/api/admin/requests`,{headers:{'x-auth-token':authToken}});const rData=await rRes.json();const rEl=document.getElementById('admin-requests');if(!rData.requests.length){rEl.innerHTML='<div style="color:var(--text3);font-size:13px">No pending requests.</div>'}else{rEl.innerHTML=rData.requests.map(r=>`<div style="display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px 13px;margin-bottom:6px"><span style="flex:1;font-size:14px;color:var(--text);font-weight:600">👤 ${esc(r.username)}</span><span style="font-size:11px;color:var(--text3)">${new Date(r.requestedAt).toLocaleDateString()}</span><button onclick="adminApprove('${r.id}')" style="background:var(--success-dim);border:1px solid rgba(52,211,153,.3);color:var(--success);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font)">Approve</button><button onclick="adminDecline('${r.id}')" style="background:var(--danger-dim);border:1px solid rgba(248,113,113,.3);color:var(--danger);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:var(--font)">Decline</button></div>`).join('')}}catch(e){document.getElementById('admin-requests').innerHTML='<div style="color:var(--danger);font-size:13px">Failed to load.</div>'}
-  try{const uRes=await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});const uData=await uRes.json();const uEl=document.getElementById('admin-users');if(!uData.users.length){uEl.innerHTML='<div style="color:var(--text3);font-size:13px">No users yet.</div>'}else{uEl.innerHTML=uData.users.map(u=>{const pc=u.plan==='pro'?'var(--warn)':u.plan==='plus'?'var(--success)':'var(--text3)';return`<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:6px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;gap:8px"><span style="flex:1;font-size:14px;color:${u.blocked?'var(--danger)':'var(--text)'};font-weight:600">👤 ${esc(u.username)}${u.blocked?' · blocked':''}</span><span style="font-size:10px;color:${pc};background:var(--surface2);padding:2px 8px;border-radius:6px;font-weight:700">${(u.plan||'free').toUpperCase()}</span></div><div style="font-size:11px;color:var(--text3)">${u.usageCount||0} msgs today · resets in ${hoursUntilReset(u.usageReset)}h</div><div style="display:flex;gap:6px;flex-wrap:wrap"><select onchange="adminSetPlan('${u.username}',this.value)" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font);font-size:11px;padding:5px 8px;cursor:pointer;flex:1"><option value="free" ${u.plan==='free'?'selected':''}>Free — 20/day</option><option value="plus" ${u.plan==='plus'?'selected':''}>Plus — 100/day (€5/mo)</option><option value="pro" ${u.plan==='pro'?'selected':''}>Pro — 400/day (€15/mo)</option></select>${u.blocked?`<button onclick="adminUnblock('${u.username}')" style="background:var(--surface2);border:1px solid var(--border);color:var(--success);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:var(--font)">Unblock</button>`:`<button onclick="adminBlock('${u.username}')" style="background:var(--surface2);border:1px solid var(--border);color:var(--warn);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:var(--font)">Block</button>`}<button onclick="adminDelete('${u.username}')" style="background:var(--danger-dim);border:1px solid rgba(248,113,113,.3);color:var(--danger);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:var(--font)">Delete</button></div></div>`}).join('')}}catch(e){document.getElementById('admin-users').innerHTML='<div style="color:var(--danger);font-size:13px">Failed to load.</div>'}
+  try{const uRes=await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});const uData=await uRes.json();const uEl=document.getElementById('admin-users');if(!uData.users.length){uEl.innerHTML='<div style="color:var(--text3);font-size:13px">No users yet.</div>'}else{uEl.innerHTML=uData.users.map(u=>{const pc=u.plan==='pro'?'var(--warn)':u.plan==='plus'?'var(--success)':'var(--text3)';return`<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:6px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;gap:8px"><span style="flex:1;font-size:14px;color:${u.blocked?'var(--danger)':'var(--text)'};font-weight:600">👤 ${esc(u.username)}${u.blocked?' · blocked':''}</span><span style="font-size:10px;color:${pc};background:var(--surface2);padding:2px 8px;border-radius:6px;font-weight:700">${(u.plan||'free').toUpperCase()}</span></div><div style="font-size:11px;color:var(--text3)">${u.usageCount||0} msgs today · resets in ${hoursUntilReset(u.usageReset)}h</div><div style="display:flex;gap:6px;flex-wrap:wrap"><select onchange="adminSetPlan('${u.id}',this.value)" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font);font-size:11px;padding:5px 8px;cursor:pointer;flex:1"><option value="free" ${u.plan==='free'?'selected':''}>Free — 20/day</option><option value="plus" ${u.plan==='plus'?'selected':''}>Plus — 100/day (€5/mo)</option><option value="pro" ${u.plan==='pro'?'selected':''}>Pro — 400/day (€15/mo)</option></select>${u.blocked?`<button onclick="adminUnblock('${u.id}')" style="background:var(--surface2);border:1px solid var(--border);color:var(--success);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:var(--font)">Unblock</button>`:`<button onclick="adminBlock('${u.id}')" style="background:var(--surface2);border:1px solid var(--border);color:var(--warn);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:var(--font)">Block</button>`}<button onclick="adminDelete('${u.id}')" style="background:var(--danger-dim);border:1px solid rgba(248,113,113,.3);color:var(--danger);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:var(--font)">Delete</button></div></div>`}).join('')}}catch(e){document.getElementById('admin-users').innerHTML='<div style="color:var(--danger);font-size:13px">Failed to load.</div>'}
 }
 async function loadAdminInbox(){try{const res=await fetch(`${SERVER}/api/messages/inbox`,{headers:{'x-auth-token':authToken}});const d=await res.json();const el=document.getElementById('admin-inbox');if(!d.messages||!d.messages.length){el.innerHTML='<div style="color:var(--text3);font-size:13px">No messages yet.</div>';return}el.innerHTML=d.messages.map(m=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:6px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px;font-weight:600;color:var(--accent)">👤 ${esc(m.from)}</span><span style="font-size:11px;color:var(--text3)">${new Date(m.sentAt).toLocaleString()}</span></div><div style="font-size:13px;color:var(--text);line-height:1.6">${esc(m.text)}</div></div>`).join('')}catch(e){document.getElementById('admin-inbox').innerHTML='<div style="color:var(--danger);font-size:13px">Failed to load.</div>'}}
-async function loadAdminUserDropdown(){try{const uRes=await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});const uData=await uRes.json();const sel=document.getElementById('admin-msg-to');sel.innerHTML='<option value="">Select a user…</option>'+uData.users.map(u=>`<option value="${esc(u.username)}">${esc(u.username)}</option>`).join('')}catch(e){}}
+async function loadAdminUserDropdown(){try{const uRes=await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});const uData=await uRes.json();const sel=document.getElementById('admin-msg-to');sel.innerHTML='<option value="">Select a user…</option>'+uData.users.map(u=>`<option value="${esc(u.id)}|${esc(u.email)}">${esc(u.email)}</option>`).join('')}catch(e){}}
 async function adminSendMsgFromPanel(){const to=document.getElementById('admin-msg-to').value,text=document.getElementById('admin-msg-text').value.trim();if(!to){showToast('⚠ Select a user first');return}if(!text){showToast('⚠ Write a message first');return}try{const res=await fetch(`${SERVER}/api/messages/send`,{method:'POST',headers:{'Content-Type':'application/json','x-auth-token':authToken},body:JSON.stringify({to,text})});const d=await res.json();if(d.ok){document.getElementById('admin-msg-text').value='';showToast('✅ Sent to '+to)}else showToast('⚠ '+d.error)}catch(e){showToast('⚠ Failed')}}
 async function adminApprove(id){const res=await fetch(`${SERVER}/api/admin/approve/${id}`,{method:'POST',headers:{'x-auth-token':authToken}});const d=await res.json();if(d.ok){showToast('✅ '+d.username+' approved');await loadAdminData()}else showToast('⚠ '+d.error)}
 async function adminDecline(id){await fetch(`${SERVER}/api/admin/decline/${id}`,{method:'DELETE',headers:{'x-auth-token':authToken}});showToast('Declined');await loadAdminData()}
