@@ -73,13 +73,22 @@ async function verifySupabaseToken(token){
     const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
       headers: {
         'Authorization': `Bearer ${token}`,
-        'apikey': SUPABASE_SECRET
+        'apikey': SUPABASE_SECRET,
+        'Content-Type': 'application/json'
       }
     });
-    if(!r.ok) return null;
+    if(!r.ok){
+      const err = await r.text();
+      console.error('Supabase auth error:', r.status, err);
+      return null;
+    }
     const data = await r.json();
-    return data; // { id, email, ... }
-  } catch(e){ return null; }
+    if(!data.id) return null;
+    return data;
+  } catch(e){
+    console.error('verifySupabaseToken error:', e.message);
+    return null;
+  }
 }
 
 // ── Get or create profile ──────────────────────────────────────────────────
