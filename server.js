@@ -56,6 +56,11 @@ async function initDB(){
       sent_at      TIMESTAMPTZ DEFAULT NOW()
     )
   `);
+  // Migrate old messages table columns if they exist
+  await pool.query(`ALTER TABLE messages ADD COLUMN IF NOT EXISTS from_id TEXT NOT NULL DEFAULT ''`);
+  await pool.query(`ALTER TABLE messages ADD COLUMN IF NOT EXISTS from_email TEXT NOT NULL DEFAULT ''`);
+  await pool.query(`ALTER TABLE messages ADD COLUMN IF NOT EXISTS to_id TEXT NOT NULL DEFAULT ''`);
+  await pool.query(`ALTER TABLE messages ADD COLUMN IF NOT EXISTS to_email TEXT NOT NULL DEFAULT ''`);
   console.log('✅ Database ready');
 }
 
