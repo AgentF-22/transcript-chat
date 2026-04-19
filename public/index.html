@@ -576,7 +576,7 @@ async function tryEmailNext() {
   btn.disabled=true; btn.textContent='Sending code...';
   clearLoginError();
   const { error } = await _supa.auth.signInWithOtp({email, options:{shouldCreateUser:true}});
-  if(error) { showLoginError(error.message); btn.disabled=false; btn.textContent='Continue →'; return; }
+  if(error) { const m=error.message?.toLowerCase()||''; const friendly = (m.includes('rate limit')||m.includes('too many')) ? 'We\'re having a high demand right now — please wait a few minutes and try again, or use Continue with Google.' : error.message; showLoginError(friendly); btn.disabled=false; btn.textContent='Continue →'; return; }
   pendingEmail = email;
   document.getElementById('otp-email-label').textContent = email;
   document.getElementById('email-form').style.display = 'none';
