@@ -148,6 +148,62 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
 }
 .btn-signout:hover{background:#2a2a2a;color:#ececec}
 
+/* ── USAGE BAR ── */
+.usage-wrap{
+  padding:10px 12px 6px;
+  border-top:1px solid #2a2a2a;
+}
+.usage-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:6px;
+}
+.usage-label{font-size:11px;color:#8e8ea0;font-weight:500}
+.usage-count{font-size:11px;color:#565869}
+.usage-bar-bg{
+  width:100%;height:4px;background:#2a2a2a;border-radius:2px;overflow:hidden;
+}
+.usage-bar-fill{
+  height:100%;border-radius:2px;background:#10a37f;
+  transition:width .3s ease;
+}
+.usage-bar-fill.warn{background:#f59e0b}
+.usage-bar-fill.full{background:#ef4444}
+.btn-upgrade{
+  width:100%;margin-top:8px;
+  background:linear-gradient(135deg,#10a37f,#0d8c6d);
+  border:none;border-radius:9px;color:#fff;
+  font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
+  padding:8px;cursor:pointer;transition:opacity .15s;
+}
+.btn-upgrade:hover{opacity:.9}
+
+/* ── UPGRADE MODAL ── */
+.upgrade-modal{
+  background:#2f2f2f;border:1px solid #3f3f3f;border-radius:20px;
+  padding:28px;width:100%;max-width:480px;
+  display:flex;flex-direction:column;gap:18px;
+  max-height:90dvh;overflow-y:auto;
+}
+.upgrade-title{font-size:20px;font-weight:700;color:#fff}
+.upgrade-sub{font-size:13px;color:#8e8ea0;line-height:1.6;margin-top:-10px}
+.plans-grid{display:flex;flex-direction:column;gap:10px}
+.plan-card{
+  background:#212121;border:1.5px solid #3f3f3f;border-radius:12px;
+  padding:16px;display:flex;align-items:center;gap:14px;
+}
+.plan-card.current{border-color:#10a37f}
+.plan-card.highlighted{border-color:#f59e0b;background:#1a1500}
+.plan-icon{font-size:24px;flex-shrink:0}
+.plan-info{flex:1}
+.plan-name{font-size:15px;font-weight:700;color:#fff}
+.plan-price{font-size:12px;color:#8e8ea0;margin-top:2px}
+.plan-limit{font-size:12px;color:#6ee7b7;margin-top:3px}
+.plan-badge{
+  font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;
+  background:#064e3b;color:#6ee7b7;border:1px solid #065f46;flex-shrink:0;
+}
+.plan-badge.gold{background:#451a03;color:#fbbf24;border-color:#78350f}
+
 /* ── MAIN AREA ── */
 .main{
   flex:1;display:flex;flex-direction:column;
@@ -480,6 +536,17 @@ textarea.finput{resize:vertical;min-height:120px}
         Sign out
       </button>
     </div>
+    <!-- Usage bar (hidden for admin) -->
+    <div class="usage-wrap" id="usage-wrap" style="display:none">
+      <div class="usage-header">
+        <span class="usage-label" id="usage-plan-label">Free plan</span>
+        <span class="usage-count" id="usage-count-label">0 / 20</span>
+      </div>
+      <div class="usage-bar-bg">
+        <div class="usage-bar-fill" id="usage-bar-fill" style="width:0%"></div>
+      </div>
+      <button class="btn-upgrade" id="btn-upgrade" onclick="openUpgradeModal()">⚡ Upgrade plan</button>
+    </div>
   </div>
 
   <!-- MAIN -->
@@ -702,6 +769,51 @@ textarea.finput{resize:vertical;min-height:120px}
   </div>
 </div>
 
+
+<!-- UPGRADE MODAL -->
+<div class="overlay" id="upgrade-overlay" onclick="if(event.target===this)closeUpgradeModal()" style="display:none;align-items:center;justify-content:center;padding:20px">
+  <div class="upgrade-modal">
+    <div class="upgrade-title">⚡ Upgrade your plan</div>
+    <div class="upgrade-sub">Contact us to upgrade. We'll update your account manually — just send a message via the Inbox after choosing your plan.</div>
+    <div class="plans-grid">
+      <div class="plan-card" id="plan-card-free">
+        <div class="plan-icon">🌱</div>
+        <div class="plan-info">
+          <div class="plan-name">Free</div>
+          <div class="plan-price">€0 / month</div>
+          <div class="plan-limit">20 messages per day</div>
+        </div>
+        <div class="plan-badge" id="plan-badge-free" style="display:none">Current</div>
+      </div>
+      <div class="plan-card" id="plan-card-plus">
+        <div class="plan-icon">⚡</div>
+        <div class="plan-info">
+          <div class="plan-name">Plus</div>
+          <div class="plan-price">€5 / month</div>
+          <div class="plan-limit">100 messages per day (5×)</div>
+        </div>
+        <div class="plan-badge" id="plan-badge-plus" style="display:none">Current</div>
+      </div>
+      <div class="plan-card highlighted" id="plan-card-pro">
+        <div class="plan-icon">🚀</div>
+        <div class="plan-info">
+          <div class="plan-name">Pro</div>
+          <div class="plan-price">€15 / month</div>
+          <div class="plan-limit">400 messages per day (20×)</div>
+        </div>
+        <div class="plan-badge gold" id="plan-badge-pro" style="display:none">Current</div>
+      </div>
+    </div>
+    <div style="background:#212121;border:1px solid #3f3f3f;border-radius:10px;padding:14px;font-size:13px;color:#8e8ea0;line-height:1.7">
+      To upgrade, open your <strong style="color:#ececec">Inbox</strong> and send a message saying which plan you want. We'll upgrade your account and confirm.
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn-cancel" onclick="closeUpgradeModal();openInbox()" style="flex:1;background:#10a37f;color:#fff;border-color:#10a37f">✉️ Open Inbox</button>
+      <button class="btn-cancel" onclick="closeUpgradeModal()" style="flex:1">Close</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ── STATE ──────────────────────────────────────────────────────────────────
 let sources   = [];
@@ -820,7 +932,9 @@ async function doLogin(){
       }
       showApp(u);
       checkUnread();
-      setInterval(checkUnread, 30000); // check every 30 seconds
+      loadUsage();
+      setInterval(checkUnread, 30000);
+      setInterval(loadUsage, 60000); // check every 30 seconds
     } else {
       err.classList.add('show');
       btn.disabled=false; btn.textContent='Sign in →';
@@ -1002,6 +1116,14 @@ async function send(){
     });
     if(!res.ok){
       const ed = await res.json().catch(()=>({}));
+      if(res.status===429){
+        const ed2 = await res.json().catch(()=>({}));
+        typingEl.remove(); loading=false; toggleSend();
+        showToast('⚠ '+( ed2?.error || 'Daily limit reached.'));
+        loadUsage();
+        chatHistory.pop();
+        return;
+      }
       if(res.status===401){
         localStorage.removeItem('tc_token'); authToken='';
         typingEl.remove(); loading=false; toggleSend();
@@ -1038,6 +1160,7 @@ async function send(){
     showToast('⚠ '+(e.message||'Something went wrong.'));
   }
   loading=false; toggleSend(); scrollBottom();
+  loadUsage();
 }
 
 function ask(q){
@@ -1472,12 +1595,24 @@ async function loadAdminData(){
     } else {
       uEl.innerHTML = uData.users.map(u=>{
         const blockBtn = u.blocked
-          ? `<button onclick="adminUnblock('${u.username}')" style="background:#3f3f3f;border:none;color:#6ee7b7;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">Unblock</button>`
-          : `<button onclick="adminBlock('${u.username}')" style="background:#3f3f3f;border:none;color:#fbbf24;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">Block</button>`;
-        return `<div style="display:flex;align-items:center;gap:10px;background:#212121;border:1px solid #3f3f3f;border-radius:8px;padding:11px 13px;margin-bottom:6px">
-          <span style="flex:1;font-size:14px;color:${u.blocked?'#f87171':'#ececec'};font-weight:600">👤 ${esc(u.username)}${u.blocked?' (blocked)':''}</span>
-          ${blockBtn}
-          <button onclick="adminDelete('${u.username}')" style="background:#3f3f3f;border:none;color:#f87171;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">Delete</button>
+          ? `<button onclick="adminUnblock('${u.username}')" style="background:#3f3f3f;border:none;color:#6ee7b7;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:'Inter',sans-serif">Unblock</button>`
+          : `<button onclick="adminBlock('${u.username}')" style="background:#3f3f3f;border:none;color:#fbbf24;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:'Inter',sans-serif">Block</button>`;
+        const planColor = u.plan==='pro'?'#fbbf24':u.plan==='plus'?'#6ee7b7':'#565869';
+        return `<div style="background:#212121;border:1px solid #3f3f3f;border-radius:8px;padding:11px 13px;margin-bottom:6px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="flex:1;font-size:14px;color:${u.blocked?'#f87171':'#ececec'};font-weight:600">👤 ${esc(u.username)}${u.blocked?' (blocked)':''}</span>
+            <span style="font-size:11px;color:${planColor};background:#2a2a2a;padding:2px 8px;border-radius:8px;font-weight:600">${(u.plan||'free').toUpperCase()}</span>
+          </div>
+          <div style="font-size:11px;color:#565869">${u.usageCount||0} msgs today · resets in ${hoursUntilMidnight(u.usageReset)}h</div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+            <select onchange="adminSetPlan('${u.username}',this.value)" style="background:#2a2a2a;border:1px solid #3f3f3f;border-radius:6px;color:#ececec;font-family:'Inter',sans-serif;font-size:11px;padding:5px 8px;cursor:pointer">
+              <option value="free" ${u.plan==='free'?'selected':''}>Free (20/day)</option>
+              <option value="plus" ${u.plan==='plus'?'selected':''}>Plus (100/day) — €5/mo</option>
+              <option value="pro"  ${u.plan==='pro' ?'selected':''}>Pro (400/day) — €15/mo</option>
+            </select>
+            ${blockBtn}
+            <button onclick="adminDelete('${u.username}')" style="background:#3f3f3f;border:none;color:#f87171;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:'Inter',sans-serif">Delete</button>
+          </div>
         </div>`;
       }).join('');
     }
@@ -1595,6 +1730,68 @@ function copyUrl(){
 function copyCode(){
   navigator.clipboard.writeText(lastDelivCode).then(()=>showToast('✅ Code copied!')).catch(()=>{});
 }
+
+// ── USAGE ──────────────────────────────────────────────────────────────────
+let currentPlan = 'free';
+
+async function loadUsage(){
+  if(!authToken) return;
+  try{
+    const res = await fetch(`${SERVER}/api/usage`,{headers:{'x-auth-token':authToken}});
+    const data = await res.json();
+    if(!data.ok || data.admin) return;
+    currentPlan = data.plan;
+    const wrap  = document.getElementById('usage-wrap');
+    const label = document.getElementById('usage-plan-label');
+    const count = document.getElementById('usage-count-label');
+    const bar   = document.getElementById('usage-bar-fill');
+    wrap.style.display = 'block';
+    label.textContent  = data.planLabel + ' plan';
+    count.textContent  = `${data.used} / ${data.limit}`;
+    const pct = Math.min(100, Math.round((data.used / data.limit) * 100));
+    bar.style.width = pct + '%';
+    bar.className = 'usage-bar-fill' + (pct >= 100 ? ' full' : pct >= 80 ? ' warn' : '');
+    // Update upgrade modal badges
+    ['free','plus','pro'].forEach(p=>{
+      const card  = document.getElementById('plan-card-' + p);
+      const badge = document.getElementById('plan-badge-' + p);
+      if(card && badge){
+        badge.style.display = data.plan === p ? 'block' : 'none';
+        if(data.plan === p) card.classList.add('current');
+        else card.classList.remove('current');
+      }
+    });
+  } catch(e){}
+}
+
+function openUpgradeModal(){
+  document.getElementById('upgrade-overlay').style.display = 'flex';
+}
+function closeUpgradeModal(){
+  document.getElementById('upgrade-overlay').style.display = 'none';
+}
+
+function hoursUntilMidnight(resetStr){
+  if(!resetStr) return 24;
+  const now   = new Date();
+  const reset = new Date(resetStr);
+  const ms = Math.max(0, 24*60*60*1000 - (now - reset));
+  return Math.ceil(ms / (60*60*1000));
+}
+
+async function adminSetPlan(username, plan){
+  try{
+    const res = await fetch(`${SERVER}/api/admin/setplan/${username}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-auth-token':authToken},
+      body:JSON.stringify({plan})
+    });
+    const data = await res.json();
+    if(data.ok) showToast(`✅ ${username} → ${plan.toUpperCase()}`);
+    else showToast('⚠ '+data.error);
+  } catch(e){ showToast('⚠ Failed'); }
+}
+
 </script>
 </body>
 </html>
