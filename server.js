@@ -43,24 +43,28 @@ async function initDB(){
   await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS plan TEXT DEFAULT 'free'`);
   await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS usage_count INT DEFAULT 0`);
   await pool.query(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS usage_reset TIMESTAMPTZ DEFAULT NOW()`);
+  // Drop and recreate messages table with new schema if old columns exist
+  const { rows: msgCols } = await pool.query(`
+    SELECT column_name FROM information_schema.columns
+    WHERE table_name='messages' AND column_name='from_user'
+  `);
+  if(msgCols.length > 0){
+    console.log('Migrating messages table to new schema...');
+    await pool.query('DROP TABLE IF EXISTS messages');
+  }
   await pool.query(`
     CREATE TABLE IF NOT EXISTS messages (
       id           TEXT PRIMARY KEY,
-      from_id      TEXT NOT NULL,
-      from_email   TEXT NOT NULL,
-      to_id        TEXT NOT NULL,
-      to_email     TEXT NOT NULL,
+      from_id      TEXT NOT NULL DEFAULT '',
+      from_email   TEXT NOT NULL DEFAULT '',
+      to_id        TEXT NOT NULL DEFAULT '',
+      to_email     TEXT NOT NULL DEFAULT '',
       text         TEXT NOT NULL,
       read         BOOLEAN DEFAULT FALSE,
       is_sent_copy BOOLEAN DEFAULT FALSE,
       sent_at      TIMESTAMPTZ DEFAULT NOW()
     )
   `);
-  // Migrate old messages table columns if they exist
-  await pool.query(`ALTER TABLE messages ADD COLUMN IF NOT EXISTS from_id TEXT NOT NULL DEFAULT ''`);
-  await pool.query(`ALTER TABLE messages ADD COLUMN IF NOT EXISTS from_email TEXT NOT NULL DEFAULT ''`);
-  await pool.query(`ALTER TABLE messages ADD COLUMN IF NOT EXISTS to_id TEXT NOT NULL DEFAULT ''`);
-  await pool.query(`ALTER TABLE messages ADD COLUMN IF NOT EXISTS to_email TEXT NOT NULL DEFAULT ''`);
   console.log('✅ Database ready');
 }
 
