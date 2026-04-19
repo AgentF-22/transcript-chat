@@ -276,16 +276,22 @@ app.post('/api/messages/send', requireAdmin, async (req, res) => {
 app.post('/api/messages/reply', requireAuth, async (req, res) => {
   const { text } = req.body;
   if(!text) return res.status(400).json({ error: 'Missing text' });
-  // Get admin profile
-  const { rows } = await pool.query('SELECT id, email FROM profiles WHERE is_admin=TRUE LIMIT 1');
-  if(!rows.length) return res.status(500).json({ error: 'No admin found' });
-  const admin = rows[0];
-  const id = crypto.randomBytes(6).toString('hex');
-  await pool.query(
-    'INSERT INTO messages (id,from_id,from_email,to_id,to_email,text,read,is_sent_copy) VALUES ($1,$2,$3,$4,$5,$6,FALSE,FALSE)',
-    [id, req.user.id, req.user.email, admin.id, admin.email, text]
-  );
-  res.json({ ok: true });
+  try {
+    // Get admin profile - use ADMIN_EMAIL env var as fallback
+    let adminId = 'admin';
+    let adminEmail = ADMIN_EMAIL;
+    const { rows } = await pool.query('SELECT id, email FROM profiles WHERE is_admin=TRUE LIMIT 1');
+    if(rows.length){ adminId = rows[0].id; adminEmail = rows[0].email; }
+    const id = crypto.randomBytes(6).toString('hex');
+    await pool.query(
+      'INSERT INTO messages (id,from_id,from_email,to_id,to_email,text,read,is_sent_copy) VALUES ($1,$2,$3,$4,$5,$6,FALSE,FALSE)',
+      [id, req.user.id, req.user.email, adminId, adminEmail, text]
+    );
+    res.json({ ok: true });
+  } catch(e) {
+    console.error('Reply error:', e.message);
+    res.status(500).json({ error: e.message });
+  }
 });
 
 // ── Messages: inbox ────────────────────────────────────────────────────────
