@@ -408,8 +408,7 @@ textarea.finput{resize:vertical;min-height:120px}
 </div>
 
 <!-- SUPPORT MODAL -->
-<div class="overlay" id="support-bg" onclick="closeSupport()"></div>
-<div class="modal-wrap" id="support-wrap">
+<div class="modal-wrap" id="support-wrap" onclick="if(event.target===this)closeSupport()" style="background:rgba(0,0,0,0.7)">
   <div class="modal" style="max-width:500px">
     <div class="modal-title">💬 Support</div>
     <div id="support-admin-view" style="display:none;flex-direction:column;gap:16px">
@@ -438,8 +437,7 @@ textarea.finput{resize:vertical;min-height:120px}
 </div>
 
 <!-- ADMIN PANEL -->
-<div class="overlay" id="admin-bg" onclick="closeAdmin()"></div>
-<div class="modal-wrap" id="admin-wrap">
+<div class="modal-wrap" id="admin-wrap" onclick="if(event.target===this)closeAdmin()" style="background:rgba(0,0,0,0.7)">
   <div class="modal" style="max-width:540px">
     <div class="modal-title">⚙️ Admin panel</div>
     <div style="display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:4px;border:1px solid var(--border)">
@@ -476,8 +474,7 @@ textarea.finput{resize:vertical;min-height:120px}
 </div>
 
 <!-- UPGRADE MODAL -->
-<div class="overlay" id="upgrade-bg" onclick="closeUpgradeModal()"></div>
-<div class="modal-wrap" id="upgrade-wrap">
+<div class="modal-wrap" id="upgrade-wrap" onclick="if(event.target===this)closeUpgradeModal()" style="background:rgba(0,0,0,0.7)">
   <div class="modal" style="max-width:460px">
     <div class="modal-title">⚡ Upgrade your plan</div>
     <div class="modal-sub">Send a support message to upgrade. We'll update your account manually.</div>
@@ -749,8 +746,8 @@ async function loadUsage(){
     });
   }catch(e){}
 }
-function openUpgradeModal(){document.getElementById('upgrade-bg').style.display='block';document.getElementById('upgrade-wrap').classList.add('open')}
-function closeUpgradeModal(){document.getElementById('upgrade-bg').style.display='none';document.getElementById('upgrade-wrap').classList.remove('open')}
+function openUpgradeModal(){document.getElementById('upgrade-wrap').classList.add('open')}
+function closeUpgradeModal(){document.getElementById('upgrade-wrap').classList.remove('open')}
 function hoursUntilReset(r){if(!r)return 24;const ms=Math.max(0,24*60*60*1000-(new Date()-new Date(r)));return Math.ceil(ms/(60*60*1000))}
 
 // SUPPORT
@@ -759,14 +756,14 @@ async function checkUnread(){
   try{const res=await fetch(`${SERVER}/api/messages/unread`,{headers:{'x-auth-token':authToken}});const d=await res.json();document.getElementById('unread-badge').style.display=d.count>0?'inline':'none'}catch(e){}
 }
 async function openSupport(){
-  document.getElementById('support-bg').style.display='block';
+  
   document.getElementById('support-wrap').classList.add('open');
   document.getElementById('unread-badge').style.display='none';
   closeSb();
   if(isAdminUser){document.getElementById('support-admin-view').style.display='flex';document.getElementById('support-user-view').style.display='none';await loadSupportAdminView()}
   else{document.getElementById('support-admin-view').style.display='none';document.getElementById('support-user-view').style.display='flex';await loadUserMessages()}
 }
-function closeSupport(){document.getElementById('support-bg').style.display='none';document.getElementById('support-wrap').classList.remove('open')}
+function closeSupport(){document.getElementById('support-wrap').classList.remove('open')}
 
 async function loadSupportAdminView(){
   try{const uRes=await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});const uData=await uRes.json();const sel=document.getElementById('msg-to');sel.innerHTML='<option value="">Select a user…</option>'+uData.users.map(u=>`<option value="${esc(u.id)}|${esc(u.email)}">${esc(u.email)}</option>`).join('')}catch(e){}
@@ -796,8 +793,8 @@ async function userSendReply(){
 }
 
 // ADMIN
-async function openAdmin(){document.getElementById('admin-bg').style.display='block';document.getElementById('admin-wrap').classList.add('open');closeSb();switchAdminTab('users');await loadAdminData()}
-function closeAdmin(){document.getElementById('admin-bg').style.display='none';document.getElementById('admin-wrap').classList.remove('open')}
+async function openAdmin(){document.getElementById('admin-wrap').classList.add('open');closeSb();switchAdminTab('users');await loadAdminData()}
+function closeAdmin(){document.getElementById('admin-wrap').classList.remove('open')}
 function switchAdminTab(tab){
   const uT=document.getElementById('tab-users'),iT=document.getElementById('tab-inbox'),uB=document.getElementById('tab-users-btn'),iB=document.getElementById('tab-inbox-btn');
   if(tab==='users'){uT.style.display='flex';iT.style.display='none';uB.style.background='var(--accent)';uB.style.color='#fff';iB.style.background='transparent';iB.style.color='var(--text2)'}
@@ -808,7 +805,7 @@ async function loadAdminData(){
 }
 async function loadAdminInbox(){try{const res=await fetch(`${SERVER}/api/messages/inbox`,{headers:{'x-auth-token':authToken}});const d=await res.json();const el=document.getElementById('admin-inbox');if(!d.messages||!d.messages.length){el.innerHTML='<div style="color:var(--text3);font-size:13px">No messages yet.</div>';return}el.innerHTML=d.messages.map(m=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:6px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px;font-weight:600;color:var(--accent)">👤 ${esc(m.from)}</span><span style="font-size:11px;color:var(--text3)">${new Date(m.sentAt).toLocaleString()}</span></div><div style="font-size:13px;color:var(--text);line-height:1.6">${esc(m.text)}</div></div>`).join('')}catch(e){document.getElementById('admin-inbox').innerHTML='<div style="color:var(--danger);font-size:13px">Failed to load.</div>'}}
 async function loadAdminUserDropdown(){try{const uRes=await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});const uData=await uRes.json();const sel=document.getElementById('admin-msg-to');sel.innerHTML='<option value="">Select a user…</option>'+uData.users.map(u=>`<option value="${esc(u.id)}|${esc(u.email)}">${esc(u.email)}</option>`).join('')}catch(e){}}
-async function adminSendMsgFromPanel(){const to=document.getElementById('admin-msg-to').value,text=document.getElementById('admin-msg-text').value.trim();if(!to){showToast('⚠ Select a user first');return}if(!text){showToast('⚠ Write a message first');return}try{const res=await fetch(`${SERVER}/api/messages/send`,{method:'POST',headers:{'Content-Type':'application/json','x-auth-token':authToken},body:JSON.stringify({to,text})});const d=await res.json();if(d.ok){document.getElementById('admin-msg-text').value='';showToast('✅ Sent to '+to)}else showToast('⚠ '+d.error)}catch(e){showToast('⚠ Failed')}}
+async function adminSendMsgFromPanel(){const toVal=document.getElementById('admin-msg-to').value,text=document.getElementById('admin-msg-text').value.trim();if(!toVal){showToast('⚠ Select a user first');return}if(!text){showToast('⚠ Write a message first');return}const[toId,toEmail]=toVal.split('|');try{const res=await fetch(`${SERVER}/api/messages/send`,{method:'POST',headers:{'Content-Type':'application/json','x-auth-token':authToken},body:JSON.stringify({toId,toEmail,text})});const d=await res.json();if(d.ok){document.getElementById('admin-msg-text').value='';showToast('✅ Message sent!')}else showToast('⚠ '+d.error)}catch(e){showToast('⚠ Failed')}}
 async function adminApprove(id){const res=await fetch(`${SERVER}/api/admin/approve/${id}`,{method:'POST',headers:{'x-auth-token':authToken}});const d=await res.json();if(d.ok){showToast('✅ '+d.username+' approved');await loadAdminData()}else showToast('⚠ '+d.error)}
 async function adminDecline(id){await fetch(`${SERVER}/api/admin/decline/${id}`,{method:'DELETE',headers:{'x-auth-token':authToken}});showToast('Declined');await loadAdminData()}
 async function adminBlock(u){await fetch(`${SERVER}/api/admin/block/${u}`,{method:'POST',headers:{'x-auth-token':authToken}});showToast('🚫 '+u+' blocked');await loadAdminData()}
