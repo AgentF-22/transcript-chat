@@ -3,1697 +3,707 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>FingerPost Echo — AI Interview Intelligence</title>
+<title>Noted</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{height:100%;background:#111827}
-body{font-family:'DM Sans',sans-serif;background:#111827;color:#f3f4f6;min-height:100dvh;display:flex;flex-direction:column}
+:root{
+  --bg:#0f1117;
+  --surface:#181c27;
+  --surface2:#1e2235;
+  --border:#2a2f45;
+  --border2:#323752;
+  --accent:#4f8ef7;
+  --accent-dim:#1e3a6e;
+  --accent-hover:#6ba3ff;
+  --text:#e8eaf0;
+  --text2:#8b90a7;
+  --text3:#555b78;
+  --success:#34d399;
+  --success-dim:#0a3a2a;
+  --warn:#fbbf24;
+  --danger:#f87171;
+  --danger-dim:#3b1111;
+  --radius:12px;
+  --radius-lg:18px;
+  --font:'DM Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html{height:100%;background:var(--bg)}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
 
-/* ══════════════════════════════════════
-   LOGIN
-══════════════════════════════════════ */
-#login-screen{
-  flex:1;display:flex;align-items:center;justify-content:center;
-  padding:24px;background:radial-gradient(ellipse at 50% 0%,#1e3a5f 0%,#111827 60%);min-height:100dvh;
-}
-.login-box{
-  width:100%;max-width:380px;
-  background:#1f2937;border:1px solid #374151;
-  border-radius:20px;padding:36px 28px;
-  display:flex;flex-direction:column;gap:22px;
-  box-shadow:0 25px 50px rgba(0,0,0,.5),0 0 0 1px rgba(37,99,235,.1);
-}
-.login-logo{text-align:center;margin-bottom:4px}
-.login-icon{font-size:38px;margin-bottom:10px}
-.login-title{font-size:22px;font-weight:700;color:#fff}
-.login-title span{color:#2563eb}
-.login-sub{font-size:13px;color:#9ca3af;margin-top:5px}
-.lfield{display:flex;flex-direction:column;gap:7px}
-.llabel{font-size:11px;font-weight:600;color:#9ca3af;letter-spacing:.08em}
-.linput{
-  background:#111827;border:1.5px solid #374151;
-  border-radius:10px;color:#f3f4f6;
-  font-family:'DM Sans',sans-serif;font-size:16px;
-  padding:13px 15px;outline:none;width:100%;
-  transition:border-color .15s;-webkit-appearance:none;
-}
-.linput:focus{border-color:#2563eb}
-.linput::placeholder{color:#6b7280}
-.lerr{
-  font-size:13px;color:#f87171;background:#2d1212;
-  border:1px solid #7f1d1d;border-radius:8px;
-  padding:11px 13px;display:none;text-align:center;
-}
+/* LOGIN */
+#login-screen{flex:1;display:flex;align-items:center;justify-content:center;padding:24px;min-height:100dvh;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(79,142,247,.1) 0%,transparent 70%)}
+.login-wrap{width:100%;max-width:400px;display:flex;flex-direction:column;gap:32px}
+.login-brand{text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+.login-mark{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 8px 32px rgba(79,142,247,.3)}
+.login-product{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.login-product span{color:var(--accent)}
+.login-tagline{font-size:13px;color:var(--text2)}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:32px 28px;display:flex;flex-direction:column;gap:20px;box-shadow:0 24px 64px rgba(0,0,0,.4)}
+.login-box-title{font-size:16px;font-weight:600;color:var(--text)}
+.lfield{display:flex;flex-direction:column;gap:6px}
+.llabel{font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.08em;text-transform:uppercase}
+.linput{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--font);font-size:15px;padding:12px 14px;outline:none;width:100%;transition:border-color .15s;-webkit-appearance:none}
+.linput:focus{border-color:var(--accent)}
+.linput::placeholder{color:var(--text3)}
+.lerr{font-size:13px;color:var(--danger);background:var(--danger-dim);border:1px solid rgba(248,113,113,.25);border-radius:8px;padding:10px 13px;display:none;text-align:center}
 .lerr.show{display:block}
-.btn-signin{
-  width:100%;background:#2563eb;color:#fff;border:none;
-  border-radius:12px;font-size:16px;font-weight:600;
-  font-family:'DM Sans',sans-serif;padding:14px;cursor:pointer;
-  transition:background .15s;-webkit-appearance:none;
-}
-.btn-signin:active{background:#1d4ed8}
-.btn-signin:disabled{background:#374151;color:#6b7280;cursor:not-allowed}
+.btn-primary{width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;font-family:var(--font);padding:13px;cursor:pointer;transition:background .15s;-webkit-appearance:none;box-shadow:0 4px 16px rgba(79,142,247,.25)}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-primary:disabled{background:var(--border);color:var(--text3);cursor:not-allowed;box-shadow:none}
+.login-link{text-align:center}
+.login-link button{background:none;border:none;color:var(--text2);font-size:13px;font-family:var(--font);cursor:pointer;transition:color .15s}
+.login-link button:hover{color:var(--accent)}
 
-/* ══════════════════════════════════════
-   APP SHELL
-══════════════════════════════════════ */
+/* APP SHELL */
 #app{display:none;height:100dvh;overflow:hidden}
 #app.visible{display:flex}
 
-/* ── SIDEBAR ── */
-.sb{
-  width:260px;flex-shrink:0;
-  background:#0d1117;border-right:1px solid #1a2234;
-  display:flex;flex-direction:column;
-  height:100dvh;overflow:hidden;
-  transition:transform .25s ease;
-}
-.sb-head{padding:14px 12px 10px;display:flex;flex-direction:column;gap:4px}
-.sb-logo{
-  display:flex;align-items:center;gap:9px;
-  padding:8px 10px;border-radius:10px;cursor:pointer;
-  transition:background .15s;margin-bottom:4px;
-  text-decoration:none;
-}
-.sb-logo:hover{background:#1a2234}
-.sb-logo-icon{font-size:20px}
-.sb-logo-text{font-size:15px;font-weight:700;color:#fff;letter-spacing:0;white-space:nowrap}
-.sb-logo-text span{color:#2563eb}
-.btn-newchat{
-  display:flex;align-items:center;gap:9px;
-  padding:9px 10px;border-radius:10px;cursor:pointer;
-  background:none;border:none;color:#f3f4f6;
-  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
-  transition:background .15s;width:100%;text-align:left;
-}
-.btn-newchat:hover{background:#1a2234}
-.btn-newchat svg{opacity:.7;flex-shrink:0}
-
-.sb-section{
-  padding:12px 12px 4px;
-  font-size:11px;font-weight:600;letter-spacing:.08em;
-  color:#6b7280;
-}
-
+/* SIDEBAR */
+.sb{width:256px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100dvh;overflow:hidden;transition:transform .25s ease}
+.sb-head{padding:16px 12px 10px;display:flex;flex-direction:column;gap:6px}
+.sb-brand{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;transition:background .15s;margin-bottom:2px}
+.sb-brand:hover{background:var(--surface2)}
+.sb-brand-mark{width:30px;height:30px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;align-items:center;justify-content:center;font-size:14px}
+.sb-brand-name{font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.2px}
+.sb-brand-name span{color:var(--accent)}
+.btn-newchat{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:10px;cursor:pointer;background:none;border:1px solid var(--border);color:var(--text);font-family:var(--font);font-size:13.5px;font-weight:500;transition:background .15s,border-color .15s;width:100%}
+.btn-newchat:hover{background:var(--surface2);border-color:var(--border2)}
+.sb-section{padding:14px 14px 4px;font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--text3);text-transform:uppercase}
 .sb-history{flex:1;overflow-y:auto;padding:0 8px 8px}
-.sb-history::-webkit-scrollbar{width:4px}
-.sb-history::-webkit-scrollbar-thumb{background:#374151;border-radius:4px}
-
-.hist-item{
-  display:flex;align-items:center;gap:8px;
-  padding:9px 10px;border-radius:9px;cursor:pointer;
-  transition:background .12s;font-size:13.5px;color:#d1d5db;
-  position:relative;
-}
-.hist-item:hover{background:#1a2234}
-.hist-item.active{background:#1a2234;color:#fff}
+.sb-history::-webkit-scrollbar{width:3px}
+.sb-history::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.hist-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;cursor:pointer;transition:background .12s;font-size:13px;color:var(--text2)}
+.hist-item:hover,.hist-item.active{background:var(--surface2);color:var(--text)}
 .hist-item-text{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hist-item-del{
-  background:none;border:none;color:#6b7280;
-  font-size:16px;cursor:pointer;padding:0;line-height:1;
-  opacity:0;transition:opacity .12s;flex-shrink:0;
-}
+.hist-item-del{background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:0;line-height:1;opacity:0;transition:opacity .12s;flex-shrink:0}
 .hist-item:hover .hist-item-del{opacity:1}
-.hist-item-del:hover{color:#f87171}
+.hist-item-del:hover{color:var(--danger)}
+.sb-empty{padding:20px 12px;font-size:13px;color:var(--text3);text-align:center;line-height:1.7}
+.sb-foot{padding:10px 10px 0;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:2px}
+.sb-nav{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;cursor:pointer;background:none;border:none;color:var(--text2);font-family:var(--font);font-size:13px;font-weight:500;transition:background .15s,color .15s;width:100%;text-align:left}
+.sb-nav:hover{background:var(--surface2);color:var(--text)}
+.sb-nav.warn{color:var(--warn)}
+.sb-nav svg{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.src-badge{margin-left:auto;font-size:10px;font-weight:700;background:var(--accent-dim);color:var(--accent);border-radius:8px;padding:2px 6px;font-family:var(--mono)}
+.usage-wrap{padding:10px 12px 14px}
+.usage-row{display:flex;justify-content:space-between;margin-bottom:6px}
+.usage-plan{font-size:11px;font-weight:600;color:var(--text2)}
+.usage-nums{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.usage-track{width:100%;height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:8px}
+.usage-fill{height:100%;border-radius:2px;background:var(--accent);transition:width .4s}
+.usage-fill.warn{background:var(--warn)}
+.usage-fill.full{background:var(--danger)}
+.btn-upgrade{width:100%;background:transparent;border:1px solid var(--accent);border-radius:8px;color:var(--accent);font-family:var(--font);font-size:12px;font-weight:600;padding:7px;cursor:pointer;transition:background .15s,color .15s}
+.btn-upgrade:hover{background:var(--accent);color:#fff}
 
-.sb-empty{
-  padding:20px 12px;font-size:13px;color:#6b7280;
-  text-align:center;line-height:1.7;
-}
-
-.sb-foot{
-  padding:12px;border-top:1px solid #1a2234;
-  display:flex;flex-direction:column;gap:6px;
-}
-.btn-sources{
-  display:flex;align-items:center;gap:9px;
-  padding:9px 10px;border-radius:10px;cursor:pointer;
-  background:none;border:none;color:#f3f4f6;
-  font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:500;
-  transition:background .15s;width:100%;text-align:left;
-}
-.btn-sources:hover{background:#1a2234}
-.src-badge{
-  margin-left:auto;font-size:11px;font-weight:600;
-  background:#1e3a5f;color:#93c5fd;
-  border:1px solid #1e40af;border-radius:12px;
-  padding:2px 8px;
-}
-.btn-signout{
-  display:flex;align-items:center;gap:9px;
-  padding:9px 10px;border-radius:10px;cursor:pointer;
-  background:none;border:none;color:#9ca3af;
-  font-family:'DM Sans',sans-serif;font-size:13px;
-  transition:background .15s;width:100%;text-align:left;
-}
-.btn-signout:hover{background:#1a2234;color:#f3f4f6}
-
-/* ── USAGE BAR ── */
-.usage-wrap{
-  padding:10px 12px 6px;
-  border-top:1px solid #1a2234;
-}
-.usage-header{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:6px;
-}
-.usage-label{font-size:11px;color:#9ca3af;font-weight:500}
-.usage-count{font-size:11px;color:#6b7280}
-.usage-bar-bg{
-  width:100%;height:4px;background:#1a2234;border-radius:2px;overflow:hidden;
-}
-.usage-bar-fill{
-  height:100%;border-radius:2px;background:#2563eb;
-  transition:width .3s ease;
-}
-.usage-bar-fill.warn{background:#f59e0b}
-.usage-bar-fill.full{background:#ef4444}
-.btn-upgrade{
-  width:100%;margin-top:8px;
-  background:linear-gradient(135deg,#2563eb,#1d4ed8);
-  border:none;border-radius:9px;color:#fff;
-  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;
-  padding:8px;cursor:pointer;transition:opacity .15s;
-}
-.btn-upgrade:hover{opacity:.9}
-
-/* ── UPGRADE MODAL ── */
-.upgrade-modal{
-  background:#1f2937;border:1px solid #374151;border-radius:20px;
-  padding:28px;width:100%;max-width:480px;
-  display:flex;flex-direction:column;gap:18px;
-  max-height:90dvh;overflow-y:auto;
-}
-.upgrade-title{font-size:20px;font-weight:700;color:#fff}
-.upgrade-sub{font-size:13px;color:#9ca3af;line-height:1.6;margin-top:-10px}
-.plans-grid{display:flex;flex-direction:column;gap:10px}
-.plan-card{
-  background:#111827;border:1.5px solid #374151;border-radius:12px;
-  padding:16px;display:flex;align-items:center;gap:14px;
-}
-.plan-card.current{border-color:#2563eb}
-.plan-card.highlighted{border-color:#f59e0b;background:#1a1500}
-.plan-icon{font-size:24px;flex-shrink:0}
-.plan-info{flex:1}
-.plan-name{font-size:15px;font-weight:700;color:#fff}
-.plan-price{font-size:12px;color:#9ca3af;margin-top:2px}
-.plan-limit{font-size:12px;color:#93c5fd;margin-top:3px}
-.plan-badge{
-  font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;
-  background:#1e3a5f;color:#93c5fd;border:1px solid #1e40af;flex-shrink:0;
-}
-.plan-badge.gold{background:#451a03;color:#fbbf24;border-color:#78350f}
-
-/* ── MAIN AREA ── */
-.main{
-  flex:1;display:flex;flex-direction:column;
-  height:100dvh;overflow:hidden;min-width:0;
-}
-
-/* Mobile topbar (hidden on desktop) */
-.mob-bar{
-  display:none;
-  align-items:center;justify-content:space-between;
-  padding:12px 16px;
-  padding-top:max(12px,env(safe-area-inset-top));
-  background:#0d1117;border-bottom:1px solid #1a2234;
-  flex-shrink:0;
-}
-.btn-menu{background:none;border:none;color:#f3f4f6;font-size:22px;cursor:pointer;padding:4px}
-.mob-logo{font-size:15px;font-weight:700;color:#fff;cursor:pointer}
-.mob-logo span{color:#2563eb}
-.btn-mob-add{
-  background:#2563eb;color:#fff;border:none;border-radius:8px;
-  padding:7px 13px;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;
-  cursor:pointer;-webkit-appearance:none;
-}
-
-/* Messages */
-.msgs{
-  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  padding:32px 0 16px;display:flex;flex-direction:column;gap:0;
-  background:#111827;
-}
-.msgs::-webkit-scrollbar{width:5px}
-.msgs::-webkit-scrollbar-thumb{background:#374151;border-radius:4px}
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;height:100dvh;overflow:hidden;min-width:0}
+.mob-bar{display:none;align-items:center;justify-content:space-between;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.btn-menu{background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;padding:4px}
+.mob-brand{font-size:14px;font-weight:700;color:var(--text)}
+.mob-brand span{color:var(--accent)}
+.btn-mob-add{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 13px;font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer}
+.msgs{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:32px 0 16px;display:flex;flex-direction:column;background:var(--bg)}
+.msgs::-webkit-scrollbar{width:4px}
+.msgs::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
 
 /* Welcome */
-.welcome{
-  max-width:680px;margin:0 auto;padding:40px 24px 24px;
-  display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;
-}
-.w-icon{font-size:44px}
-.w-title{font-size:26px;font-weight:700;color:#fff}
-.w-sub{font-size:15px;color:#9ca3af;line-height:1.7;max-width:400px}
-.w-cards{
-  display:grid;grid-template-columns:1fr 1fr;gap:10px;
-  width:100%;margin-top:8px;text-align:left;
-}
-.wcard{
-  background:#1f2937;border:1px solid #374151;border-radius:12px;
-  padding:14px 16px;cursor:pointer;font-family:'DM Sans',sans-serif;
-  transition:background .15s,border-color .15s;
-  -webkit-appearance:none;
-}
-.wcard:hover{background:#3a3a3a;border-color:#555}
-.wcard:active{background:#444}
-.wcard-t{font-size:13px;font-weight:600;color:#fff;margin-bottom:4px}
-.wcard-s{font-size:12px;color:#9ca3af;line-height:1.4}
+.welcome{max-width:680px;margin:0 auto;padding:48px 32px 24px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px}
+.w-logo{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 32px rgba(79,142,247,.2);margin-bottom:4px}
+.w-title{font-size:26px;font-weight:700;color:var(--text);letter-spacing:-.4px}
+.w-sub{font-size:15px;color:var(--text2);line-height:1.7;max-width:420px}
+.w-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;margin-top:12px;text-align:left}
+.wcard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;cursor:pointer;font-family:var(--font);transition:border-color .15s,background .15s;-webkit-appearance:none;text-align:left}
+.wcard:hover{border-color:var(--border2);background:var(--surface2)}
+.wcard-t{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.wcard-s{font-size:12px;color:var(--text2);line-height:1.4}
 
-/* Message row */
-.msg-row{
-  width:100%;padding:6px 0;
-}
-.msg-row.user{background:transparent}
-.msg-row.bot{background:transparent}
-.msg-inner{
-  max-width:680px;margin:0 auto;padding:0 24px;
-  display:flex;gap:14px;align-items:flex-start;
-}
+/* Messages */
+.msg-row{width:100%;padding:4px 0}
+.msg-inner{max-width:720px;margin:0 auto;padding:0 28px;display:flex;gap:14px;align-items:flex-start}
 .msg-row.user .msg-inner{flex-direction:row-reverse}
-.av{
-  width:32px;height:32px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;
-}
-.av.bot{background:#2563eb;color:#fff;font-size:11px}
-.av.user{background:#374151;color:#d1d5db}
+.av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px}
+.av.bot{background:linear-gradient(135deg,var(--accent),#7c3aed);color:#fff;border-radius:10px;font-size:10px;font-family:var(--mono)}
+.av.user{background:var(--surface2);border:1px solid var(--border);color:var(--text2)}
 .msg-body{flex:1;min-width:0}
-.msg-name{font-size:12px;font-weight:600;color:#9ca3af;margin-bottom:6px}
+.msg-name{font-size:11px;font-weight:600;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
 .msg-row.user .msg-body{display:flex;flex-direction:column;align-items:flex-end}
-.msg-text{
-  font-size:15px;line-height:1.75;color:#f3f4f6;word-break:break-word;
-  max-width:560px;
-}
+.msg-text{font-size:15px;line-height:1.8;color:var(--text);word-break:break-word;max-width:580px}
 .msg-text p{margin-bottom:10px}
 .msg-text p:last-child{margin-bottom:0}
 .msg-text ul{padding-left:20px;margin:8px 0}
 .msg-text li{margin-bottom:5px}
-.msg-text strong{color:#fff;font-weight:600}
-.msg-text em{color:#93c5fd}
-
-.user-bubble{
-  background:#1f2937;border-radius:18px 18px 4px 18px;
-  padding:12px 16px;font-size:15px;line-height:1.65;color:#f3f4f6;
-  max-width:85%;word-break:break-word;
-}
-
-/* Typing */
-.typing-row{max-width:680px;margin:0 auto;padding:6px 24px;display:flex;gap:14px;align-items:center}
-.typing-dots{display:flex;gap:5px;padding:14px 16px;background:#1f2937;border-radius:16px}
-.dot{width:8px;height:8px;border-radius:50%;background:#6b7280;animation:blink 1.2s infinite}
+.msg-text strong{color:var(--text);font-weight:600}
+.user-bubble{background:var(--surface2);border:1px solid var(--border);border-radius:16px 16px 4px 16px;padding:11px 15px;font-size:15px;line-height:1.65;color:var(--text);max-width:85%;word-break:break-word}
+.typing-row{max-width:720px;margin:6px auto;padding:0 28px;display:flex;gap:14px;align-items:center}
+.typing-dots{display:flex;gap:5px;padding:12px 15px;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--text3);animation:blink 1.4s infinite}
 .dot:nth-child(2){animation-delay:.2s}
 .dot:nth-child(3){animation-delay:.4s}
 @keyframes blink{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
 
 /* Input */
-.inp-area{
-  flex-shrink:0;padding:12px 24px;
-  padding-bottom:max(16px,env(safe-area-inset-bottom));
-  background:#111827;
-}
-.inp-box{
-  max-width:680px;margin:0 auto;
-  background:#1f2937;border:1px solid #374151;
-  border-radius:16px;padding:12px 14px;
-  display:flex;gap:10px;align-items:flex-end;
-  transition:border-color .15s;
-}
-.inp-box:focus-within{border-color:#6b7280}
-.chat-inp{
-  flex:1;background:transparent;border:none;outline:none;
-  color:#f3f4f6;font-family:'DM Sans',sans-serif;
-  font-size:15px;line-height:1.55;resize:none;
-  max-height:130px;overflow-y:auto;
-  -webkit-appearance:none;
-}
-.chat-inp::placeholder{color:#6b7280}
-.send-btn{
-  width:36px;height:36px;border-radius:18px;
-  background:#2563eb;border:none;color:#fff;
-  font-size:18px;cursor:pointer;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  transition:background .15s;-webkit-appearance:none;
-}
-.send-btn:disabled{background:#374151;color:#6b7280;cursor:not-allowed}
-.send-btn:not(:disabled):active{background:#1d4ed8}
-.inp-hint{text-align:center;font-size:11px;color:#374151;margin-top:8px;max-width:680px;margin-left:auto;margin-right:auto}
+.inp-area{flex-shrink:0;padding:14px 28px;padding-bottom:max(16px,env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--border)}
+.inp-box{max-width:720px;margin:0 auto;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:flex-end;transition:border-color .15s}
+.inp-box:focus-within{border-color:var(--accent)}
+.chat-inp{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font);font-size:15px;line-height:1.55;resize:none;max-height:130px;overflow-y:auto;-webkit-appearance:none}
+.chat-inp::placeholder{color:var(--text3)}
+.send-btn{width:36px;height:36px;border-radius:9px;background:var(--accent);border:none;color:#fff;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s;-webkit-appearance:none;box-shadow:0 2px 8px rgba(79,142,247,.3)}
+.send-btn:disabled{background:var(--border);color:var(--text3);cursor:not-allowed;box-shadow:none}
+.send-btn:not(:disabled):hover{background:var(--accent-hover)}
 
-/* ── PANEL (slide up) ── */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:50}
+/* Modals */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:50;backdrop-filter:blur(3px)}
 .overlay.open{display:block}
-.panel{
-  position:fixed;bottom:0;left:0;right:0;
-  background:#1f2937;border-radius:24px 24px 0 0;
-  border-top:1px solid #374151;
-  padding:18px 22px;
-  padding-bottom:max(32px,env(safe-area-inset-bottom));
-  z-index:51;display:flex;flex-direction:column;gap:16px;
-  transform:translateY(110%);
-  transition:transform .3s cubic-bezier(.4,0,.2,1);
-  max-height:92dvh;overflow-y:auto;
-  visibility:hidden;
-}
-.panel.open{transform:translateY(0);visibility:visible}
-.panel-handle{width:40px;height:4px;background:#374151;border-radius:2px;margin:0 auto 4px}
-.panel-title{font-size:18px;font-weight:700;color:#fff}
-.panel-sub{font-size:13px;color:#9ca3af;line-height:1.6;margin-top:-8px}
-.flabel{font-size:11px;font-weight:600;color:#9ca3af;letter-spacing:.06em;margin-bottom:6px}
-.finput{
-  width:100%;background:#111827;border:1.5px solid #374151;border-radius:10px;
-  color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;
-  padding:13px 14px;outline:none;transition:border-color .15s;-webkit-appearance:none;
-}
-.finput:focus{border-color:#2563eb}
-.finput::placeholder{color:#6b7280}
-textarea.finput{resize:vertical;min-height:120px}
-.btn-upload{
-  width:100%;background:#111827;border:1.5px dashed #374151;border-radius:10px;
-  color:#9ca3af;font-size:14px;font-family:'DM Sans',sans-serif;
-  padding:14px;cursor:pointer;text-align:center;
-  transition:border-color .15s,background .15s;-webkit-appearance:none;
-}
-.btn-upload:active{background:#1a2234;border-color:#2563eb;color:#2563eb}
-.fstatus{font-size:12px;color:#9ca3af;margin-top:4px;display:none}
-.divider{display:flex;align-items:center;gap:10px;color:#374151;font-size:12px}
-.divider-line{flex:1;height:1px;background:#374151}
-.panel-btns{display:flex;gap:10px}
-.btn-cancel{
-  flex:1;background:transparent;border:1px solid #374151;border-radius:10px;
-  color:#9ca3af;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;
-  padding:13px;cursor:pointer;-webkit-appearance:none;
-}
-.btn-add{
-  flex:2;background:#2563eb;border:none;border-radius:10px;
-  color:#fff;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;
-  padding:13px;cursor:pointer;-webkit-appearance:none;
-}
-.btn-add:active{background:#1d4ed8}
-.btn-eg{background:none;border:none;color:#6b7280;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline;text-align:left}
+.modal-wrap{position:fixed;inset:0;z-index:51;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-wrap.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;display:flex;flex-direction:column;gap:18px;max-height:90dvh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.5)}
+.modal-title{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.2px}
+.modal-sub{font-size:13px;color:var(--text2);line-height:1.6;margin-top:-10px}
 
+/* Panel */
+.panel{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);border-radius:24px 24px 0 0;padding:20px 24px;padding-bottom:max(32px,env(safe-area-inset-bottom));z-index:51;display:flex;flex-direction:column;gap:16px;transform:translateY(110%);transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:92dvh;overflow-y:auto;visibility:hidden}
+.panel.open{transform:translateY(0);visibility:visible}
+.panel-handle{width:36px;height:3px;background:var(--border2);border-radius:2px;margin:0 auto 4px}
+.panel-title{font-size:17px;font-weight:700;color:var(--text)}
+.panel-sub{font-size:13px;color:var(--text2);margin-top:-8px}
+.flabel{font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px}
+.finput{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6;padding:12px 14px;outline:none;transition:border-color .15s;-webkit-appearance:none}
+.finput:focus{border-color:var(--accent)}
+.finput::placeholder{color:var(--text3)}
+textarea.finput{resize:vertical;min-height:120px}
+.btn-upload{width:100%;background:var(--bg);border:1.5px dashed var(--border2);border-radius:10px;color:var(--text2);font-size:14px;font-family:var(--font);padding:14px;cursor:pointer;text-align:center;transition:border-color .15s;-webkit-appearance:none}
+.btn-upload:active{border-color:var(--accent);color:var(--accent)}
+.fstatus{font-size:12px;color:var(--text2);margin-top:4px;display:none}
+.divider{display:flex;align-items:center;gap:10px;color:var(--text3);font-size:12px}
+.divider-line{flex:1;height:1px;background:var(--border)}
+.panel-btns{display:flex;gap:10px}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--text2);font-size:14px;font-weight:500;font-family:var(--font);padding:12px;cursor:pointer;-webkit-appearance:none;transition:border-color .15s,color .15s}
+.btn-cancel:hover{border-color:var(--border2);color:var(--text)}
+.btn-action{flex:2;background:var(--accent);border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:600;font-family:var(--font);padding:12px;cursor:pointer;-webkit-appearance:none;transition:background .15s}
+.btn-action:hover{background:var(--accent-hover)}
+.btn-eg{background:none;border:none;color:var(--text3);font-size:12px;font-family:var(--font);cursor:pointer;text-decoration:underline;text-align:left}
 .src-list{display:flex;flex-direction:column;gap:6px}
-.src-item{
-  display:flex;align-items:center;gap:8px;
-  background:#111827;border:1px solid #374151;border-radius:8px;padding:11px 13px;
-}
-.src-item-name{flex:1;font-size:13px;color:#d1d5db;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.src-item-rm{background:none;border:none;color:#6b7280;font-size:20px;cursor:pointer;padding:0;line-height:1}
-.src-item-rm:active{color:#f87171}
+.src-item{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 13px}
+.src-item-name{flex:1;font-size:13px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src-item-rm{background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;padding:0;line-height:1}
+.src-item-rm:hover{color:var(--danger)}
+
+/* Plans */
+.plan-card{background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;transition:border-color .15s}
+.plan-card.current{border-color:var(--accent)}
+.plan-card.hot{border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.02)}
+.plan-info{flex:1}
+.plan-name{font-size:15px;font-weight:700;color:var(--text)}
+.plan-price{font-size:12px;color:var(--text2);margin-top:2px}
+.plan-msgs{font-size:12px;color:var(--success);margin-top:3px}
+.plan-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;background:var(--accent-dim);color:var(--accent);flex-shrink:0}
+.plan-badge.gold{background:rgba(251,191,36,.15);color:var(--warn)}
 
 /* Toast */
-.toast{
-  position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
-  background:#1a0a0a;color:#fca5a5;border:1px solid #7f1d1d;
-  border-radius:10px;padding:11px 20px;font-size:13px;
-  z-index:200;opacity:0;transition:opacity .2s;pointer-events:none;
-  max-width:90%;text-align:center;
-}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--surface2);color:var(--text);border:1px solid var(--border2);border-radius:10px;padding:11px 20px;font-size:13px;z-index:200;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90%;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4)}
 .toast.show{opacity:1}
-
-/* Mobile sidebar overlay */
 .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:80}
 .sb-overlay.open{display:block}
 
-/* ── RESPONSIVE ── */
 @media(max-width:700px){
-  .sb{
-    position:fixed;left:0;top:0;bottom:0;z-index:90;
-    transform:translateX(-100%);
-  }
+  .sb{position:fixed;left:0;top:0;bottom:0;z-index:90;transform:translateX(-100%)}
   .sb.open{transform:translateX(0)}
   .mob-bar{display:flex}
   .msgs{padding-top:16px}
   .inp-area{padding:10px 14px;padding-bottom:max(14px,env(safe-area-inset-bottom))}
-  .inp-box{border-radius:14px}
-  .w-cards{grid-template-columns:1fr 1fr}
-  .welcome{padding:20px 16px 16px}
-  .msg-inner{padding:0 14px}
-  .typing-row{padding:6px 14px}
+  .msg-inner,.typing-row{padding:0 14px}
+  .welcome{padding:24px 16px 16px}
 }
 @media(min-width:701px){
-  .panel{left:auto;right:24px;width:440px;border-radius:18px;bottom:24px;border:1px solid #374151;max-height:88vh}
+  .panel{left:auto;right:24px;width:440px;border-radius:18px;bottom:24px;border:1px solid var(--border);max-height:88vh}
 }
 </style>
 </head>
 <body>
 
-<!-- ══ LOGIN ══ -->
+<!-- LOGIN -->
 <div id="login-screen">
-  <!-- SIGN IN BOX -->
-  <div class="login-box" id="signin-box">
-    <div class="login-logo">
-      <div class="login-icon" style="font-size:32px;letter-spacing:-1px;font-weight:700;font-family:'DM Serif Display',serif;color:#2563eb">FP</div>
-      <div class="login-title">FingerPost <span>Echo</span></div>
-      <div class="login-sub">Your expert interview intelligence platform</div>
+  <div class="login-wrap">
+    <div class="login-brand">
+      <div class="login-mark">🔬</div>
+      <div class="login-product">Noted</div>
+      <div class="login-tagline">AI-powered expert interview analysis</div>
     </div>
-    <div class="lfield">
-      <div class="llabel">USERNAME</div>
-      <input class="linput" type="text" id="l-user" placeholder="Enter username"
-        autocomplete="username" autocorrect="off" autocapitalize="off" spellcheck="false"
-        onkeydown="if(event.key==='Enter'){event.preventDefault();doLogin()}"/>
+    <div class="login-box" id="signin-box">
+      <div class="login-box-title">Sign in to your account</div>
+      <div class="lfield">
+        <div class="llabel">Username</div>
+        <input class="linput" type="text" id="l-user" placeholder="Enter your username" autocomplete="username" autocorrect="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter'){event.preventDefault();doLogin()}"/>
+      </div>
+      <div class="lfield">
+        <div class="llabel">Password</div>
+        <input class="linput" type="password" id="l-pass" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter'){event.preventDefault();doLogin()}"/>
+      </div>
+      <div class="lerr" id="lerr">Incorrect username or password.</div>
+      <button class="btn-primary" id="btn-signin" onclick="doLogin()">Sign in</button>
+      <div class="login-link"><button onclick="showRequestForm()">Don't have an account? Request access</button></div>
     </div>
-    <div class="lfield">
-      <div class="llabel">PASSWORD</div>
-      <input class="linput" type="password" id="l-pass" placeholder="Enter password"
-        autocomplete="current-password"
-        onkeydown="if(event.key==='Enter'){event.preventDefault();doLogin()}"/>
-    </div>
-    <div class="lerr" id="lerr">Incorrect username or password.</div>
-    <button class="btn-signin" id="btn-signin" onclick="doLogin()">Sign in →</button>
-    <div style="text-align:center;margin-top:-6px">
-      <button onclick="showRequestForm()" style="background:none;border:none;color:#6b7280;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline">
-        Request an account
-      </button>
-    </div>
-  </div>
-
-  <!-- REQUEST ACCOUNT BOX -->
-  <div class="login-box" id="request-box" style="display:none">
-    <div class="login-logo">
-      <div class="login-icon">✉️</div>
-      <div class="login-title" style="font-size:18px">Request Access</div>
-      <div class="login-sub">Choose a username and password. Your request will be reviewed.</div>
-    </div>
-    <div class="lfield">
-      <div class="llabel">DESIRED USERNAME</div>
-      <input class="linput" type="text" id="r-user" placeholder="Choose a username"
-        autocorrect="off" autocapitalize="off" spellcheck="false"/>
-    </div>
-    <div class="lfield">
-      <div class="llabel">DESIRED PASSWORD</div>
-      <input class="linput" type="password" id="r-pass" placeholder="Choose a password"/>
-    </div>
-    <div class="lerr" id="rerr">Please fill in all fields.</div>
-    <div id="rsuccess" style="display:none;font-size:13px;color:#93c5fd;background:#0f172a;border:1px solid #1e40af;border-radius:8px;padding:13px;text-align:center;line-height:1.7">
-      ✅ Request sent!<br/>Please wait while we review your request. We'll be in touch soon.
-    </div>
-    <button class="btn-signin" id="btn-request" onclick="doRequestAccount()">Send request →</button>
-    <div style="text-align:center;margin-top:-6px">
-      <button onclick="showSignIn()" style="background:none;border:none;color:#6b7280;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline">
-        ← Back to sign in
-      </button>
+    <div class="login-box" id="request-box" style="display:none">
+      <div class="login-box-title">Request access</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-top:-8px">Choose a username and password. Your request will be reviewed and we'll activate your account.</div>
+      <div class="lfield">
+        <div class="llabel">Username</div>
+        <input class="linput" type="text" id="r-user" placeholder="Choose a username" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      </div>
+      <div class="lfield">
+        <div class="llabel">Password</div>
+        <input class="linput" type="password" id="r-pass" placeholder="Choose a password"/>
+      </div>
+      <div class="lerr" id="rerr">Please fill in all fields.</div>
+      <div id="rsuccess" style="display:none;font-size:13px;color:var(--success);background:var(--success-dim);border:1px solid rgba(52,211,153,.2);border-radius:8px;padding:13px;text-align:center;line-height:1.7">✅ Request sent! We'll review it and be in touch soon.</div>
+      <button class="btn-primary" id="btn-request" onclick="doRequestAccount()">Send request</button>
+      <div class="login-link"><button onclick="showSignIn()">← Back to sign in</button></div>
     </div>
   </div>
 </div>
 
-<!-- ══ APP ══ -->
+<!-- APP -->
 <div id="app">
-
-  <!-- SIDEBAR -->
   <div class="sb-overlay" id="sb-overlay" onclick="closeSb()"></div>
   <div class="sb" id="sb">
     <div class="sb-head">
-      <div class="sb-logo" onclick="goHome()">
-        <span class="sb-logo-icon" style="font-size:14px;font-weight:800;font-family:'DM Serif Display',serif;color:#2563eb;background:#1e3a5f;padding:4px 7px;border-radius:7px">FP</span>
-        <span class="sb-logo-text">FingerPost <span>Echo</span></span>
+      <div class="sb-brand" onclick="goHome()">
+        <div class="sb-brand-mark">🔬</div>
+        <span class="sb-brand-name">Noted</span>
       </div>
       <button class="btn-newchat" onclick="newChat()">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
         New chat
       </button>
     </div>
-
-    <div class="sb-section">RECENTS</div>
+    <div class="sb-section">Recents</div>
     <div class="sb-history" id="sb-history"></div>
-
     <div class="sb-foot">
-      <button class="btn-sources" onclick="openPanel()">
-        📎 &nbsp;Add transcripts
+      <button class="sb-nav" onclick="openPanel()">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+        Add transcripts
         <span class="src-badge" id="src-badge">0</span>
       </button>
-
-      <button class="btn-sources" id="btn-inbox" onclick="openInbox()" style="position:relative;display:none">
-        💬 &nbsp;Support
-        <span id="unread-badge" style="display:none;background:#ef4444;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:2px 6px;margin-left:4px">0</span>
+      <button class="sb-nav" id="btn-support" onclick="openSupport()" style="display:none;position:relative">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-3 3v-3z"/></svg>
+        Support
+        <span id="unread-badge" style="display:none;background:var(--danger);color:#fff;font-size:10px;font-weight:700;border-radius:8px;padding:1px 6px;margin-left:auto">!</span>
       </button>
-      <button class="btn-sources" id="btn-admin" onclick="openAdmin()" style="display:none;color:#f59e0b;background:none">
-        ⚙️ &nbsp;Admin panel
+      <button class="sb-nav warn" id="btn-admin" onclick="openAdmin()" style="display:none">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+        Admin panel
       </button>
-      <button class="btn-signout" onclick="logout()">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      <button class="sb-nav" onclick="logout()" style="color:var(--text3)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
         Sign out
       </button>
     </div>
-    <!-- Usage bar (hidden for admin) -->
     <div class="usage-wrap" id="usage-wrap" style="display:none">
-      <div class="usage-header">
-        <span class="usage-label" id="usage-plan-label">Free plan</span>
-        <span class="usage-count" id="usage-count-label">0 / 20</span>
+      <div class="usage-row">
+        <span class="usage-plan" id="usage-plan-label">Free plan</span>
+        <span class="usage-nums" id="usage-count-label">0/20</span>
       </div>
-      <div class="usage-bar-bg">
-        <div class="usage-bar-fill" id="usage-bar-fill" style="width:0%"></div>
-      </div>
-      <button class="btn-upgrade" id="btn-upgrade" onclick="openUpgradeModal()">⚡ Upgrade plan</button>
+      <div class="usage-track"><div class="usage-fill" id="usage-bar-fill" style="width:0%"></div></div>
+      <button class="btn-upgrade" onclick="openUpgradeModal()">Upgrade plan ↑</button>
     </div>
   </div>
 
-  <!-- MAIN -->
   <div class="main">
-    <!-- Mobile top bar -->
     <div class="mob-bar">
       <button class="btn-menu" onclick="openSb()">☰</button>
-      <div class="mob-logo" onclick="goHome()">FingerPost <span>Echo</span></div>
+      <div class="mob-brand">Noted</div>
       <button class="btn-mob-add" onclick="openPanel()">+ Add</button>
     </div>
-
-    <!-- Messages -->
     <div class="msgs" id="msgs">
       <div id="welcome" class="welcome">
-        <div class="w-icon">💬</div>
-        <div class="w-title">Expert Intelligence, Instantly</div>
-        <div class="w-sub">Load an interview transcript from the sidebar, then ask anything about the expert's insights, opinions, and recommendations.</div>
+        <div class="w-logo">🔬</div>
+        <div class="w-title">What do you want to know?</div>
+        <div class="w-sub">Add an interview transcript, then ask anything about the expert's views, opinions, and insights.</div>
         <div class="w-cards">
-          <button class="wcard" onclick="ask('Give me a full summary of this expert')">
-            <div class="wcard-t">📋 Summary</div>
-            <div class="wcard-s">Overview of key opinions</div>
-          </button>
-          <button class="wcard" onclick="ask('What is the expert overall opinion of the product?')">
-            <div class="wcard-t">💊 Product Opinion</div>
-            <div class="wcard-s">Their view on the product</div>
-          </button>
-          <button class="wcard" onclick="ask('What are the main concerns or reservations?')">
-            <div class="wcard-t">⚠️ Concerns</div>
-            <div class="wcard-s">Reservations & risks</div>
-          </button>
-          <button class="wcard" onclick="ask('What does the expert see as the main clinical benefits?')">
-            <div class="wcard-t">✅ Benefits</div>
-            <div class="wcard-s">Clinical advantages</div>
-          </button>
-          <button class="wcard" onclick="ask('How does the expert compare this to current alternatives?')">
-            <div class="wcard-t">⚖️ Comparison</div>
-            <div class="wcard-s">vs. existing options</div>
-          </button>
-          <button class="wcard" onclick="ask('Would the expert recommend or adopt this product?')">
-            <div class="wcard-t">🏥 Adoption</div>
-            <div class="wcard-s">Likelihood to use</div>
-          </button>
+          <button class="wcard" onclick="ask('Give me a full summary of this transcript')"><div class="wcard-t">📋 Summary</div><div class="wcard-s">Key opinions at a glance</div></button>
+          <button class="wcard" onclick="ask('Who is the person speaking and what is their background?')"><div class="wcard-t">👤 About the person</div><div class="wcard-s">Who they are &amp; background</div></button>
+          <button class="wcard" onclick="ask('What are the main opinions or views expressed?')"><div class="wcard-t">💡 Main opinions</div><div class="wcard-s">What they think & risks raised</div></button>
+          <button class="wcard" onclick="ask('What concerns or hesitations were expressed?')"><div class="wcard-t">⚠️ Concerns</div><div class="wcard-s">Advantages highlighted</div></button>
+          <button class="wcard" onclick="ask('What are the key strengths or positives highlighted?')"><div class="wcard-t">✅ Strengths</div><div class="wcard-s">vs. existing options</div></button>
+          <button class="wcard" onclick="ask('What recommendations or next steps were suggested?')"><div class="wcard-t">🎯 Recommendations</div><div class="wcard-s">Would they use it?</div></button>
         </div>
       </div>
     </div>
-
-    <!-- Input -->
     <div class="inp-area">
       <div class="inp-box">
-        <textarea class="chat-inp" id="chat-inp" rows="1"
-          placeholder="Ask about the expert's views, opinions, or findings..."
-          oninput="onInp(this)" onkeydown="onKey(event)"></textarea>
-        <button class="send-btn" id="send-btn" disabled onclick="send()">↑</button>
+        <textarea class="chat-inp" id="chat-inp" rows="1" placeholder="Ask anything about the expert's views…" oninput="onInp(this)" onkeydown="onKey(event)"></textarea>
+        <button class="send-btn" id="send-btn" disabled onclick="send()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </button>
       </div>
-      <div class="inp-hint">Tap Send · Enter on desktop</div>
     </div>
   </div>
 </div>
 
-<!-- PANEL -->
+<!-- ADD TRANSCRIPT PANEL -->
 <div class="overlay" id="overlay" onclick="if(event.target===this)closePanel()"></div>
 <div class="panel" id="panel">
   <div class="panel-handle"></div>
-  <div class="panel-title">Add Transcript</div>
-  <div class="panel-sub">Upload a file or paste text directly.</div>
-
+  <div class="panel-title">Add transcript</div>
+  <div class="panel-sub">Upload a file or paste the text directly.</div>
   <div>
-    <div class="flabel">UPLOAD A FILE</div>
-    <button class="btn-upload" onclick="document.getElementById('finp').click()">
-      📎 &nbsp;Browse files — txt, doc, docx, pdf…
-    </button>
+    <div class="flabel">Upload a file</div>
+    <button class="btn-upload" onclick="document.getElementById('finp').click()">📎 &nbsp;Browse — .txt, .doc, .docx, .pdf…</button>
     <input type="file" id="finp" accept=".txt,.doc,.docx,.pdf,.rtf,.csv,.md,text/plain,application/pdf" multiple style="display:none" onchange="handleFiles(this)"/>
     <div class="fstatus" id="fstatus"></div>
   </div>
-
-  <div class="divider"><div class="divider-line"></div>OR<div class="divider-line"></div></div>
-
+  <div class="divider"><div class="divider-line"></div>or<div class="divider-line"></div></div>
   <div>
-    <div class="flabel">NAME (optional)</div>
-    <input type="text" class="finput" id="p-name" placeholder="e.g. John Smith — Developer Interview" autocorrect="off"/>
+    <div class="flabel">Name (optional)</div>
+    <input type="text" class="finput" id="p-name" placeholder="e.g. Dr. Smith — Cardiologist" autocorrect="off"/>
   </div>
   <div>
-    <div class="flabel">PASTE TEXT</div>
-    <textarea class="finput" id="p-text" placeholder="Paste the full transcript here..."></textarea>
+    <div class="flabel">Paste text</div>
+    <textarea class="finput" id="p-text" placeholder="Paste the full transcript here…"></textarea>
   </div>
-
   <button class="btn-eg" onclick="loadExample()">← Load example transcript</button>
-
   <div class="panel-btns">
     <button class="btn-cancel" onclick="closePanel()">Cancel</button>
-    <button class="btn-add" onclick="confirmAdd()">Add transcript →</button>
+    <button class="btn-action" onclick="confirmAdd()">Add transcript →</button>
   </div>
-
   <div id="src-section" style="display:none">
-    <div class="flabel" style="margin-bottom:8px">LOADED TRANSCRIPTS</div>
+    <div class="flabel" style="margin-bottom:8px">Loaded transcripts</div>
     <div class="src-list" id="src-list"></div>
   </div>
 </div>
 
-<!-- INBOX MODAL -->
-<div class="overlay" id="inbox-overlay" onclick="if(event.target===this)closeInbox()" style="display:none;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#1f2937;border:1px solid #374151;border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;display:flex;flex-direction:column;gap:16px">
-    <div style="font-size:18px;font-weight:700;color:#fff" id="inbox-title">💬 Support</div>
-
-    <!-- Admin view: conversations list + compose -->
-    <div id="inbox-admin-view" style="display:none;flex-direction:column;gap:14px">
+<!-- SUPPORT MODAL -->
+<div class="overlay" id="support-bg" onclick="closeSupport()"></div>
+<div class="modal-wrap" id="support-wrap">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-title">💬 Support</div>
+    <div id="support-admin-view" style="display:none;flex-direction:column;gap:16px">
       <div>
-        <div class="flabel" style="margin-bottom:8px">SEND MESSAGE TO USER</div>
-        <select id="msg-to" class="finput" style="margin-bottom:8px">
-          <option value="">Select a user...</option>
-        </select>
-        <textarea id="msg-text" class="finput" rows="3" placeholder="Write your message..." style="resize:none"></textarea>
-        <button class="btn-add" onclick="adminSendMsg()" style="margin-top:8px;width:100%">Send →</button>
+        <div class="flabel" style="margin-bottom:8px">Send message to user</div>
+        <select id="msg-to" class="finput" style="margin-bottom:8px"><option value="">Select a user…</option></select>
+        <textarea id="msg-text" class="finput" rows="3" placeholder="Write your message…" style="resize:none"></textarea>
+        <button class="btn-action" onclick="adminSendMsg()" style="margin-top:8px;width:100%">Send →</button>
       </div>
       <div>
-        <div class="flabel" style="margin-bottom:8px">CONVERSATIONS</div>
-        <div id="admin-convos"><div style="color:#6b7280;font-size:13px">Loading...</div></div>
+        <div class="flabel" style="margin-bottom:8px">Conversations</div>
+        <div id="admin-convos" style="display:flex;flex-direction:column;gap:10px"><div style="color:var(--text3);font-size:13px">Loading…</div></div>
       </div>
     </div>
-
-    <!-- User view: messages + reply -->
-    <div id="inbox-user-view" style="display:none;flex-direction:column;gap:14px">
-      <div id="user-messages" style="display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto"></div>
+    <div id="support-user-view" style="display:none;flex-direction:column;gap:14px">
+      <div style="font-size:13px;color:var(--text2);line-height:1.6">Have a question or need help? Send us a message and we'll get back to you.</div>
+      <div id="user-messages" style="display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto"></div>
       <div>
-        <div class="flabel" style="margin-bottom:8px">SEND A MESSAGE</div>
-        <textarea id="reply-text" class="finput" rows="3" placeholder="Write your message..." style="resize:none"></textarea>
-        <button class="btn-add" onclick="userSendReply()" style="margin-top:8px;width:100%">Send reply →</button>
+        <div class="flabel" style="margin-bottom:6px">New message</div>
+        <textarea id="reply-text" class="finput" rows="3" placeholder="Write your message…" style="resize:none"></textarea>
+        <button class="btn-action" onclick="userSendReply()" style="margin-top:8px;width:100%">Send message →</button>
       </div>
     </div>
-
-    <button class="btn-cancel" onclick="closeInbox()">Close</button>
+    <button class="btn-cancel" onclick="closeSupport()">Close</button>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
-
 <!-- ADMIN PANEL -->
-<div class="overlay" id="admin-overlay" onclick="if(event.target===this)closeAdmin()" style="display:none;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#1f2937;border:1px solid #374151;border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;display:flex;flex-direction:column;gap:20px">
-    <div style="font-size:18px;font-weight:700;color:#fff">⚙️ Admin Panel</div>
-
-    <!-- Tabs -->
-    <div style="display:flex;gap:0;background:#111827;border-radius:10px;padding:4px">
-      <button id="tab-users-btn" onclick="switchAdminTab('users')" style="flex:1;padding:9px;border:none;border-radius:8px;background:#2563eb;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Manage Users</button>
-      <button id="tab-inbox-btn" onclick="switchAdminTab('inbox')" style="flex:1;padding:9px;border:none;border-radius:8px;background:transparent;color:#9ca3af;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;position:relative">
-        Inbox
-        <span id="admin-unread-dot" style="display:none;position:absolute;top:6px;right:10px;width:7px;height:7px;background:#ef4444;border-radius:50%"></span>
+<div class="overlay" id="admin-bg" onclick="closeAdmin()"></div>
+<div class="modal-wrap" id="admin-wrap">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-title">⚙️ Admin panel</div>
+    <div style="display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:4px;border:1px solid var(--border)">
+      <button id="tab-users-btn" onclick="switchAdminTab('users')" style="flex:1;padding:9px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer">Users</button>
+      <button id="tab-inbox-btn" onclick="switchAdminTab('inbox')" style="flex:1;padding:9px;border:none;border-radius:8px;background:transparent;color:var(--text2);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;position:relative">
+        Support inbox
+        <span id="admin-unread-dot" style="display:none;position:absolute;top:6px;right:8px;width:7px;height:7px;background:var(--danger);border-radius:50%"></span>
       </button>
     </div>
-
-    <!-- Manage Users tab -->
-    <div id="tab-users" style="display:flex;flex-direction:column;gap:16px">
+    <div id="tab-users" style="display:flex;flex-direction:column;gap:14px">
       <div>
-        <div class="flabel" style="margin-bottom:8px">PENDING ACCOUNT REQUESTS</div>
-        <div id="admin-requests"><div style="color:#6b7280;font-size:13px">Loading...</div></div>
+        <div class="flabel" style="margin-bottom:8px">Pending requests</div>
+        <div id="admin-requests"><div style="color:var(--text3);font-size:13px">Loading…</div></div>
       </div>
       <div>
-        <div class="flabel" style="margin-bottom:8px">ACTIVE USERS</div>
-        <div id="admin-users"><div style="color:#6b7280;font-size:13px">Loading...</div></div>
+        <div class="flabel" style="margin-bottom:8px">Active users</div>
+        <div id="admin-users"><div style="color:var(--text3);font-size:13px">Loading…</div></div>
       </div>
     </div>
-
-    <!-- Inbox tab -->
     <div id="tab-inbox" style="display:none;flex-direction:column;gap:16px">
-      <!-- Send message -->
       <div>
-        <div class="flabel" style="margin-bottom:8px">SEND MESSAGE</div>
-        <select id="msg-to" class="finput" style="margin-bottom:8px">
-          <option value="">Select a user...</option>
-        </select>
-        <textarea id="msg-text" class="finput" rows="3" placeholder="Write your message..." style="resize:none"></textarea>
-        <button class="btn-add" onclick="adminSendMsg()" style="margin-top:8px;width:100%">Send →</button>
+        <div class="flabel" style="margin-bottom:8px">Send message</div>
+        <select id="admin-msg-to" class="finput" style="margin-bottom:8px"><option value="">Select a user…</option></select>
+        <textarea id="admin-msg-text" class="finput" rows="3" placeholder="Write your message…" style="resize:none"></textarea>
+        <button class="btn-action" onclick="adminSendMsgFromPanel()" style="margin-top:8px;width:100%">Send →</button>
       </div>
-      <!-- Replies from users -->
       <div>
-        <div class="flabel" style="margin-bottom:8px">REPLIES FROM USERS</div>
-        <div id="admin-inbox"><div style="color:#6b7280;font-size:13px">Loading...</div></div>
+        <div class="flabel" style="margin-bottom:8px">Messages from users</div>
+        <div id="admin-inbox"><div style="color:var(--text3);font-size:13px">Loading…</div></div>
       </div>
     </div>
-
     <button class="btn-cancel" onclick="closeAdmin()">Close</button>
   </div>
 </div>
 
 <!-- UPGRADE MODAL -->
-<div class="overlay" id="upgrade-overlay" onclick="if(event.target===this)closeUpgradeModal()" style="display:none;align-items:center;justify-content:center;padding:20px">
-  <div class="upgrade-modal">
-    <div class="upgrade-title">⚡ Upgrade your plan</div>
-    <div class="upgrade-sub">Contact us to upgrade. We'll update your account manually — just send a message via the Inbox after choosing your plan.</div>
-    <div class="plans-grid">
+<div class="overlay" id="upgrade-bg" onclick="closeUpgradeModal()"></div>
+<div class="modal-wrap" id="upgrade-wrap">
+  <div class="modal" style="max-width:460px">
+    <div class="modal-title">⚡ Upgrade your plan</div>
+    <div class="modal-sub">Send a support message to upgrade. We'll update your account manually.</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
       <div class="plan-card" id="plan-card-free">
-        <div class="plan-icon">🌱</div>
-        <div class="plan-info">
-          <div class="plan-name">Free</div>
-          <div class="plan-price">€0 / month</div>
-          <div class="plan-limit">20 messages per day</div>
-        </div>
+        <div style="font-size:22px">🌱</div>
+        <div class="plan-info"><div class="plan-name">Free</div><div class="plan-price">€0 / month</div><div class="plan-msgs">20 messages per day</div></div>
         <div class="plan-badge" id="plan-badge-free" style="display:none">Current</div>
       </div>
       <div class="plan-card" id="plan-card-plus">
-        <div class="plan-icon">⚡</div>
-        <div class="plan-info">
-          <div class="plan-name">Plus</div>
-          <div class="plan-price">€5 / month</div>
-          <div class="plan-limit">100 messages per day (5×)</div>
-        </div>
+        <div style="font-size:22px">⚡</div>
+        <div class="plan-info"><div class="plan-name">Plus</div><div class="plan-price">€5 / month</div><div class="plan-msgs">100 messages per day · 5×</div></div>
         <div class="plan-badge" id="plan-badge-plus" style="display:none">Current</div>
       </div>
-      <div class="plan-card highlighted" id="plan-card-pro">
-        <div class="plan-icon">🚀</div>
-        <div class="plan-info">
-          <div class="plan-name">Pro</div>
-          <div class="plan-price">€15 / month</div>
-          <div class="plan-limit">400 messages per day (20×)</div>
-        </div>
+      <div class="plan-card hot" id="plan-card-pro">
+        <div style="font-size:22px">🚀</div>
+        <div class="plan-info"><div class="plan-name">Pro</div><div class="plan-price">€15 / month</div><div class="plan-msgs">400 messages per day · 20×</div></div>
         <div class="plan-badge gold" id="plan-badge-pro" style="display:none">Current</div>
       </div>
     </div>
-    <div style="background:#111827;border:1px solid #374151;border-radius:10px;padding:14px;font-size:13px;color:#9ca3af;line-height:1.7">
-      To upgrade, open your <strong style="color:#f3f4f6">Support chat</strong> and send a message saying which plan you want. We'll upgrade your account and confirm.
-    </div>
     <div style="display:flex;gap:10px">
-      <button class="btn-cancel" onclick="closeUpgradeModal();openInbox()" style="flex:1;background:#2563eb;color:#fff;border-color:#2563eb">💬 Open Support</button>
-      <button class="btn-cancel" onclick="closeUpgradeModal()" style="flex:1">Close</button>
+      <button class="btn-action" style="flex:1" onclick="closeUpgradeModal();openSupport()">Contact support to upgrade</button>
+      <button class="btn-cancel" style="flex:1" onclick="closeUpgradeModal()">Close</button>
     </div>
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-// ── STATE ──────────────────────────────────────────────────────────────────
-let sources   = [];
-let chatHistory = []; // AI message history for current chat
-let loading   = false;
-let uid       = 1;
-function newChatId(){ return Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
-let activeChatId = null;
-let authToken = '';
-let currentUser = ''; // track logged in username
+let sources=[],chatHistory=[],loading=false,uid=1,activeChatId=null,authToken='',currentUser='',isAdminUser=false,currentPlan='free',chats=[];
+const SERVER=window.location.origin;
+function newChatId(){return Math.random().toString(36).slice(2,10)+Date.now().toString(36)}
+const EXAMPLE=`Interviewer: Can you walk me through your professional background?\nSarah: Absolutely. I have over 10 years of experience in product management, primarily in fintech. I started at PayRoute then joined Stripe, where I spent five years leading the checkout and conversion team.\n\nInterviewer: What was your biggest achievement at Stripe?\nSarah: The checkout redesign in 2021. We saw a 22% improvement in conversion rates across the platform.\n\nInterviewer: What are your greatest strengths?\nSarah: Bridging technical and business perspectives. I am comfortable going deep with engineers but can also present clearly to a board.\n\nInterviewer: And areas you are working on?\nSarah: Delegation. I am naturally hands-on and it took time to realise doing everything myself was slowing the team down.`;
 
-// Chats are stored per-user: tc_chats_username
-let chats = [];
-
-const SERVER = window.location.origin;
-
-const EXAMPLE = `Interviewer: Can you walk me through your professional background?
-Sarah: Absolutely. I have over 10 years of experience in product management, primarily in fintech. I started at a small payments startup called PayRoute where I was one of the first product hires. After three years I joined Stripe, where I spent five years leading the checkout and conversion team.
-
-Interviewer: What was your biggest achievement at Stripe?
-Sarah: The checkout redesign we shipped in 2021. We completely overhauled the payment flow based on user research and saw a 22% improvement in conversion rates across the platform.
-
-Interviewer: Why are you looking to leave?
-Sarah: Stripe has been incredible for my growth, but I feel ready to shape product strategy from the ground up. I want to build a team and a product vision.
-
-Interviewer: What are your greatest strengths?
-Sarah: Bridging technical and business perspectives. I am comfortable going deep with engineers on architecture, but I can also present clearly to a board. I am also strong at prioritisation.
-
-Interviewer: And areas you are working on?
-Sarah: Delegation. I am naturally hands-on and it took time to realise doing everything myself was slowing the team down.
-
-Interviewer: What are your salary expectations?
-Sarah: I am targeting a base between 180 and 210 thousand, depending on equity and the overall package.
-
-Interviewer: Where do you see yourself in five years?
-Sarah: In a VP of Product or CPO role where I have helped build something meaningful.`;
-
-// ── AUTH ───────────────────────────────────────────────────────────────────
-// Always show login screen on page load
-
-function showRequestForm(){
-  document.getElementById('signin-box').style.display='none';
-  document.getElementById('request-box').style.display='flex';
-  document.getElementById('rsuccess').style.display='none';
-  document.getElementById('rerr').classList.remove('show');
-  
-  document.getElementById('r-user').value='';
-  document.getElementById('r-pass').value='';
-  document.getElementById('btn-request').disabled=false;
-  document.getElementById('btn-request').textContent='Send request →';
-}
-
-function showSignIn(){
-  document.getElementById('request-box').style.display='none';
-  document.getElementById('signin-box').style.display='flex';
-}
+// AUTH
+function showRequestForm(){document.getElementById('signin-box').style.display='none';document.getElementById('request-box').style.display='flex';document.getElementById('rsuccess').style.display='none';document.getElementById('rerr').classList.remove('show');document.getElementById('r-user').value='';document.getElementById('r-pass').value='';document.getElementById('btn-request').disabled=false;document.getElementById('btn-request').textContent='Send request'}
+function showSignIn(){document.getElementById('request-box').style.display='none';document.getElementById('signin-box').style.display='flex'}
 
 async function doRequestAccount(){
-  const user = document.getElementById('r-user').value.trim();
-  const pass = document.getElementById('r-pass').value.trim();
-  const err  = document.getElementById('rerr');
-  const btn  = document.getElementById('btn-request');
+  const user=document.getElementById('r-user').value.trim(),pass=document.getElementById('r-pass').value.trim(),err=document.getElementById('rerr'),btn=document.getElementById('btn-request');
   err.classList.remove('show');
-
-  if(!user || !pass){
-    err.textContent='Please fill in all fields.';
-    err.classList.add('show'); return;
-  }
-
-  btn.disabled=true; btn.textContent='Sending...';
+  if(!user||!pass){err.textContent='Please fill in all fields.';err.classList.add('show');return}
+  btn.disabled=true;btn.textContent='Sending…';
   try{
-    const res = await fetch(`${SERVER}/api/request-account`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:user, password:pass})
-    });
-    const data = await res.json();
-    if(data.ok){
-      document.getElementById('rsuccess').style.display='block';
-      btn.style.display='none';
-    } else {
-      err.textContent = data.error || 'Something went wrong.';
-      err.classList.add('show');
-      btn.disabled=false; btn.textContent='Send request →';
-    }
-  } catch(e){
-    err.textContent='Could not reach server.';
-    err.classList.add('show');
-    btn.disabled=false; btn.textContent='Send request →';
-  }
+    const res=await fetch(`${SERVER}/api/request-account`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:user,password:pass})});
+    const d=await res.json();
+    if(d.ok){document.getElementById('rsuccess').style.display='block';btn.style.display='none'}
+    else{err.textContent=d.error||'Something went wrong.';err.classList.add('show');btn.disabled=false;btn.textContent='Send request'}
+  }catch(e){err.textContent='Could not reach server.';err.classList.add('show');btn.disabled=false;btn.textContent='Send request'}
 }
 
 async function doLogin(){
-  const u = document.getElementById('l-user').value.trim();
-  const p = document.getElementById('l-pass').value;
-  const btn = document.getElementById('btn-signin');
-  const err = document.getElementById('lerr');
-  if(!u||!p) return;
-  btn.disabled=true; btn.textContent='Signing in...';
-  err.classList.remove('show');
+  const u=document.getElementById('l-user').value.trim(),p=document.getElementById('l-pass').value,btn=document.getElementById('btn-signin'),err=document.getElementById('lerr');
+  if(!u||!p)return;
+  btn.disabled=true;btn.textContent='Signing in…';err.classList.remove('show');
   try{
-    const res = await fetch(`${SERVER}/api/login`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:u,password:p})
-    });
-    const data = await res.json();
-    if(data.ok){
-      authToken=data.token;
-      isAdminUser = !!data.isAdmin;
-      if(data.isAdmin){
-        document.getElementById('btn-admin').style.display='flex';
-        document.getElementById('btn-inbox').style.display='none';
-      } else {
-        document.getElementById('btn-admin').style.display='none';
-        document.getElementById('btn-inbox').style.display='flex';
-      }
-      showApp(u);
-      checkUnread();
-      loadUsage();
-      setInterval(checkUnread, 30000);
-      setInterval(loadUsage, 60000); // check every 30 seconds
-    } else {
-      err.classList.add('show');
-      btn.disabled=false; btn.textContent='Sign in →';
-    }
-  } catch(e){
-    err.textContent='Could not reach server.';
-    err.classList.add('show');
-    btn.disabled=false; btn.textContent='Sign in →';
-  }
+    const res=await fetch(`${SERVER}/api/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+    const d=await res.json();
+    if(d.ok){
+      authToken=d.token;isAdminUser=!!d.isAdmin;currentPlan=d.plan||'free';
+      document.getElementById('btn-admin').style.display=d.isAdmin?'flex':'none';
+      document.getElementById('btn-support').style.display=d.isAdmin?'none':'flex';
+      showApp(u);checkUnread();loadUsage();
+      setInterval(checkUnread,30000);setInterval(loadUsage,60000);
+    }else{err.classList.add('show');btn.disabled=false;btn.textContent='Sign in'}
+  }catch(e){err.textContent='Could not reach server.';err.classList.add('show');btn.disabled=false;btn.textContent='Sign in'}
 }
 
 function showApp(username){
-  currentUser = username || currentUser;
-  chats = JSON.parse(localStorage.getItem('tc_chats_' + currentUser) || '[]');
+  currentUser=username||currentUser;
+  chats=JSON.parse(localStorage.getItem('noted_chats_'+currentUser)||'[]');
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').classList.add('visible');
   renderSidebar();
 }
 
 function logout(){
-  authToken=''; currentUser=''; chats=[];
-  sources=[]; chatHistory=[]; activeChatId=null;
+  authToken='';currentUser='';chats=[];sources=[];chatHistory=[];activeChatId=null;
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('app').classList.remove('visible');
-  document.getElementById('l-user').value='';
-  document.getElementById('l-pass').value='';
-  document.getElementById('btn-signin').disabled=false;
-  document.getElementById('btn-signin').textContent='Sign in →';
+  document.getElementById('usage-wrap').style.display='none';
+  document.getElementById('l-user').value='';document.getElementById('l-pass').value='';
+  document.getElementById('btn-signin').disabled=false;document.getElementById('btn-signin').textContent='Sign in';
 }
 
-// ── CHAT MANAGEMENT ────────────────────────────────────────────────────────
-function saveChats(){
-  localStorage.setItem('tc_chats_' + currentUser, JSON.stringify(chats.slice(0,50)));
-}
-
-function newChat(){
-  // Force stop any loading
-  loading = false;
-  activeChatId = null;
-  chatHistory  = [];
-  sources      = [];
-
-  // Reset UI
-  updateBadge();
-  toggleSend();
-
-  // Nuke the messages area completely and rebuild welcome
-  const msgs = document.getElementById('msgs');
-  while(msgs.firstChild) msgs.removeChild(msgs.firstChild);
-  showWelcome();
-
-  // Reset input
-  const inp = document.getElementById('chat-inp');
-  if(inp){ inp.value=''; inp.style.height='auto'; }
-
-  // Update sidebar highlight
-  renderSidebar();
-  closeSb();
-}
-
-function goHome(){
-  newChat();
-}
-
+// CHATS
+function saveChats(){localStorage.setItem('noted_chats_'+currentUser,JSON.stringify(chats.slice(0,50)))}
+function newChat(){loading=false;activeChatId=null;chatHistory=[];sources=[];updateBadge();toggleSend();const msgs=document.getElementById('msgs');while(msgs.firstChild)msgs.removeChild(msgs.firstChild);showWelcome();const inp=document.getElementById('chat-inp');if(inp){inp.value='';inp.style.height='auto'}renderSidebar();closeSb()}
+function goHome(){newChat()}
 function showWelcome(){
-  const msgs = document.getElementById('msgs');
-  // Remove any existing welcome first
-  const old = document.getElementById('welcome');
-  if(old) old.remove();
-  const w = document.createElement('div');
-  w.id='welcome'; w.className='welcome';
-  w.innerHTML = `
-    <div class="w-icon">💬</div>
-    <div class="w-title">Expert Intelligence, Instantly</div>
-    <div class="w-sub">Load an interview transcript from the sidebar, then ask anything about the expert's insights, opinions, and recommendations.</div>
-    <div class="w-cards">
-      <button class="wcard" onclick="ask('Give me a full summary of this expert')"><div class="wcard-t">📋 Summary</div><div class="wcard-s">Overview of key opinions</div></button>
-      <button class="wcard" onclick="ask('What is the expert overall opinion of the product?')"><div class="wcard-t">💊 Product Opinion</div><div class="wcard-s">Their view on the product</div></button>
-      <button class="wcard" onclick="ask('What are the main concerns or reservations?')"><div class="wcard-t">⚠️ Concerns</div><div class="wcard-s">Reservations & risks</div></button>
-      <button class="wcard" onclick="ask('What does the expert see as the main clinical benefits?')"><div class="wcard-t">✅ Benefits</div><div class="wcard-s">Clinical advantages</div></button>
-      <button class="wcard" onclick="ask('How does the expert compare this to current alternatives?')"><div class="wcard-t">⚖️ Comparison</div><div class="wcard-s">vs. existing options</div></button>
-      <button class="wcard" onclick="ask('Would the expert recommend or adopt this product?')"><div class="wcard-t">🏥 Adoption</div><div class="wcard-s">Likelihood to use</div></button>
-    </div>`;
+  const msgs=document.getElementById('msgs');const old=document.getElementById('welcome');if(old)old.remove();
+  const w=document.createElement('div');w.id='welcome';w.className='welcome';
+  w.innerHTML=`<div class="w-logo">🔬</div><div class="w-title">What do you want to know?</div><div class="w-sub">Add an interview transcript, then ask anything about the expert's views, opinions, and insights.</div><div class="w-cards"><button class="wcard" onclick="ask('Give me a full summary of this transcript')"><div class="wcard-t">📋 Summary</div><div class="wcard-s">Key opinions at a glance</div></button><button class="wcard" onclick="ask('Who is the person speaking and what is their background?')"><div class="wcard-t">👤 About the person</div><div class="wcard-s">Who they are &amp; background</div></button><button class="wcard" onclick="ask('What are the main opinions or views expressed?')"><div class="wcard-t">💡 Main opinions</div><div class="wcard-s">What they think & risks raised</div></button><button class="wcard" onclick="ask('What concerns or hesitations were expressed?')"><div class="wcard-t">⚠️ Concerns</div><div class="wcard-s">Advantages highlighted</div></button><button class="wcard" onclick="ask('What are the key strengths or positives highlighted?')"><div class="wcard-t">✅ Strengths</div><div class="wcard-s">vs. existing options</div></button><button class="wcard" onclick="ask('What recommendations or next steps were suggested?')"><div class="wcard-t">🎯 Recommendations</div><div class="wcard-s">Would they use it?</div></button></div>`;
   msgs.appendChild(w);
 }
+function loadChat(id){id=String(id);const chat=chats.find(c=>String(c.id)===id);if(!chat)return;activeChatId=id;chatHistory=chat.messages.map(m=>({role:m.role,content:m.content}));sources=(chat.sources||[]).map(s=>({id:s.id||uid++,name:s.name,content:s.content}));updateBadge();renderSidebar();const msgs=document.getElementById('msgs');msgs.innerHTML='';chat.messages.forEach(m=>{if(m.role==='user')appendUserMsg(m.text||m.content);else appendBotMsg(m.text||m.content)});scrollBottom();closeSb()}
+function deleteChat(id){id=String(id);chats=chats.filter(c=>String(c.id)!==id);saveChats();if(String(activeChatId)===id)newChat();else renderSidebar()}
+function renderSidebar(){const hist=document.getElementById('sb-history');if(!hist)return;if(!chats.length){hist.innerHTML='<div class="sb-empty">No chats yet.<br/>Start a conversation below.</div>';return}hist.innerHTML=chats.map(c=>`<div class="hist-item${activeChatId===c.id?' active':''}" data-id="${c.id}"><span class="hist-item-text">${esc(c.title)}</span><button class="hist-item-del" data-del="${c.id}">×</button></div>`).join('');hist.onclick=function(e){const d=e.target.closest('[data-del]');if(d){e.stopPropagation();deleteChat(d.dataset.del);return}const i=e.target.closest('[data-id]');if(i)loadChat(i.dataset.id)}}
 
-function loadChat(id){
-  id = String(id);
-  const chat = chats.find(c=>String(c.id)===id);
-  if(!chat) return;
-  activeChatId = id;
-  chatHistory  = chat.messages.map(m=>({role:m.role,content:m.content}));
-  // Restore sources fully including content so AI can use them
-  sources = (chat.sources || []).map(s=>({id:s.id||uid++, name:s.name, content:s.content}));
-  updateBadge();
-  renderSidebar();
-  const msgs = document.getElementById('msgs');
-  msgs.innerHTML='';
-  chat.messages.forEach(m=>{
-    if(m.role==='user') appendUserMsg(m.text||m.content);
-    else appendBotMsg(m.text||m.content);
-  });
-  scrollBottom();
-  closeSb();
-}
-
-function deleteChat(id){
-  id = String(id);
-  chats = chats.filter(c=>String(c.id)!==id);
-  saveChats();
-  if(String(activeChatId)===id) newChat();
-  else renderSidebar();
-}
-
-function renderSidebar(){
-  const hist = document.getElementById('sb-history');
-  if(!hist) return;
-  if(!chats.length){
-    hist.innerHTML = '<div class="sb-empty">No chats yet.<br/>Start a conversation below.</div>';
-    return;
-  }
-  hist.innerHTML = chats.map(c=>`
-    <div class="hist-item${activeChatId===c.id?' active':''}" data-id="${c.id}">
-      <span class="hist-item-text">${esc(c.title)}</span>
-      <button class="hist-item-del" data-del="${c.id}" title="Delete">×</button>
-    </div>`).join('');
-
-  hist.onclick = function(e){
-    const delBtn = e.target.closest('[data-del]');
-    if(delBtn){ e.stopPropagation(); deleteChat(delBtn.dataset.del); return; }
-    const item = e.target.closest('[data-id]');
-    if(item) loadChat(item.dataset.id);
-  };
-}
-
-// ── SYSTEM PROMPT ──────────────────────────────────────────────────────────
+// SYSTEM PROMPT
 function buildSystem(){
-  if(!sources.length){
-    return `You are FingerPost Echo. No transcripts are loaded. Tell the user to add one via the sidebar. Answer general questions helpfully.`;
-  }
-  const block = sources.map(s=>`=== ${s.name} ===\n${s.content}`).join('\n\n');
-  return `You are FingerPost Echo — an expert intelligence tool that answers questions about medical and research expert interviews conducted by FingerPost. You help clients understand the opinions, insights and views expressed by doctors and researchers in these interviews.
+  if(!sources.length)return`You are Noted. No transcripts are loaded. Tell the user to add one via the sidebar.`;
+  const block=sources.map(s=>`=== ${s.name} ===\n${s.content}`).join('\n\n');
+  return`You are Noted — an AI assistant that helps people extract insights from any transcript. You work with interviews, meetings, podcasts, recruitment calls, research sessions, and any recorded conversation.
 
-TRANSCRIPTS:
-${block}
-
-INSTRUCTIONS:
-- Identify the expert by name and specialty where possible. Use their name naturally.
-- Write fluent, professional sentences: "Dr. Smith expressed strong support for the product", "The expert highlighted concerns around long-term safety data."
-- Never say "according to the transcript" repeatedly — just answer naturally as if you know the expert's views.
-- If something is not mentioned in the transcript, say so clearly and briefly.
-- Keep answers concise: 2–5 sentences for simple questions. Use bullet points only for 3+ items.
-- Focus on clinical opinions, product assessments, concerns, benefits and expert recommendations.
-- You can also answer general questions not related to the transcript.`;
+You are Noted — placeholder fix that answers questions about medical and research expert interviews conducted by Noted.\n\nTRANSCRIPTS:\n${block}\n\nINSTRUCTIONS:\n- Identify the expert by name and use it naturally.\n- Write fluent, professional sentences — don't say "according to the transcript" repeatedly.\n- If something isn't in the transcript, say so briefly.\n- Keep answers concise: 2–5 sentences for simple questions. Use bullets only for 3+ items.\n- Focus on clinical opinions, product assessments, concerns, benefits and recommendations.`;
 }
 
-// ── SEND ───────────────────────────────────────────────────────────────────
+// SEND
 async function send(){
-  const el = document.getElementById('chat-inp');
-  const q = el.value.trim();
-  if(!q||loading) return;
-  loading=true; // set loading FIRST before anything else
-  el.value=''; el.style.height='auto'; toggleSend();
-
+  const el=document.getElementById('chat-inp');const q=el.value.trim();if(!q||loading)return;
+  loading=true;el.value='';el.style.height='auto';toggleSend();
+  const welcome=document.getElementById('welcome');if(welcome)welcome.remove();
+  appendUserMsg(q);const typingEl=addTyping();chatHistory.push({role:'user',content:q});
   try{
-    const welcome = document.getElementById('welcome');
-    if(welcome) welcome.remove();
-  } catch(e){}
-
-  appendUserMsg(q);
-  const typingEl = addTyping();
-  chatHistory.push({role:'user',content:q});
-
-  try{
-    const res = await fetch(`${SERVER}/api/chat`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-auth-token':authToken},
-      body:JSON.stringify({system:buildSystem(),messages:chatHistory.slice(-12)})
-    });
+    const res=await fetch(`${SERVER}/api/chat`,{method:'POST',headers:{'Content-Type':'application/json','x-auth-token':authToken},body:JSON.stringify({system:buildSystem(),messages:chatHistory.slice(-12)})});
     if(!res.ok){
-      const ed = await res.json().catch(()=>({}));
-      if(res.status===429){
-        const ed2 = await res.json().catch(()=>({}));
-        typingEl.remove(); loading=false; toggleSend();
-        showToast('⚠ '+( ed2?.error || 'Daily limit reached.'));
-        loadUsage();
-        chatHistory.pop();
-        return;
-      }
-      if(res.status===401){
-        localStorage.removeItem('tc_token'); authToken='';
-        typingEl.remove(); loading=false; toggleSend();
-        document.getElementById('login-screen').style.display='flex';
-        document.getElementById('app').classList.remove('visible');
-        return;
-      }
+      const ed=await res.json().catch(()=>({}));
+      if(res.status===429){typingEl.remove();loading=false;toggleSend();showToast('⚠ '+(ed?.error||'Daily limit reached.'));loadUsage();chatHistory.pop();return}
+      if(res.status===401){authToken='';typingEl.remove();loading=false;toggleSend();document.getElementById('login-screen').style.display='flex';document.getElementById('app').classList.remove('visible');return}
       throw new Error(ed?.error||`Server error ${res.status}`);
     }
-    const data = await res.json();
-    const reply = data.reply||'No response.';
-    chatHistory.push({role:'assistant',content:reply});
-    typingEl.remove();
-    appendBotMsg(reply);
-
-    // Save to chat history
-    if(!activeChatId){
-      activeChatId = newChatId();
-      const title = generateChatTitle(sources, q);
-      chats.unshift({id:activeChatId, title, messages:[], sources:[]});
-    }
-    const chat = chats.find(c=>c.id===activeChatId);
-    if(chat){
-      chat.messages.push({role:'user',content:q,text:q});
-      chat.messages.push({role:'assistant',content:reply,text:reply});
-      chat.sources = sources.map(s=>({id:s.id,name:s.name,content:s.content}));
-      saveChats();
-      renderSidebar();
-    }
-
-  } catch(e){
-    chatHistory.pop();
-    typingEl.remove();
-    showToast('⚠ '+(e.message||'Something went wrong.'));
-  }
-  loading=false; toggleSend(); scrollBottom();
-  loadUsage();
+    const data=await res.json();const reply=data.reply||'No response.';
+    chatHistory.push({role:'assistant',content:reply});typingEl.remove();appendBotMsg(reply);
+    if(!activeChatId){activeChatId=newChatId();chats.unshift({id:activeChatId,title:generateChatTitle(sources,q),messages:[],sources:[]})}
+    const chat=chats.find(c=>c.id===activeChatId);
+    if(chat){chat.messages.push({role:'user',content:q,text:q});chat.messages.push({role:'assistant',content:reply,text:reply});chat.sources=sources.map(s=>({id:s.id,name:s.name,content:s.content}));saveChats();renderSidebar()}
+  }catch(e){chatHistory.pop();typingEl.remove();showToast('⚠ '+(e.message||'Something went wrong.'))}
+  loading=false;toggleSend();scrollBottom();loadUsage();
 }
+function ask(q){loading=false;const inp=document.getElementById('chat-inp');inp.value=q;onInp(inp);send()}
 
-function ask(q){
-  loading = false; // reset in case it got stuck
-  const inp = document.getElementById('chat-inp');
-  inp.value = q;
-  onInp(inp);
-  send();
-}
-
-// ── RENDER ─────────────────────────────────────────────────────────────────
-function appendUserMsg(text){
-  const msgs = document.getElementById('msgs');
-  const row = document.createElement('div');
-  row.className='msg-row user';
-  row.innerHTML=`<div class="msg-inner"><div class="av user">U</div><div class="msg-body"><div class="msg-name">You</div><div class="user-bubble">${esc(text)}</div></div></div>`;
-  msgs.appendChild(row);
-  scrollBottom();
-}
-
-function appendBotMsg(text){
-  const msgs = document.getElementById('msgs');
-  const row = document.createElement('div');
-  row.className='msg-row bot';
-  row.innerHTML=`<div class="msg-inner"><div class="av bot">FP</div><div class="msg-body"><div class="msg-name">FingerPost Echo</div><div class="msg-text">${renderMd(text)}</div></div></div>`;
-  msgs.appendChild(row);
-  scrollBottom();
-}
-
-function addTyping(){
-  const msgs = document.getElementById('msgs');
-  const w = document.createElement('div');
-  w.className='typing-row';
-  w.innerHTML=`<div class="av bot">FP</div><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-  msgs.appendChild(w);
-  scrollBottom();
-  return w;
-}
-
-function renderMd(text){
-  const e=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  return e.split('\n\n').map(block=>{
-    const t=block.trim();
-    if(!t) return '';
-    if(/^[-•*] /m.test(t)){
-      const lines=t.split('\n').filter(l=>l.trim());
-      return '<ul>'+lines.map(l=>`<li>${fmt(l.replace(/^[-•*]\s*/,''))}</li>`).join('')+'</ul>';
-    }
-    if(/^\d+\. /m.test(t)){
-      const lines=t.split('\n').filter(l=>l.trim());
-      return '<ul>'+lines.map(l=>`<li>${fmt(l.replace(/^\d+\.\s*/,''))}</li>`).join('')+'</ul>';
-    }
-    return `<p>${fmt(t)}</p>`;
-  }).join('');
-}
+// RENDER
+function appendUserMsg(text){const msgs=document.getElementById('msgs');const row=document.createElement('div');row.className='msg-row user';row.innerHTML=`<div class="msg-inner"><div class="av user">U</div><div class="msg-body"><div class="msg-name">You</div><div class="user-bubble">${esc(text)}</div></div></div>`;msgs.appendChild(row);scrollBottom()}
+function appendBotMsg(text){const msgs=document.getElementById('msgs');const row=document.createElement('div');row.className='msg-row bot';row.innerHTML=`<div class="msg-inner"><div class="av bot">N</div><div class="msg-body"><div class="msg-name">Noted</div><div class="msg-text">${renderMd(text)}</div></div></div>`;msgs.appendChild(row);scrollBottom()}
+function addTyping(){const msgs=document.getElementById('msgs');const w=document.createElement('div');w.className='typing-row';w.innerHTML=`<div class="av bot">N</div><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;msgs.appendChild(w);scrollBottom();return w}
+function renderMd(text){const e=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');return e.split('\n\n').map(block=>{const t=block.trim();if(!t)return'';if(/^[-•*] /m.test(t)){const lines=t.split('\n').filter(l=>l.trim());return'<ul>'+lines.map(l=>`<li>${fmt(l.replace(/^[-•*]\s*/,''))}</li>`).join('')+'</ul>'}if(/^\d+\. /m.test(t)){const lines=t.split('\n').filter(l=>l.trim());return'<ul>'+lines.map(l=>`<li>${fmt(l.replace(/^\d+\.\s*/,''))}</li>`).join('')+'</ul>'}return`<p>${fmt(t)}</p>`}).join('')}
 function fmt(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>')}
-function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function scrollBottom(){const m=document.getElementById('msgs');setTimeout(()=>m.scrollTop=m.scrollHeight,80)}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),5000)}
 
-// ── INPUT ──────────────────────────────────────────────────────────────────
+// INPUT
 function onInp(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,130)+'px';toggleSend()}
-function onKey(e){
-  if(e.key==='Enter'&&!e.shiftKey&&!('ontouchstart' in window)){
-    e.preventDefault();
-    if(!document.getElementById('send-btn').disabled) send();
-  }
-}
-function toggleSend(){const v=document.getElementById('chat-inp').value.trim();document.getElementById('send-btn').disabled=!v||loading}
+function onKey(e){if(e.key==='Enter'&&!e.shiftKey&&!('ontouchstart' in window)){e.preventDefault();if(!document.getElementById('send-btn').disabled)send()}}
+function toggleSend(){document.getElementById('send-btn').disabled=!document.getElementById('chat-inp').value.trim()||loading}
 
-// ── SIDEBAR MOBILE ────────────────────────────────────────────────────────
+// SIDEBAR MOBILE
 function openSb(){document.getElementById('sb').classList.add('open');document.getElementById('sb-overlay').classList.add('open')}
 function closeSb(){document.getElementById('sb').classList.remove('open');document.getElementById('sb-overlay').classList.remove('open')}
 
-// ── PANEL ─────────────────────────────────────────────────────────────────
-function openPanel(){
-  document.getElementById('p-name').value='';
-  document.getElementById('p-text').value='';
-  document.getElementById('fstatus').style.display='none';
-  document.getElementById('overlay').classList.add('open');
-  document.getElementById('panel').classList.add('open');
-  renderSrcList();
-  closeSb();
-}
-function closePanel(){
-  document.getElementById('overlay').classList.remove('open');
-  document.getElementById('panel').classList.remove('open');
-}
-function loadExample(){
-  document.getElementById('p-name').value='Sarah Johnson — Product Manager';
-  document.getElementById('p-text').value=EXAMPLE;
-}
-function confirmAdd(){
-  const text=document.getElementById('p-text').value.trim();
-  if(!text){document.getElementById('p-text').focus();return;}
-  const name=document.getElementById('p-name').value.trim()||('Transcript '+(sources.length+1));
-  sources.push({id:uid++,name,content:text});
-  chatHistory=[];
-  updateBadge();
-  document.getElementById('p-name').value='';
-  document.getElementById('p-text').value='';
-  renderSrcList();
-  closePanel();
-}
-function removeSource(id){
-  sources=sources.filter(s=>s.id!==id);
-  chatHistory=[];
-  updateBadge();
-  renderSrcList();
-}
-function renderSrcList(){
-  const sec=document.getElementById('src-section');
-  const list=document.getElementById('src-list');
-  if(!sources.length){sec.style.display='none';return;}
-  sec.style.display='block';
-  list.innerHTML=sources.map(s=>`
-    <div class="src-item">
-      <span class="src-item-name">📄 ${esc(s.name)}</span>
-      <button class="src-item-rm" onclick="removeSource(${s.id})">×</button>
-    </div>`).join('');
-}
-// ── INBOX ──────────────────────────────────────────────────────────────────
-let isAdminUser = false;
+// PANEL
+function openPanel(){document.getElementById('p-name').value='';document.getElementById('p-text').value='';document.getElementById('fstatus').style.display='none';document.getElementById('overlay').classList.add('open');document.getElementById('panel').classList.add('open');renderSrcList();closeSb()}
+function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('panel').classList.remove('open')}
+function loadExample(){document.getElementById('p-name').value='Sarah Johnson — Product Manager';document.getElementById('p-text').value=EXAMPLE}
+function confirmAdd(){const text=document.getElementById('p-text').value.trim();if(!text){document.getElementById('p-text').focus();return}const name=document.getElementById('p-name').value.trim()||('Transcript '+(sources.length+1));sources.push({id:uid++,name,content:text});chatHistory=[];updateBadge();document.getElementById('p-name').value='';document.getElementById('p-text').value='';renderSrcList();closePanel()}
+function removeSource(id){sources=sources.filter(s=>s.id!==id);chatHistory=[];updateBadge();renderSrcList()}
+function renderSrcList(){const sec=document.getElementById('src-section');const list=document.getElementById('src-list');if(!sources.length){sec.style.display='none';return}sec.style.display='block';list.innerHTML=sources.map(s=>`<div class="src-item"><span class="src-item-name">📄 ${esc(s.name)}</span><button class="src-item-rm" onclick="removeSource(${s.id})">×</button></div>`).join('')}
+function updateBadge(){document.getElementById('src-badge').textContent=sources.length}
 
+// USAGE
+async function loadUsage(){
+  if(!authToken||isAdminUser)return;
+  try{
+    const res=await fetch(`${SERVER}/api/usage`,{headers:{'x-auth-token':authToken}});
+    const d=await res.json();if(!d.ok||d.admin)return;
+    currentPlan=d.plan;
+    document.getElementById('usage-wrap').style.display='block';
+    document.getElementById('usage-plan-label').textContent=d.planLabel+' plan';
+    document.getElementById('usage-count-label').textContent=`${d.used}/${d.limit}`;
+    const pct=Math.min(100,Math.round((d.used/d.limit)*100));
+    const bar=document.getElementById('usage-bar-fill');
+    bar.style.width=pct+'%';bar.className='usage-fill'+(pct>=100?' full':pct>=80?' warn':'');
+    ['free','plus','pro'].forEach(p=>{
+      const card=document.getElementById('plan-card-'+p);const badge=document.getElementById('plan-badge-'+p);
+      if(card&&badge){badge.style.display=d.plan===p?'block':'none';if(d.plan===p)card.classList.add('current');else card.classList.remove('current')}
+    });
+  }catch(e){}
+}
+function openUpgradeModal(){document.getElementById('upgrade-bg').style.display='block';document.getElementById('upgrade-wrap').classList.add('open')}
+function closeUpgradeModal(){document.getElementById('upgrade-bg').style.display='none';document.getElementById('upgrade-wrap').classList.remove('open')}
+function hoursUntilReset(r){if(!r)return 24;const ms=Math.max(0,24*60*60*1000-(new Date()-new Date(r)));return Math.ceil(ms/(60*60*1000))}
+
+// SUPPORT
 async function checkUnread(){
-  if(!authToken) return;
-  try{
-    const res = await fetch(`${SERVER}/api/messages/unread`,{headers:{'x-auth-token':authToken}});
-    const data = await res.json();
-    const badge = document.getElementById('unread-badge');
-    if(data.count > 0){
-      badge.textContent = data.count;
-      badge.style.display = 'inline';
-    } else {
-      badge.style.display = 'none';
-    }
-  } catch(e){}
+  if(!authToken||isAdminUser)return;
+  try{const res=await fetch(`${SERVER}/api/messages/unread`,{headers:{'x-auth-token':authToken}});const d=await res.json();document.getElementById('unread-badge').style.display=d.count>0?'inline':'none'}catch(e){}
 }
-
-async function openInbox(){
-  document.getElementById('inbox-overlay').style.display = 'flex';
-  document.getElementById('unread-badge').style.display = 'none';
+async function openSupport(){
+  document.getElementById('support-bg').style.display='block';
+  document.getElementById('support-wrap').classList.add('open');
+  document.getElementById('unread-badge').style.display='none';
   closeSb();
-
-  if(isAdminUser){
-    document.getElementById('inbox-title').textContent = '💬 Support';
-    document.getElementById('inbox-admin-view').style.display = 'flex';
-    document.getElementById('inbox-user-view').style.display = 'none';
-    await loadAdminConvos();
-  } else {
-    document.getElementById('inbox-title').textContent = '💬 Support';
-    document.getElementById('inbox-admin-view').style.display = 'none';
-    document.getElementById('inbox-user-view').style.display = 'flex';
-    await loadUserInbox();
-  }
+  if(isAdminUser){document.getElementById('support-admin-view').style.display='flex';document.getElementById('support-user-view').style.display='none';await loadSupportAdminView()}
+  else{document.getElementById('support-admin-view').style.display='none';document.getElementById('support-user-view').style.display='flex';await loadUserMessages()}
 }
+function closeSupport(){document.getElementById('support-bg').style.display='none';document.getElementById('support-wrap').classList.remove('open')}
 
-function closeInbox(){
-  document.getElementById('inbox-overlay').style.display = 'none';
-}
-
-async function loadAdminConvos(){
-  // Populate user dropdown
+async function loadSupportAdminView(){
+  try{const uRes=await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});const uData=await uRes.json();const sel=document.getElementById('msg-to');sel.innerHTML='<option value="">Select a user…</option>'+uData.users.map(u=>`<option value="${esc(u.username)}">${esc(u.username)}</option>`).join('')}catch(e){}
   try{
-    const uRes = await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});
-    const uData = await uRes.json();
-    const sel = document.getElementById('msg-to');
-    sel.innerHTML = '<option value="">Select a user...</option>' +
-      uData.users.map(u=>`<option value="${esc(u.username)}">${esc(u.username)}</option>`).join('');
-  } catch(e){}
-
-  // Load conversations
-  try{
-    const cRes = await fetch(`${SERVER}/api/admin/conversations`,{headers:{'x-auth-token':authToken}});
-    const cData = await cRes.json();
-    const el = document.getElementById('admin-convos');
-    const active = cData.conversations.filter(c=>c.hasMessages);
-    if(!active.length){
-      el.innerHTML = '<div style="color:#6b7280;font-size:13px">No conversations yet.</div>';
-      return;
-    }
-    el.innerHTML = active.map(c=>`
-      <div style="background:#111827;border:1px solid #374151;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px">
-        <div style="font-size:13px;font-weight:600;color:#f3f4f6">👤 ${esc(c.username)} ${c.unread?`<span style="background:#ef4444;color:#fff;font-size:10px;border-radius:8px;padding:2px 7px">${c.unread} new</span>`:''}</div>
-        <div style="display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto">
-          ${c.messages.map(m=>`
-            <div style="display:flex;gap:8px;align-items:flex-start;flex-direction:${m.dir==='to_user'?'row-reverse':'row'}">
-              <div style="background:${m.dir==='to_user'?'#1e40af':'#1f2937'};border-radius:10px;padding:8px 12px;font-size:13px;color:#f3f4f6;max-width:85%">
-                <div>${esc(m.text)}</div>
-                <div style="font-size:10px;color:#6b7280;margin-top:4px">${new Date(m.sentAt).toLocaleString()}</div>
-              </div>
-            </div>`).join('')}
-        </div>
-      </div>`).join('');
-  } catch(e){ document.getElementById('admin-convos').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
+    const cRes=await fetch(`${SERVER}/api/admin/conversations`,{headers:{'x-auth-token':authToken}});const cData=await cRes.json();
+    const el=document.getElementById('admin-convos');const active=cData.conversations.filter(c=>c.hasMessages);
+    if(!active.length){el.innerHTML='<div style="color:var(--text3);font-size:13px">No conversations yet.</div>';return}
+    el.innerHTML=active.map(c=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px"><div style="font-size:13px;font-weight:600;color:var(--text)">👤 ${esc(c.username)} ${c.unread?`<span style="background:var(--danger);color:#fff;font-size:10px;border-radius:6px;padding:2px 6px">${c.unread} new</span>`:''}</div><div style="display:flex;flex-direction:column;gap:5px;max-height:160px;overflow-y:auto">${c.messages.map(m=>`<div style="padding:8px 12px;border-radius:10px;font-size:13px;color:var(--text);max-width:85%;${m.dir==='to_user'?'align-self:flex-end;background:var(--accent-dim);border:1px solid rgba(79,142,247,.3)':'align-self:flex-start;background:var(--surface2);border:1px solid var(--border)'}">${esc(m.text)}</div>`).join('')}</div></div>`).join('');
+  }catch(e){document.getElementById('admin-convos').innerHTML='<div style="color:var(--danger);font-size:13px">Failed to load.</div>'}
 }
-
 async function adminSendMsg(){
-  const to   = document.getElementById('msg-to').value;
-  const text = document.getElementById('msg-text').value.trim();
-  if(!to){ showToast('⚠ Select a user first'); return; }
-  if(!text){ showToast('⚠ Write a message first'); return; }
-  try{
-    const res = await fetch(`${SERVER}/api/messages/send`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-auth-token':authToken},
-      body:JSON.stringify({to, text})
-    });
-    const data = await res.json();
-    if(data.ok){
-      document.getElementById('msg-text').value='';
-      showToast('✅ Message sent to '+to);
-      await loadAdminConvos();
-    } else showToast('⚠ '+data.error);
-  } catch(e){ showToast('⚠ Failed to send'); }
+  const to=document.getElementById('msg-to').value,text=document.getElementById('msg-text').value.trim();
+  if(!to){showToast('⚠ Select a user first');return}if(!text){showToast('⚠ Write a message first');return}
+  try{const res=await fetch(`${SERVER}/api/messages/send`,{method:'POST',headers:{'Content-Type':'application/json','x-auth-token':authToken},body:JSON.stringify({to,text})});const d=await res.json();if(d.ok){document.getElementById('msg-text').value='';showToast('✅ Message sent to '+to);await loadSupportAdminView()}else showToast('⚠ '+d.error)}catch(e){showToast('⚠ Failed to send')}
 }
-
-async function loadUserInbox(){
+async function loadUserMessages(){
   try{
-    const res = await fetch(`${SERVER}/api/messages/inbox`,{headers:{'x-auth-token':authToken}});
-    const data = await res.json();
-    const el = document.getElementById('user-messages');
-    if(!data.messages.length){
-      el.innerHTML='<div style="color:#6b7280;font-size:13px;text-align:center;padding:16px">No messages yet.</div>';
-      return;
-    }
-    el.innerHTML = data.messages.map(m=>`
-      <div style="background:#111827;border:1px solid #374151;border-radius:10px;padding:12px 14px">
-        <div style="font-size:11px;color:#6b7280;margin-bottom:6px">From FingerPost · ${new Date(m.sentAt).toLocaleString()}</div>
-        <div style="font-size:14px;color:#f3f4f6;line-height:1.6">${esc(m.text)}</div>
-      </div>`).join('');
-  } catch(e){ document.getElementById('user-messages').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
+    const res=await fetch(`${SERVER}/api/messages/inbox`,{headers:{'x-auth-token':authToken}});const d=await res.json();
+    const el=document.getElementById('user-messages');
+    if(!d.messages.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:12px">No messages yet.</div>';return}
+    el.innerHTML=d.messages.map(m=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px;font-weight:600;color:var(--accent)">Noted Support</span><span style="font-size:11px;color:var(--text3)">${new Date(m.sentAt).toLocaleDateString()}</span></div><div style="font-size:14px;color:var(--text);line-height:1.6">${esc(m.text)}</div></div>`).join('');
+  }catch(e){document.getElementById('user-messages').innerHTML='<div style="color:var(--danger);font-size:13px">Failed to load.</div>'}
 }
-
 async function userSendReply(){
-  const text = document.getElementById('reply-text').value.trim();
-  if(!text){ showToast('⚠ Write a message first'); return; }
-  try{
-    const res = await fetch(`${SERVER}/api/messages/reply`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-auth-token':authToken},
-      body:JSON.stringify({text})
-    });
-    const data = await res.json();
-    if(data.ok){
-      document.getElementById('reply-text').value='';
-      showToast('✅ Message sent');
-    } else showToast('⚠ '+data.error);
-  } catch(e){ showToast('⚠ Failed to send'); }
+  const text=document.getElementById('reply-text').value.trim();if(!text){showToast('⚠ Write a message first');return}
+  try{const res=await fetch(`${SERVER}/api/messages/reply`,{method:'POST',headers:{'Content-Type':'application/json','x-auth-token':authToken},body:JSON.stringify({text})});const d=await res.json();if(d.ok){document.getElementById('reply-text').value='';showToast('✅ Message sent')}else showToast('⚠ '+d.error)}catch(e){showToast('⚠ Failed to send')}
 }
 
-function updateBadge(){
-  document.getElementById('src-badge').textContent=sources.length;
-}
-
-// ── FILE UPLOAD ────────────────────────────────────────────────────────────
-async function handleFiles(input){
-  const files=Array.from(input.files||[]);
-  if(!files.length) return;
-  const status=document.getElementById('fstatus');
-  status.style.display='block'; status.style.color='#9ca3af';
-  status.textContent='Reading files...';
-  let loaded=0;
-  for(const file of files){
-    if(sources.length>=10) break;
-    try{
-      let text='';
-      const ext=file.name.split('.').pop().toLowerCase();
-      if(ext==='pdf') text=await readPDF(file);
-      else if(ext==='docx'||ext==='doc') text=await readDocx(file);
-      else text=await readAsText(file);
-      if(text.trim()){
-        const name=file.name.replace(/\.[^.]+$/,'');
-        sources.push({id:uid++,name,content:text.trim()});
-        loaded++;
-      }
-    } catch(e){ showToast('Could not read '+file.name) }
-  }
-  input.value='';
-  updateBadge(); renderSrcList(); chatHistory=[];
-  if(loaded>0){
-    status.style.color='#93c5fd';
-    status.textContent=`✅ ${loaded} file${loaded!==1?'s':''} added successfully`;
-    setTimeout(()=>status.style.display='none',3000);
-  } else {
-    status.style.color='#f87171';
-    status.textContent='Could not read files. Try pasting the text instead.';
-  }
-}
-function readAsText(file){
-  return new Promise((res,rej)=>{
-    const r=new FileReader();
-    r.onload=e=>res(e.target.result);
-    r.onerror=()=>rej(new Error('Read failed'));
-    r.readAsText(file,'utf-8');
-  });
-}
-async function readDocx(file){
-  // Send file to server for text extraction using mammoth
-  const arrayBuffer = await file.arrayBuffer();
-  const res = await fetch(`${SERVER}/api/extract-docx`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/octet-stream' },
-    body: arrayBuffer
-  });
-  const data = await res.json();
-  if(!data.ok) throw new Error(data.error || 'Could not read document');
-  return data.text;
-}
-async function readPDF(file){
-  if(!window.pdfjsLib){
-    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
-    window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-  }
-  const buf=await file.arrayBuffer();
-  const pdf=await window.pdfjsLib.getDocument({data:buf}).promise;
-  let text='';
-  for(let i=1;i<=pdf.numPages;i++){
-    const page=await pdf.getPage(i);
-    const content=await page.getTextContent();
-    text+=content.items.map(it=>it.str).join(' ')+'\n';
-  }
-  return text;
-}
-// ── SMART CHAT TITLE ──────────────────────────────────────────────────────
-function generateChatTitle(sources, fallbackQ){
-  if(!sources.length) return fallbackQ.length>45 ? fallbackQ.slice(0,45)+'…' : fallbackQ;
-
-  // Try to extract candidate name(s) from transcript speaker labels
-  // e.g. "Sarah:" or "John Smith:" at the start of a line
-  const names = [];
-  const roles = [];
-
-  for(const src of sources){
-    const lines = src.content.split('\n').slice(0, 40); // only check first 40 lines
-    for(const line of lines){
-      // Match "Name:" speaker label — not "Interviewer" or "Question"
-      const m = line.match(/^([A-Z][a-z]+(?:\s[A-Z][a-z]+)?):/);
-      if(m){
-        const n = m[1];
-        if(!['Interviewer','Interviewer1','Interviewer2','Question','Q','Recruiter','Hiring'].includes(n)){
-          if(!names.includes(n)) names.push(n);
-        }
-      }
-      // Detect job title mentions
-      const roleMatch = line.match(/\b(software engineer|product manager|developer|designer|data scientist|analyst|director|manager|cto|ceo|vp|nurse|doctor|surgeon|lawyer|accountant|architect|consultant|teacher|professor)\b/i);
-      if(roleMatch && !roles.includes(roleMatch[1])) roles.push(roleMatch[1]);
-    }
-  }
-
-  if(names.length === 1){
-    // Single candidate — use their name + role if found
-    const role = roles.length ? ' — ' + capitalise(roles[0]) : '';
-    return names[0] + role;
-  }
-  if(names.length > 1 && names.length <= 4){
-    // Multiple candidates — try to find common role
-    if(roles.length){
-      return names.join(', ') + ' — ' + capitalise(roles[0]) + 's';
-    }
-    return names.join(', ');
-  }
-  if(names.length > 4){
-    // Many candidates — use role or source name
-    if(roles.length) return capitalise(roles[0]) + ' Interviews';
-    return sources.length > 1 ? `${sources.length} Interviews` : (sources[0]?.name || 'Interview');
-  }
-
-  // No names found — use source file name or fallback to question
-  if(sources.length === 1 && sources[0].name) return sources[0].name;
-  return fallbackQ.length>45 ? fallbackQ.slice(0,45)+'…' : fallbackQ;
-}
-
-function capitalise(s){ return s.charAt(0).toUpperCase()+s.slice(1).toLowerCase(); }
-// ── ADMIN PANEL ────────────────────────────────────────────────────────────
-async function openAdmin(){
-  document.getElementById('admin-overlay').style.display='flex';
-  closeSb();
-  switchAdminTab('users');
-  await loadAdminData();
-}
-
+// ADMIN
+async function openAdmin(){document.getElementById('admin-bg').style.display='block';document.getElementById('admin-wrap').classList.add('open');closeSb();switchAdminTab('users');await loadAdminData()}
+function closeAdmin(){document.getElementById('admin-bg').style.display='none';document.getElementById('admin-wrap').classList.remove('open')}
 function switchAdminTab(tab){
-  const usersTab  = document.getElementById('tab-users');
-  const inboxTab  = document.getElementById('tab-inbox');
-  const usersBtn  = document.getElementById('tab-users-btn');
-  const inboxBtn  = document.getElementById('tab-inbox-btn');
-  if(tab === 'users'){
-    usersTab.style.display='flex';
-    inboxTab.style.display='none';
-    usersBtn.style.background='#2563eb'; usersBtn.style.color='#fff';
-    inboxBtn.style.background='transparent'; inboxBtn.style.color='#9ca3af';
-  } else {
-    usersTab.style.display='none';
-    inboxTab.style.display='flex';
-    inboxBtn.style.background='#2563eb'; inboxBtn.style.color='#fff';
-    usersBtn.style.background='transparent'; usersBtn.style.color='#9ca3af';
-    document.getElementById('admin-unread-dot').style.display='none';
-    loadAdminInbox();
-    loadUserDropdown();
-  }
-}
-function closeAdmin(){
-  document.getElementById('admin-overlay').style.display='none';
+  const uT=document.getElementById('tab-users'),iT=document.getElementById('tab-inbox'),uB=document.getElementById('tab-users-btn'),iB=document.getElementById('tab-inbox-btn');
+  if(tab==='users'){uT.style.display='flex';iT.style.display='none';uB.style.background='var(--accent)';uB.style.color='#fff';iB.style.background='transparent';iB.style.color='var(--text2)'}
+  else{uT.style.display='none';iT.style.display='flex';iB.style.background='var(--accent)';iB.style.color='#fff';uB.style.background='transparent';uB.style.color='var(--text2)';document.getElementById('admin-unread-dot').style.display='none';loadAdminInbox();loadAdminUserDropdown()}
 }
 async function loadAdminData(){
-  // Load pending requests
-  try{
-    const rRes = await fetch(`${SERVER}/api/admin/requests`,{headers:{'x-auth-token':authToken}});
-    const rData = await rRes.json();
-    const rEl = document.getElementById('admin-requests');
-    if(!rData.requests.length){
-      rEl.innerHTML='<div style="color:#6b7280;font-size:13px">No pending requests.</div>';
-    } else {
-      rEl.innerHTML = rData.requests.map(r=>`
-        <div style="display:flex;align-items:center;gap:10px;background:#111827;border:1px solid #374151;border-radius:8px;padding:11px 13px;margin-bottom:6px">
-          <span style="flex:1;font-size:14px;color:#f3f4f6;font-weight:600">👤 ${esc(r.username)}</span>
-          <span style="font-size:11px;color:#6b7280">${new Date(r.requestedAt).toLocaleDateString()}</span>
-          <button onclick="adminApprove('${r.id}')" style="background:#2563eb;border:none;color:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif">✅ Approve</button>
-          <button onclick="adminDecline('${r.id}')" style="background:#374151;border:none;color:#f87171;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif">❌ Decline</button>
-        </div>`).join('');
-    }
-  } catch(e){ document.getElementById('admin-requests').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
+  try{const rRes=await fetch(`${SERVER}/api/admin/requests`,{headers:{'x-auth-token':authToken}});const rData=await rRes.json();const rEl=document.getElementById('admin-requests');if(!rData.requests.length){rEl.innerHTML='<div style="color:var(--text3);font-size:13px">No pending requests.</div>'}else{rEl.innerHTML=rData.requests.map(r=>`<div style="display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px 13px;margin-bottom:6px"><span style="flex:1;font-size:14px;color:var(--text);font-weight:600">👤 ${esc(r.username)}</span><span style="font-size:11px;color:var(--text3)">${new Date(r.requestedAt).toLocaleDateString()}</span><button onclick="adminApprove('${r.id}')" style="background:var(--success-dim);border:1px solid rgba(52,211,153,.3);color:var(--success);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--font)">Approve</button><button onclick="adminDecline('${r.id}')" style="background:var(--danger-dim);border:1px solid rgba(248,113,113,.3);color:var(--danger);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:var(--font)">Decline</button></div>`).join('')}}catch(e){document.getElementById('admin-requests').innerHTML='<div style="color:var(--danger);font-size:13px">Failed to load.</div>'}
+  try{const uRes=await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});const uData=await uRes.json();const uEl=document.getElementById('admin-users');if(!uData.users.length){uEl.innerHTML='<div style="color:var(--text3);font-size:13px">No users yet.</div>'}else{uEl.innerHTML=uData.users.map(u=>{const pc=u.plan==='pro'?'var(--warn)':u.plan==='plus'?'var(--success)':'var(--text3)';return`<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:6px;display:flex;flex-direction:column;gap:8px"><div style="display:flex;align-items:center;gap:8px"><span style="flex:1;font-size:14px;color:${u.blocked?'var(--danger)':'var(--text)'};font-weight:600">👤 ${esc(u.username)}${u.blocked?' · blocked':''}</span><span style="font-size:10px;color:${pc};background:var(--surface2);padding:2px 8px;border-radius:6px;font-weight:700">${(u.plan||'free').toUpperCase()}</span></div><div style="font-size:11px;color:var(--text3)">${u.usageCount||0} msgs today · resets in ${hoursUntilReset(u.usageReset)}h</div><div style="display:flex;gap:6px;flex-wrap:wrap"><select onchange="adminSetPlan('${u.username}',this.value)" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--font);font-size:11px;padding:5px 8px;cursor:pointer;flex:1"><option value="free" ${u.plan==='free'?'selected':''}>Free — 20/day</option><option value="plus" ${u.plan==='plus'?'selected':''}>Plus — 100/day (€5/mo)</option><option value="pro" ${u.plan==='pro'?'selected':''}>Pro — 400/day (€15/mo)</option></select>${u.blocked?`<button onclick="adminUnblock('${u.username}')" style="background:var(--surface2);border:1px solid var(--border);color:var(--success);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:var(--font)">Unblock</button>`:`<button onclick="adminBlock('${u.username}')" style="background:var(--surface2);border:1px solid var(--border);color:var(--warn);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:var(--font)">Block</button>`}<button onclick="adminDelete('${u.username}')" style="background:var(--danger-dim);border:1px solid rgba(248,113,113,.3);color:var(--danger);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:11px;font-family:var(--font)">Delete</button></div></div>`}).join('')}}catch(e){document.getElementById('admin-users').innerHTML='<div style="color:var(--danger);font-size:13px">Failed to load.</div>'}
+}
+async function loadAdminInbox(){try{const res=await fetch(`${SERVER}/api/messages/inbox`,{headers:{'x-auth-token':authToken}});const d=await res.json();const el=document.getElementById('admin-inbox');if(!d.messages||!d.messages.length){el.innerHTML='<div style="color:var(--text3);font-size:13px">No messages yet.</div>';return}el.innerHTML=d.messages.map(m=>`<div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:6px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px;font-weight:600;color:var(--accent)">👤 ${esc(m.from)}</span><span style="font-size:11px;color:var(--text3)">${new Date(m.sentAt).toLocaleString()}</span></div><div style="font-size:13px;color:var(--text);line-height:1.6">${esc(m.text)}</div></div>`).join('')}catch(e){document.getElementById('admin-inbox').innerHTML='<div style="color:var(--danger);font-size:13px">Failed to load.</div>'}}
+async function loadAdminUserDropdown(){try{const uRes=await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});const uData=await uRes.json();const sel=document.getElementById('admin-msg-to');sel.innerHTML='<option value="">Select a user…</option>'+uData.users.map(u=>`<option value="${esc(u.username)}">${esc(u.username)}</option>`).join('')}catch(e){}}
+async function adminSendMsgFromPanel(){const to=document.getElementById('admin-msg-to').value,text=document.getElementById('admin-msg-text').value.trim();if(!to){showToast('⚠ Select a user first');return}if(!text){showToast('⚠ Write a message first');return}try{const res=await fetch(`${SERVER}/api/messages/send`,{method:'POST',headers:{'Content-Type':'application/json','x-auth-token':authToken},body:JSON.stringify({to,text})});const d=await res.json();if(d.ok){document.getElementById('admin-msg-text').value='';showToast('✅ Sent to '+to)}else showToast('⚠ '+d.error)}catch(e){showToast('⚠ Failed')}}
+async function adminApprove(id){const res=await fetch(`${SERVER}/api/admin/approve/${id}`,{method:'POST',headers:{'x-auth-token':authToken}});const d=await res.json();if(d.ok){showToast('✅ '+d.username+' approved');await loadAdminData()}else showToast('⚠ '+d.error)}
+async function adminDecline(id){await fetch(`${SERVER}/api/admin/decline/${id}`,{method:'DELETE',headers:{'x-auth-token':authToken}});showToast('Declined');await loadAdminData()}
+async function adminBlock(u){await fetch(`${SERVER}/api/admin/block/${u}`,{method:'POST',headers:{'x-auth-token':authToken}});showToast('🚫 '+u+' blocked');await loadAdminData()}
+async function adminUnblock(u){await fetch(`${SERVER}/api/admin/unblock/${u}`,{method:'POST',headers:{'x-auth-token':authToken}});showToast('✅ '+u+' unblocked');await loadAdminData()}
+async function adminDelete(u){if(!confirm('Delete '+u+'? This cannot be undone.'))return;await fetch(`${SERVER}/api/admin/delete/${u}`,{method:'DELETE',headers:{'x-auth-token':authToken}});showToast('🗑 '+u+' deleted');await loadAdminData()}
+async function adminSetPlan(u,plan){try{const res=await fetch(`${SERVER}/api/admin/setplan/${u}`,{method:'POST',headers:{'Content-Type':'application/json','x-auth-token':authToken},body:JSON.stringify({plan})});const d=await res.json();if(d.ok)showToast(`✅ ${u} → ${plan.toUpperCase()}`);else showToast('⚠ '+d.error)}catch(e){showToast('⚠ Failed')}}
 
-  // Load users
-  try{
-    const uRes = await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});
-    const uData = await uRes.json();
-    const uEl = document.getElementById('admin-users');
-    if(!uData.users.length){
-      uEl.innerHTML='<div style="color:#6b7280;font-size:13px">No users yet.</div>';
-    } else {
-      uEl.innerHTML = uData.users.map(u=>{
-        const blockBtn = u.blocked
-          ? `<button onclick="adminUnblock('${u.username}')" style="background:#374151;border:none;color:#93c5fd;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Unblock</button>`
-          : `<button onclick="adminBlock('${u.username}')" style="background:#374151;border:none;color:#fbbf24;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Block</button>`;
-        const planColor = u.plan==='pro'?'#fbbf24':u.plan==='plus'?'#93c5fd':'#6b7280';
-        return `<div style="background:#111827;border:1px solid #374151;border-radius:8px;padding:11px 13px;margin-bottom:6px;display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;align-items:center;gap:8px">
-            <span style="flex:1;font-size:14px;color:${u.blocked?'#f87171':'#f3f4f6'};font-weight:600">👤 ${esc(u.username)}${u.blocked?' (blocked)':''}</span>
-            <span style="font-size:11px;color:${planColor};background:#1a2234;padding:2px 8px;border-radius:8px;font-weight:600">${(u.plan||'free').toUpperCase()}</span>
-          </div>
-          <div style="font-size:11px;color:#6b7280">${u.usageCount||0} msgs today · resets in ${hoursUntilMidnight(u.usageReset)}h</div>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-            <select onchange="adminSetPlan('${u.username}',this.value)" style="background:#1a2234;border:1px solid #374151;border-radius:6px;color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:11px;padding:5px 8px;cursor:pointer">
-              <option value="free" ${u.plan==='free'?'selected':''}>Free (20/day)</option>
-              <option value="plus" ${u.plan==='plus'?'selected':''}>Plus (100/day) — €5/mo</option>
-              <option value="pro"  ${u.plan==='pro' ?'selected':''}>Pro (400/day) — €15/mo</option>
-            </select>
-            ${blockBtn}
-            <button onclick="adminDelete('${u.username}')" style="background:#374151;border:none;color:#f87171;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Delete</button>
-          </div>
-        </div>`;
-      }).join('');
-    }
-  } catch(e){ document.getElementById('admin-users').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
-}
+// CHAT TITLE
+function generateChatTitle(sources,fallbackQ){if(!sources.length)return fallbackQ.length>45?fallbackQ.slice(0,45)+'…':fallbackQ;const names=[];for(const src of sources){const lines=src.content.split('\n').slice(0,40);for(const line of lines){const m=line.match(/^([A-Z][a-z]+(?:\s[A-Z][a-z]+)?):/);;if(m&&!['Interviewer','Question','Q','Recruiter'].includes(m[1])&&!names.includes(m[1]))names.push(m[1])}}if(names.length===1)return names[0];if(names.length>1&&names.length<=4)return names.join(', ');if(sources.length===1&&sources[0].name)return sources[0].name;return fallbackQ.length>45?fallbackQ.slice(0,45)+'…':fallbackQ}
 
-async function loadAdminInbox(){
-  try{
-    const iRes = await fetch(`${SERVER}/api/messages/inbox`,{headers:{'x-auth-token':authToken}});
-    const iData = await iRes.json();
-    const iEl = document.getElementById('admin-inbox');
-    if(!iData.messages || !iData.messages.length){
-      iEl.innerHTML='<div style="color:#6b7280;font-size:13px">No replies yet.</div>';
-      return;
-    }
-    iEl.innerHTML = iData.messages.map(m=>`
-      <div style="background:#111827;border:1px solid #374151;border-radius:9px;padding:12px 14px;margin-bottom:6px">
-        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-          <span style="font-size:12px;font-weight:600;color:#2563eb">👤 ${esc(m.from)}</span>
-          <span style="font-size:11px;color:#6b7280">${new Date(m.sentAt).toLocaleString()}</span>
-        </div>
-        <div style="font-size:13px;color:#f3f4f6;line-height:1.6">${esc(m.text)}</div>
-      </div>`).join('');
-  } catch(e){ document.getElementById('admin-inbox').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
-}
-
-async function loadUserDropdown(){
-  try{
-    const uRes = await fetch(`${SERVER}/api/admin/users`,{headers:{'x-auth-token':authToken}});
-    const uData = await uRes.json();
-    const sel = document.getElementById('msg-to');
-    sel.innerHTML = '<option value="">Select a user...</option>' +
-      uData.users.map(u=>`<option value="${esc(u.username)}">${esc(u.username)}</option>`).join('');
-  } catch(e){}
-}
-async function adminApprove(id){
-  const res=await fetch(`${SERVER}/api/admin/approve/${id}`,{method:'POST',headers:{'x-auth-token':authToken}});
-  const data=await res.json();
-  if(data.ok){showToast('✅ '+data.username+' approved');await loadAdminData();}
-  else showToast('⚠ '+data.error);
-}
-async function adminDecline(id){
-  await fetch(`${SERVER}/api/admin/decline/${id}`,{method:'DELETE',headers:{'x-auth-token':authToken}});
-  showToast('Declined');await loadAdminData();
-}
-async function adminBlock(username){
-  await fetch(`${SERVER}/api/admin/block/${username}`,{method:'POST',headers:{'x-auth-token':authToken}});
-  showToast('🚫 '+username+' blocked');await loadAdminData();
-}
-async function adminUnblock(username){
-  await fetch(`${SERVER}/api/admin/unblock/${username}`,{method:'POST',headers:{'x-auth-token':authToken}});
-  showToast('✅ '+username+' unblocked');await loadAdminData();
-}
-async function adminDelete(username){
-  if(!confirm('Delete '+username+'? This cannot be undone.')) return;
-  await fetch(`${SERVER}/api/admin/delete/${username}`,{method:'DELETE',headers:{'x-auth-token':authToken}});
-  showToast('🗑 '+username+' deleted');await loadAdminData();
-}
-
-
-// ── USAGE ──────────────────────────────────────────────────────────────────
-let currentPlan = 'free';
-
-async function loadUsage(){
-  if(!authToken) return;
-  try{
-    const res = await fetch(`${SERVER}/api/usage`,{headers:{'x-auth-token':authToken}});
-    const data = await res.json();
-    if(!data.ok || data.admin) return;
-    currentPlan = data.plan;
-    const wrap  = document.getElementById('usage-wrap');
-    const label = document.getElementById('usage-plan-label');
-    const count = document.getElementById('usage-count-label');
-    const bar   = document.getElementById('usage-bar-fill');
-    wrap.style.display = 'block';
-    label.textContent  = data.planLabel + ' plan';
-    count.textContent  = `${data.used} / ${data.limit}`;
-    const pct = Math.min(100, Math.round((data.used / data.limit) * 100));
-    bar.style.width = pct + '%';
-    bar.className = 'usage-bar-fill' + (pct >= 100 ? ' full' : pct >= 80 ? ' warn' : '');
-    // Update upgrade modal badges
-    ['free','plus','pro'].forEach(p=>{
-      const card  = document.getElementById('plan-card-' + p);
-      const badge = document.getElementById('plan-badge-' + p);
-      if(card && badge){
-        badge.style.display = data.plan === p ? 'block' : 'none';
-        if(data.plan === p) card.classList.add('current');
-        else card.classList.remove('current');
-      }
-    });
-  } catch(e){}
-}
-
-function openUpgradeModal(){
-  document.getElementById('upgrade-overlay').style.display = 'flex';
-}
-function closeUpgradeModal(){
-  document.getElementById('upgrade-overlay').style.display = 'none';
-}
-
-function hoursUntilMidnight(resetStr){
-  if(!resetStr) return 24;
-  const now   = new Date();
-  const reset = new Date(resetStr);
-  const ms = Math.max(0, 24*60*60*1000 - (now - reset));
-  return Math.ceil(ms / (60*60*1000));
-}
-
-async function adminSetPlan(username, plan){
-  try{
-    const res = await fetch(`${SERVER}/api/admin/setplan/${username}`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-auth-token':authToken},
-      body:JSON.stringify({plan})
-    });
-    const data = await res.json();
-    if(data.ok) showToast(`✅ ${username} → ${plan.toUpperCase()}`);
-    else showToast('⚠ '+data.error);
-  } catch(e){ showToast('⚠ Failed'); }
-}
-
+// FILE UPLOAD
+async function handleFiles(input){const files=Array.from(input.files||[]);if(!files.length)return;const status=document.getElementById('fstatus');status.style.display='block';status.style.color='var(--text2)';status.textContent='Reading files…';let loaded=0;for(const file of files){if(sources.length>=10)break;try{let text='';const ext=file.name.split('.').pop().toLowerCase();if(ext==='pdf')text=await readPDF(file);else if(ext==='docx'||ext==='doc')text=await readDocx(file);else text=await readAsText(file);if(text.trim()){sources.push({id:uid++,name:file.name.replace(/\.[^.]+$/,''),content:text.trim()});loaded++}}catch(e){showToast('Could not read '+file.name)}}input.value='';updateBadge();renderSrcList();chatHistory=[];if(loaded>0){status.style.color='var(--success)';status.textContent=`✅ ${loaded} file${loaded!==1?'s':''} added`;setTimeout(()=>status.style.display='none',3000)}else{status.style.color='var(--danger)';status.textContent='Could not read files. Try pasting the text instead.'}}
+function readAsText(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=()=>rej(new Error('Read failed'));r.readAsText(file,'utf-8')})}
+async function readDocx(file){const ab=await file.arrayBuffer();const res=await fetch(`${SERVER}/api/extract-docx`,{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:ab});const d=await res.json();if(!d.ok)throw new Error(d.error||'Could not read document');return d.text}
+async function readPDF(file){if(!window.pdfjsLib){await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}const buf=await file.arrayBuffer();const pdf=await window.pdfjsLib.getDocument({data:buf}).promise;let text='';for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);const content=await page.getTextContent();text+=content.items.map(it=>it.str).join(' ')+'\n'}return text}
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
 </script>
 </body>
 </html>

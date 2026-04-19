@@ -376,4 +376,4 @@ async function callGroq(system, messages, res){
   }
 }
 
-app.listen(PORT, () => console.log(`✅ Finger Post Echo running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`✅ Noted running at http://localhost:${PORT}`));
