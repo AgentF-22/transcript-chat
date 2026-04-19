@@ -222,7 +222,7 @@ textarea.finput{resize:vertical;min-height:120px}
   .panel{left:auto;right:24px;width:440px;border-radius:18px;bottom:24px;border:1px solid var(--border);max-height:88vh}
 }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 
@@ -509,8 +509,7 @@ textarea.finput{resize:vertical;min-height:120px}
 
 <script>
 // ── SUPABASE ──────────────────────────────────────────────────────────────
-const { createClient } = supabase;
-const _supa = createClient('https://fprgzafskzurjlqdouei.supabase.co', 'sb_publishable_bvorSTMP9eZ8S48evYusEQ_df2PqsXj');
+const _supa = window.supabase.createClient('https://fprgzafskzurjlqdouei.supabase.co', 'sb_publishable_bvorSTMP9eZ8S48evYusEQ_df2PqsXj');
 
 // ── STATE ─────────────────────────────────────────────────────────────────
 let sources=[],chatHistory=[],loading=false,uid=1,activeChatId=null;
