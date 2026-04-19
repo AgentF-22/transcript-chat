@@ -3,42 +3,43 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>FingerPost Echo</title>
+<title>FingerPost Echo — AI Interview Intelligence</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{height:100%;background:#212121}
-body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:100dvh;display:flex;flex-direction:column}
+html{height:100%;background:#111827}
+body{font-family:'DM Sans',sans-serif;background:#111827;color:#f3f4f6;min-height:100dvh;display:flex;flex-direction:column}
 
 /* ══════════════════════════════════════
    LOGIN
 ══════════════════════════════════════ */
 #login-screen{
   flex:1;display:flex;align-items:center;justify-content:center;
-  padding:24px;background:#212121;min-height:100dvh;
+  padding:24px;background:radial-gradient(ellipse at 50% 0%,#1e3a5f 0%,#111827 60%);min-height:100dvh;
 }
 .login-box{
   width:100%;max-width:380px;
-  background:#2f2f2f;border:1px solid #3f3f3f;
+  background:#1f2937;border:1px solid #374151;
   border-radius:20px;padding:36px 28px;
   display:flex;flex-direction:column;gap:22px;
+  box-shadow:0 25px 50px rgba(0,0,0,.5),0 0 0 1px rgba(37,99,235,.1);
 }
 .login-logo{text-align:center;margin-bottom:4px}
 .login-icon{font-size:38px;margin-bottom:10px}
 .login-title{font-size:22px;font-weight:700;color:#fff}
-.login-title span{color:#10a37f}
-.login-sub{font-size:13px;color:#8e8ea0;margin-top:5px}
+.login-title span{color:#2563eb}
+.login-sub{font-size:13px;color:#9ca3af;margin-top:5px}
 .lfield{display:flex;flex-direction:column;gap:7px}
-.llabel{font-size:11px;font-weight:600;color:#8e8ea0;letter-spacing:.08em}
+.llabel{font-size:11px;font-weight:600;color:#9ca3af;letter-spacing:.08em}
 .linput{
-  background:#212121;border:1.5px solid #3f3f3f;
-  border-radius:10px;color:#ececec;
-  font-family:'Inter',sans-serif;font-size:16px;
+  background:#111827;border:1.5px solid #374151;
+  border-radius:10px;color:#f3f4f6;
+  font-family:'DM Sans',sans-serif;font-size:16px;
   padding:13px 15px;outline:none;width:100%;
   transition:border-color .15s;-webkit-appearance:none;
 }
-.linput:focus{border-color:#10a37f}
-.linput::placeholder{color:#565869}
+.linput:focus{border-color:#2563eb}
+.linput::placeholder{color:#6b7280}
 .lerr{
   font-size:13px;color:#f87171;background:#2d1212;
   border:1px solid #7f1d1d;border-radius:8px;
@@ -46,13 +47,13 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
 }
 .lerr.show{display:block}
 .btn-signin{
-  width:100%;background:#10a37f;color:#fff;border:none;
+  width:100%;background:#2563eb;color:#fff;border:none;
   border-radius:12px;font-size:16px;font-weight:600;
-  font-family:'Inter',sans-serif;padding:14px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;padding:14px;cursor:pointer;
   transition:background .15s;-webkit-appearance:none;
 }
-.btn-signin:active{background:#0d8c6d}
-.btn-signin:disabled{background:#3f3f3f;color:#565869;cursor:not-allowed}
+.btn-signin:active{background:#1d4ed8}
+.btn-signin:disabled{background:#374151;color:#6b7280;cursor:not-allowed}
 
 /* ══════════════════════════════════════
    APP SHELL
@@ -63,7 +64,7 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
 /* ── SIDEBAR ── */
 .sb{
   width:260px;flex-shrink:0;
-  background:#171717;
+  background:#0d1117;border-right:1px solid #1a2234;
   display:flex;flex-direction:column;
   height:100dvh;overflow:hidden;
   transition:transform .25s ease;
@@ -75,41 +76,41 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
   transition:background .15s;margin-bottom:4px;
   text-decoration:none;
 }
-.sb-logo:hover{background:#2a2a2a}
+.sb-logo:hover{background:#1a2234}
 .sb-logo-icon{font-size:20px}
 .sb-logo-text{font-size:15px;font-weight:700;color:#fff;letter-spacing:0;white-space:nowrap}
-.sb-logo-text span{color:#10a37f}
+.sb-logo-text span{color:#2563eb}
 .btn-newchat{
   display:flex;align-items:center;gap:9px;
   padding:9px 10px;border-radius:10px;cursor:pointer;
-  background:none;border:none;color:#ececec;
-  font-family:'Inter',sans-serif;font-size:14px;font-weight:500;
+  background:none;border:none;color:#f3f4f6;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
   transition:background .15s;width:100%;text-align:left;
 }
-.btn-newchat:hover{background:#2a2a2a}
+.btn-newchat:hover{background:#1a2234}
 .btn-newchat svg{opacity:.7;flex-shrink:0}
 
 .sb-section{
   padding:12px 12px 4px;
   font-size:11px;font-weight:600;letter-spacing:.08em;
-  color:#565869;
+  color:#6b7280;
 }
 
 .sb-history{flex:1;overflow-y:auto;padding:0 8px 8px}
 .sb-history::-webkit-scrollbar{width:4px}
-.sb-history::-webkit-scrollbar-thumb{background:#3f3f3f;border-radius:4px}
+.sb-history::-webkit-scrollbar-thumb{background:#374151;border-radius:4px}
 
 .hist-item{
   display:flex;align-items:center;gap:8px;
   padding:9px 10px;border-radius:9px;cursor:pointer;
-  transition:background .12s;font-size:13.5px;color:#c5c5d2;
+  transition:background .12s;font-size:13.5px;color:#d1d5db;
   position:relative;
 }
-.hist-item:hover{background:#2a2a2a}
-.hist-item.active{background:#2a2a2a;color:#fff}
+.hist-item:hover{background:#1a2234}
+.hist-item.active{background:#1a2234;color:#fff}
 .hist-item-text{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hist-item-del{
-  background:none;border:none;color:#565869;
+  background:none;border:none;color:#6b7280;
   font-size:16px;cursor:pointer;padding:0;line-height:1;
   opacity:0;transition:opacity .12s;flex-shrink:0;
 }
@@ -117,90 +118,90 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
 .hist-item-del:hover{color:#f87171}
 
 .sb-empty{
-  padding:20px 12px;font-size:13px;color:#565869;
+  padding:20px 12px;font-size:13px;color:#6b7280;
   text-align:center;line-height:1.7;
 }
 
 .sb-foot{
-  padding:12px;border-top:1px solid #2a2a2a;
+  padding:12px;border-top:1px solid #1a2234;
   display:flex;flex-direction:column;gap:6px;
 }
 .btn-sources{
   display:flex;align-items:center;gap:9px;
   padding:9px 10px;border-radius:10px;cursor:pointer;
-  background:none;border:none;color:#ececec;
-  font-family:'Inter',sans-serif;font-size:13.5px;font-weight:500;
+  background:none;border:none;color:#f3f4f6;
+  font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:500;
   transition:background .15s;width:100%;text-align:left;
 }
-.btn-sources:hover{background:#2a2a2a}
+.btn-sources:hover{background:#1a2234}
 .src-badge{
   margin-left:auto;font-size:11px;font-weight:600;
-  background:#064e3b;color:#6ee7b7;
-  border:1px solid #065f46;border-radius:12px;
+  background:#1e3a5f;color:#93c5fd;
+  border:1px solid #1e40af;border-radius:12px;
   padding:2px 8px;
 }
 .btn-signout{
   display:flex;align-items:center;gap:9px;
   padding:9px 10px;border-radius:10px;cursor:pointer;
-  background:none;border:none;color:#8e8ea0;
-  font-family:'Inter',sans-serif;font-size:13px;
+  background:none;border:none;color:#9ca3af;
+  font-family:'DM Sans',sans-serif;font-size:13px;
   transition:background .15s;width:100%;text-align:left;
 }
-.btn-signout:hover{background:#2a2a2a;color:#ececec}
+.btn-signout:hover{background:#1a2234;color:#f3f4f6}
 
 /* ── USAGE BAR ── */
 .usage-wrap{
   padding:10px 12px 6px;
-  border-top:1px solid #2a2a2a;
+  border-top:1px solid #1a2234;
 }
 .usage-header{
   display:flex;align-items:center;justify-content:space-between;
   margin-bottom:6px;
 }
-.usage-label{font-size:11px;color:#8e8ea0;font-weight:500}
-.usage-count{font-size:11px;color:#565869}
+.usage-label{font-size:11px;color:#9ca3af;font-weight:500}
+.usage-count{font-size:11px;color:#6b7280}
 .usage-bar-bg{
-  width:100%;height:4px;background:#2a2a2a;border-radius:2px;overflow:hidden;
+  width:100%;height:4px;background:#1a2234;border-radius:2px;overflow:hidden;
 }
 .usage-bar-fill{
-  height:100%;border-radius:2px;background:#10a37f;
+  height:100%;border-radius:2px;background:#2563eb;
   transition:width .3s ease;
 }
 .usage-bar-fill.warn{background:#f59e0b}
 .usage-bar-fill.full{background:#ef4444}
 .btn-upgrade{
   width:100%;margin-top:8px;
-  background:linear-gradient(135deg,#10a37f,#0d8c6d);
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
   border:none;border-radius:9px;color:#fff;
-  font-family:'Inter',sans-serif;font-size:12px;font-weight:600;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;
   padding:8px;cursor:pointer;transition:opacity .15s;
 }
 .btn-upgrade:hover{opacity:.9}
 
 /* ── UPGRADE MODAL ── */
 .upgrade-modal{
-  background:#2f2f2f;border:1px solid #3f3f3f;border-radius:20px;
+  background:#1f2937;border:1px solid #374151;border-radius:20px;
   padding:28px;width:100%;max-width:480px;
   display:flex;flex-direction:column;gap:18px;
   max-height:90dvh;overflow-y:auto;
 }
 .upgrade-title{font-size:20px;font-weight:700;color:#fff}
-.upgrade-sub{font-size:13px;color:#8e8ea0;line-height:1.6;margin-top:-10px}
+.upgrade-sub{font-size:13px;color:#9ca3af;line-height:1.6;margin-top:-10px}
 .plans-grid{display:flex;flex-direction:column;gap:10px}
 .plan-card{
-  background:#212121;border:1.5px solid #3f3f3f;border-radius:12px;
+  background:#111827;border:1.5px solid #374151;border-radius:12px;
   padding:16px;display:flex;align-items:center;gap:14px;
 }
-.plan-card.current{border-color:#10a37f}
+.plan-card.current{border-color:#2563eb}
 .plan-card.highlighted{border-color:#f59e0b;background:#1a1500}
 .plan-icon{font-size:24px;flex-shrink:0}
 .plan-info{flex:1}
 .plan-name{font-size:15px;font-weight:700;color:#fff}
-.plan-price{font-size:12px;color:#8e8ea0;margin-top:2px}
-.plan-limit{font-size:12px;color:#6ee7b7;margin-top:3px}
+.plan-price{font-size:12px;color:#9ca3af;margin-top:2px}
+.plan-limit{font-size:12px;color:#93c5fd;margin-top:3px}
 .plan-badge{
   font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;
-  background:#064e3b;color:#6ee7b7;border:1px solid #065f46;flex-shrink:0;
+  background:#1e3a5f;color:#93c5fd;border:1px solid #1e40af;flex-shrink:0;
 }
 .plan-badge.gold{background:#451a03;color:#fbbf24;border-color:#78350f}
 
@@ -216,15 +217,15 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
   align-items:center;justify-content:space-between;
   padding:12px 16px;
   padding-top:max(12px,env(safe-area-inset-top));
-  background:#171717;border-bottom:1px solid #2a2a2a;
+  background:#0d1117;border-bottom:1px solid #1a2234;
   flex-shrink:0;
 }
-.btn-menu{background:none;border:none;color:#ececec;font-size:22px;cursor:pointer;padding:4px}
+.btn-menu{background:none;border:none;color:#f3f4f6;font-size:22px;cursor:pointer;padding:4px}
 .mob-logo{font-size:15px;font-weight:700;color:#fff;cursor:pointer}
-.mob-logo span{color:#10a37f}
+.mob-logo span{color:#2563eb}
 .btn-mob-add{
-  background:#10a37f;color:#fff;border:none;border-radius:8px;
-  padding:7px 13px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;
+  background:#2563eb;color:#fff;border:none;border-radius:8px;
+  padding:7px 13px;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;
   cursor:pointer;-webkit-appearance:none;
 }
 
@@ -232,10 +233,10 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
 .msgs{
   flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
   padding:32px 0 16px;display:flex;flex-direction:column;gap:0;
-  background:#212121;
+  background:#111827;
 }
 .msgs::-webkit-scrollbar{width:5px}
-.msgs::-webkit-scrollbar-thumb{background:#3f3f3f;border-radius:4px}
+.msgs::-webkit-scrollbar-thumb{background:#374151;border-radius:4px}
 
 /* Welcome */
 .welcome{
@@ -244,21 +245,21 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
 }
 .w-icon{font-size:44px}
 .w-title{font-size:26px;font-weight:700;color:#fff}
-.w-sub{font-size:15px;color:#8e8ea0;line-height:1.7;max-width:400px}
+.w-sub{font-size:15px;color:#9ca3af;line-height:1.7;max-width:400px}
 .w-cards{
   display:grid;grid-template-columns:1fr 1fr;gap:10px;
   width:100%;margin-top:8px;text-align:left;
 }
 .wcard{
-  background:#2f2f2f;border:1px solid #3f3f3f;border-radius:12px;
-  padding:14px 16px;cursor:pointer;font-family:'Inter',sans-serif;
+  background:#1f2937;border:1px solid #374151;border-radius:12px;
+  padding:14px 16px;cursor:pointer;font-family:'DM Sans',sans-serif;
   transition:background .15s,border-color .15s;
   -webkit-appearance:none;
 }
 .wcard:hover{background:#3a3a3a;border-color:#555}
 .wcard:active{background:#444}
 .wcard-t{font-size:13px;font-weight:600;color:#fff;margin-bottom:4px}
-.wcard-s{font-size:12px;color:#8e8ea0;line-height:1.4}
+.wcard-s{font-size:12px;color:#9ca3af;line-height:1.4}
 
 /* Message row */
 .msg-row{
@@ -276,13 +277,13 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
   display:flex;align-items:center;justify-content:center;
   font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;
 }
-.av.bot{background:#10a37f;color:#fff;font-size:11px}
-.av.user{background:#3f3f3f;color:#c5c5d2}
+.av.bot{background:#2563eb;color:#fff;font-size:11px}
+.av.user{background:#374151;color:#d1d5db}
 .msg-body{flex:1;min-width:0}
-.msg-name{font-size:12px;font-weight:600;color:#8e8ea0;margin-bottom:6px}
+.msg-name{font-size:12px;font-weight:600;color:#9ca3af;margin-bottom:6px}
 .msg-row.user .msg-body{display:flex;flex-direction:column;align-items:flex-end}
 .msg-text{
-  font-size:15px;line-height:1.75;color:#ececec;word-break:break-word;
+  font-size:15px;line-height:1.75;color:#f3f4f6;word-break:break-word;
   max-width:560px;
 }
 .msg-text p{margin-bottom:10px}
@@ -290,18 +291,18 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
 .msg-text ul{padding-left:20px;margin:8px 0}
 .msg-text li{margin-bottom:5px}
 .msg-text strong{color:#fff;font-weight:600}
-.msg-text em{color:#a3e4d7}
+.msg-text em{color:#93c5fd}
 
 .user-bubble{
-  background:#2f2f2f;border-radius:18px 18px 4px 18px;
-  padding:12px 16px;font-size:15px;line-height:1.65;color:#ececec;
+  background:#1f2937;border-radius:18px 18px 4px 18px;
+  padding:12px 16px;font-size:15px;line-height:1.65;color:#f3f4f6;
   max-width:85%;word-break:break-word;
 }
 
 /* Typing */
 .typing-row{max-width:680px;margin:0 auto;padding:6px 24px;display:flex;gap:14px;align-items:center}
-.typing-dots{display:flex;gap:5px;padding:14px 16px;background:#2f2f2f;border-radius:16px}
-.dot{width:8px;height:8px;border-radius:50%;background:#565869;animation:blink 1.2s infinite}
+.typing-dots{display:flex;gap:5px;padding:14px 16px;background:#1f2937;border-radius:16px}
+.dot{width:8px;height:8px;border-radius:50%;background:#6b7280;animation:blink 1.2s infinite}
 .dot:nth-child(2){animation-delay:.2s}
 .dot:nth-child(3){animation-delay:.4s}
 @keyframes blink{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
@@ -310,42 +311,42 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
 .inp-area{
   flex-shrink:0;padding:12px 24px;
   padding-bottom:max(16px,env(safe-area-inset-bottom));
-  background:#212121;
+  background:#111827;
 }
 .inp-box{
   max-width:680px;margin:0 auto;
-  background:#2f2f2f;border:1px solid #3f3f3f;
+  background:#1f2937;border:1px solid #374151;
   border-radius:16px;padding:12px 14px;
   display:flex;gap:10px;align-items:flex-end;
   transition:border-color .15s;
 }
-.inp-box:focus-within{border-color:#565869}
+.inp-box:focus-within{border-color:#6b7280}
 .chat-inp{
   flex:1;background:transparent;border:none;outline:none;
-  color:#ececec;font-family:'Inter',sans-serif;
+  color:#f3f4f6;font-family:'DM Sans',sans-serif;
   font-size:15px;line-height:1.55;resize:none;
   max-height:130px;overflow-y:auto;
   -webkit-appearance:none;
 }
-.chat-inp::placeholder{color:#565869}
+.chat-inp::placeholder{color:#6b7280}
 .send-btn{
-  width:36px;height:36px;border-radius:9px;
-  background:#10a37f;border:none;color:#fff;
+  width:36px;height:36px;border-radius:18px;
+  background:#2563eb;border:none;color:#fff;
   font-size:18px;cursor:pointer;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
   transition:background .15s;-webkit-appearance:none;
 }
-.send-btn:disabled{background:#3f3f3f;color:#565869;cursor:not-allowed}
-.send-btn:not(:disabled):active{background:#0d8c6d}
-.inp-hint{text-align:center;font-size:11px;color:#3f3f3f;margin-top:8px;max-width:680px;margin-left:auto;margin-right:auto}
+.send-btn:disabled{background:#374151;color:#6b7280;cursor:not-allowed}
+.send-btn:not(:disabled):active{background:#1d4ed8}
+.inp-hint{text-align:center;font-size:11px;color:#374151;margin-top:8px;max-width:680px;margin-left:auto;margin-right:auto}
 
 /* ── PANEL (slide up) ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:50}
 .overlay.open{display:block}
 .panel{
   position:fixed;bottom:0;left:0;right:0;
-  background:#2f2f2f;border-radius:24px 24px 0 0;
-  border-top:1px solid #3f3f3f;
+  background:#1f2937;border-radius:24px 24px 0 0;
+  border-top:1px solid #374151;
   padding:18px 22px;
   padding-bottom:max(32px,env(safe-area-inset-bottom));
   z-index:51;display:flex;flex-direction:column;gap:16px;
@@ -355,49 +356,49 @@ body{font-family:'Inter',sans-serif;background:#212121;color:#ececec;min-height:
   visibility:hidden;
 }
 .panel.open{transform:translateY(0);visibility:visible}
-.panel-handle{width:40px;height:4px;background:#3f3f3f;border-radius:2px;margin:0 auto 4px}
+.panel-handle{width:40px;height:4px;background:#374151;border-radius:2px;margin:0 auto 4px}
 .panel-title{font-size:18px;font-weight:700;color:#fff}
-.panel-sub{font-size:13px;color:#8e8ea0;line-height:1.6;margin-top:-8px}
-.flabel{font-size:11px;font-weight:600;color:#8e8ea0;letter-spacing:.06em;margin-bottom:6px}
+.panel-sub{font-size:13px;color:#9ca3af;line-height:1.6;margin-top:-8px}
+.flabel{font-size:11px;font-weight:600;color:#9ca3af;letter-spacing:.06em;margin-bottom:6px}
 .finput{
-  width:100%;background:#212121;border:1.5px solid #3f3f3f;border-radius:10px;
-  color:#ececec;font-family:'Inter',sans-serif;font-size:15px;line-height:1.6;
+  width:100%;background:#111827;border:1.5px solid #374151;border-radius:10px;
+  color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.6;
   padding:13px 14px;outline:none;transition:border-color .15s;-webkit-appearance:none;
 }
-.finput:focus{border-color:#10a37f}
-.finput::placeholder{color:#565869}
+.finput:focus{border-color:#2563eb}
+.finput::placeholder{color:#6b7280}
 textarea.finput{resize:vertical;min-height:120px}
 .btn-upload{
-  width:100%;background:#212121;border:1.5px dashed #3f3f3f;border-radius:10px;
-  color:#8e8ea0;font-size:14px;font-family:'Inter',sans-serif;
+  width:100%;background:#111827;border:1.5px dashed #374151;border-radius:10px;
+  color:#9ca3af;font-size:14px;font-family:'DM Sans',sans-serif;
   padding:14px;cursor:pointer;text-align:center;
   transition:border-color .15s,background .15s;-webkit-appearance:none;
 }
-.btn-upload:active{background:#2a2a2a;border-color:#10a37f;color:#10a37f}
-.fstatus{font-size:12px;color:#8e8ea0;margin-top:4px;display:none}
-.divider{display:flex;align-items:center;gap:10px;color:#3f3f3f;font-size:12px}
-.divider-line{flex:1;height:1px;background:#3f3f3f}
+.btn-upload:active{background:#1a2234;border-color:#2563eb;color:#2563eb}
+.fstatus{font-size:12px;color:#9ca3af;margin-top:4px;display:none}
+.divider{display:flex;align-items:center;gap:10px;color:#374151;font-size:12px}
+.divider-line{flex:1;height:1px;background:#374151}
 .panel-btns{display:flex;gap:10px}
 .btn-cancel{
-  flex:1;background:transparent;border:1px solid #3f3f3f;border-radius:10px;
-  color:#8e8ea0;font-size:14px;font-weight:500;font-family:'Inter',sans-serif;
+  flex:1;background:transparent;border:1px solid #374151;border-radius:10px;
+  color:#9ca3af;font-size:14px;font-weight:500;font-family:'DM Sans',sans-serif;
   padding:13px;cursor:pointer;-webkit-appearance:none;
 }
 .btn-add{
-  flex:2;background:#10a37f;border:none;border-radius:10px;
-  color:#fff;font-size:14px;font-weight:600;font-family:'Inter',sans-serif;
+  flex:2;background:#2563eb;border:none;border-radius:10px;
+  color:#fff;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;
   padding:13px;cursor:pointer;-webkit-appearance:none;
 }
-.btn-add:active{background:#0d8c6d}
-.btn-eg{background:none;border:none;color:#565869;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;text-decoration:underline;text-align:left}
+.btn-add:active{background:#1d4ed8}
+.btn-eg{background:none;border:none;color:#6b7280;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline;text-align:left}
 
 .src-list{display:flex;flex-direction:column;gap:6px}
 .src-item{
   display:flex;align-items:center;gap:8px;
-  background:#212121;border:1px solid #3f3f3f;border-radius:8px;padding:11px 13px;
+  background:#111827;border:1px solid #374151;border-radius:8px;padding:11px 13px;
 }
-.src-item-name{flex:1;font-size:13px;color:#c5c5d2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.src-item-rm{background:none;border:none;color:#565869;font-size:20px;cursor:pointer;padding:0;line-height:1}
+.src-item-name{flex:1;font-size:13px;color:#d1d5db;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.src-item-rm{background:none;border:none;color:#6b7280;font-size:20px;cursor:pointer;padding:0;line-height:1}
 .src-item-rm:active{color:#f87171}
 
 /* Toast */
@@ -431,7 +432,7 @@ textarea.finput{resize:vertical;min-height:120px}
   .typing-row{padding:6px 14px}
 }
 @media(min-width:701px){
-  .panel{left:auto;right:24px;width:440px;border-radius:18px;bottom:24px;border:1px solid #3f3f3f;max-height:88vh}
+  .panel{left:auto;right:24px;width:440px;border-radius:18px;bottom:24px;border:1px solid #374151;max-height:88vh}
 }
 </style>
 </head>
@@ -442,9 +443,9 @@ textarea.finput{resize:vertical;min-height:120px}
   <!-- SIGN IN BOX -->
   <div class="login-box" id="signin-box">
     <div class="login-logo">
-      <div class="login-icon">🔬</div>
+      <div class="login-icon" style="font-size:32px;letter-spacing:-1px;font-weight:700;font-family:'DM Serif Display',serif;color:#2563eb">FP</div>
       <div class="login-title">FingerPost <span>Echo</span></div>
-      <div class="login-sub">Sign in to continue</div>
+      <div class="login-sub">Your expert interview intelligence platform</div>
     </div>
     <div class="lfield">
       <div class="llabel">USERNAME</div>
@@ -461,7 +462,7 @@ textarea.finput{resize:vertical;min-height:120px}
     <div class="lerr" id="lerr">Incorrect username or password.</div>
     <button class="btn-signin" id="btn-signin" onclick="doLogin()">Sign in →</button>
     <div style="text-align:center;margin-top:-6px">
-      <button onclick="showRequestForm()" style="background:none;border:none;color:#565869;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;text-decoration:underline">
+      <button onclick="showRequestForm()" style="background:none;border:none;color:#6b7280;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline">
         Request an account
       </button>
     </div>
@@ -484,12 +485,12 @@ textarea.finput{resize:vertical;min-height:120px}
       <input class="linput" type="password" id="r-pass" placeholder="Choose a password"/>
     </div>
     <div class="lerr" id="rerr">Please fill in all fields.</div>
-    <div id="rsuccess" style="display:none;font-size:13px;color:#6ee7b7;background:#022c22;border:1px solid #065f46;border-radius:8px;padding:13px;text-align:center;line-height:1.7">
+    <div id="rsuccess" style="display:none;font-size:13px;color:#93c5fd;background:#0f172a;border:1px solid #1e40af;border-radius:8px;padding:13px;text-align:center;line-height:1.7">
       ✅ Request sent!<br/>Please wait while we review your request. We'll be in touch soon.
     </div>
     <button class="btn-signin" id="btn-request" onclick="doRequestAccount()">Send request →</button>
     <div style="text-align:center;margin-top:-6px">
-      <button onclick="showSignIn()" style="background:none;border:none;color:#565869;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;text-decoration:underline">
+      <button onclick="showSignIn()" style="background:none;border:none;color:#6b7280;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline">
         ← Back to sign in
       </button>
     </div>
@@ -504,7 +505,7 @@ textarea.finput{resize:vertical;min-height:120px}
   <div class="sb" id="sb">
     <div class="sb-head">
       <div class="sb-logo" onclick="goHome()">
-        <span class="sb-logo-icon">💬</span>
+        <span class="sb-logo-icon" style="font-size:14px;font-weight:800;font-family:'DM Serif Display',serif;color:#2563eb;background:#1e3a5f;padding:4px 7px;border-radius:7px">FP</span>
         <span class="sb-logo-text">FingerPost <span>Echo</span></span>
       </div>
       <button class="btn-newchat" onclick="newChat()">
@@ -521,11 +522,9 @@ textarea.finput{resize:vertical;min-height:120px}
         📎 &nbsp;Add transcripts
         <span class="src-badge" id="src-badge">0</span>
       </button>
-      <button class="btn-sources" onclick="createDeliverable()" style="color:#10a37f;background:none">
-        🔗 &nbsp;Create deliverable
-      </button>
+
       <button class="btn-sources" id="btn-inbox" onclick="openInbox()" style="position:relative;display:none">
-        ✉️ &nbsp;Inbox
+        💬 &nbsp;Support
         <span id="unread-badge" style="display:none;background:#ef4444;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:2px 6px;margin-left:4px">0</span>
       </button>
       <button class="btn-sources" id="btn-admin" onclick="openAdmin()" style="display:none;color:#f59e0b;background:none">
@@ -562,8 +561,8 @@ textarea.finput{resize:vertical;min-height:120px}
     <div class="msgs" id="msgs">
       <div id="welcome" class="welcome">
         <div class="w-icon">💬</div>
-        <div class="w-title">What do you want to know?</div>
-        <div class="w-sub">Add an interview transcript using the sidebar, then ask anything about the expert's views.</div>
+        <div class="w-title">Expert Intelligence, Instantly</div>
+        <div class="w-sub">Load an interview transcript from the sidebar, then ask anything about the expert's insights, opinions, and recommendations.</div>
         <div class="w-cards">
           <button class="wcard" onclick="ask('Give me a full summary of this expert')">
             <div class="wcard-t">📋 Summary</div>
@@ -597,7 +596,7 @@ textarea.finput{resize:vertical;min-height:120px}
     <div class="inp-area">
       <div class="inp-box">
         <textarea class="chat-inp" id="chat-inp" rows="1"
-          placeholder="Ask anything about the expert's views..."
+          placeholder="Ask about the expert's views, opinions, or findings..."
           oninput="onInp(this)" onkeydown="onKey(event)"></textarea>
         <button class="send-btn" id="send-btn" disabled onclick="send()">↑</button>
       </div>
@@ -648,8 +647,8 @@ textarea.finput{resize:vertical;min-height:120px}
 
 <!-- INBOX MODAL -->
 <div class="overlay" id="inbox-overlay" onclick="if(event.target===this)closeInbox()" style="display:none;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#2f2f2f;border:1px solid #3f3f3f;border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;display:flex;flex-direction:column;gap:16px">
-    <div style="font-size:18px;font-weight:700;color:#fff" id="inbox-title">✉️ Inbox</div>
+  <div style="background:#1f2937;border:1px solid #374151;border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;display:flex;flex-direction:column;gap:16px">
+    <div style="font-size:18px;font-weight:700;color:#fff" id="inbox-title">💬 Support</div>
 
     <!-- Admin view: conversations list + compose -->
     <div id="inbox-admin-view" style="display:none;flex-direction:column;gap:14px">
@@ -663,7 +662,7 @@ textarea.finput{resize:vertical;min-height:120px}
       </div>
       <div>
         <div class="flabel" style="margin-bottom:8px">CONVERSATIONS</div>
-        <div id="admin-convos"><div style="color:#565869;font-size:13px">Loading...</div></div>
+        <div id="admin-convos"><div style="color:#6b7280;font-size:13px">Loading...</div></div>
       </div>
     </div>
 
@@ -671,8 +670,8 @@ textarea.finput{resize:vertical;min-height:120px}
     <div id="inbox-user-view" style="display:none;flex-direction:column;gap:14px">
       <div id="user-messages" style="display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto"></div>
       <div>
-        <div class="flabel" style="margin-bottom:8px">REPLY TO FINGER POST</div>
-        <textarea id="reply-text" class="finput" rows="3" placeholder="Write your reply..." style="resize:none"></textarea>
+        <div class="flabel" style="margin-bottom:8px">SEND A MESSAGE</div>
+        <textarea id="reply-text" class="finput" rows="3" placeholder="Write your message..." style="resize:none"></textarea>
         <button class="btn-add" onclick="userSendReply()" style="margin-top:8px;width:100%">Send reply →</button>
       </div>
     </div>
@@ -685,13 +684,13 @@ textarea.finput{resize:vertical;min-height:120px}
 
 <!-- ADMIN PANEL -->
 <div class="overlay" id="admin-overlay" onclick="if(event.target===this)closeAdmin()" style="display:none;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#2f2f2f;border:1px solid #3f3f3f;border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;display:flex;flex-direction:column;gap:20px">
+  <div style="background:#1f2937;border:1px solid #374151;border-radius:20px;padding:28px;width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;display:flex;flex-direction:column;gap:20px">
     <div style="font-size:18px;font-weight:700;color:#fff">⚙️ Admin Panel</div>
 
     <!-- Tabs -->
-    <div style="display:flex;gap:0;background:#212121;border-radius:10px;padding:4px">
-      <button id="tab-users-btn" onclick="switchAdminTab('users')" style="flex:1;padding:9px;border:none;border-radius:8px;background:#10a37f;color:#fff;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Manage Users</button>
-      <button id="tab-inbox-btn" onclick="switchAdminTab('inbox')" style="flex:1;padding:9px;border:none;border-radius:8px;background:transparent;color:#8e8ea0;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;position:relative">
+    <div style="display:flex;gap:0;background:#111827;border-radius:10px;padding:4px">
+      <button id="tab-users-btn" onclick="switchAdminTab('users')" style="flex:1;padding:9px;border:none;border-radius:8px;background:#2563eb;color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Manage Users</button>
+      <button id="tab-inbox-btn" onclick="switchAdminTab('inbox')" style="flex:1;padding:9px;border:none;border-radius:8px;background:transparent;color:#9ca3af;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;position:relative">
         Inbox
         <span id="admin-unread-dot" style="display:none;position:absolute;top:6px;right:10px;width:7px;height:7px;background:#ef4444;border-radius:50%"></span>
       </button>
@@ -701,11 +700,11 @@ textarea.finput{resize:vertical;min-height:120px}
     <div id="tab-users" style="display:flex;flex-direction:column;gap:16px">
       <div>
         <div class="flabel" style="margin-bottom:8px">PENDING ACCOUNT REQUESTS</div>
-        <div id="admin-requests"><div style="color:#565869;font-size:13px">Loading...</div></div>
+        <div id="admin-requests"><div style="color:#6b7280;font-size:13px">Loading...</div></div>
       </div>
       <div>
         <div class="flabel" style="margin-bottom:8px">ACTIVE USERS</div>
-        <div id="admin-users"><div style="color:#565869;font-size:13px">Loading...</div></div>
+        <div id="admin-users"><div style="color:#6b7280;font-size:13px">Loading...</div></div>
       </div>
     </div>
 
@@ -723,52 +722,13 @@ textarea.finput{resize:vertical;min-height:120px}
       <!-- Replies from users -->
       <div>
         <div class="flabel" style="margin-bottom:8px">REPLIES FROM USERS</div>
-        <div id="admin-inbox"><div style="color:#565869;font-size:13px">Loading...</div></div>
+        <div id="admin-inbox"><div style="color:#6b7280;font-size:13px">Loading...</div></div>
       </div>
     </div>
 
     <button class="btn-cancel" onclick="closeAdmin()">Close</button>
   </div>
 </div>
-
-<!-- DELIVERABLE MODAL -->
-<div class="overlay" id="deliv-overlay" onclick="if(event.target===this)closeDelivModal()" style="display:none;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#2f2f2f;border:1px solid #3f3f3f;border-radius:20px;padding:28px;width:100%;max-width:460px;display:flex;flex-direction:column;gap:18px;max-height:90dvh;overflow-y:auto">
-    <div style="font-size:18px;font-weight:700;color:#fff">🔗 Create Deliverable</div>
-    <div style="font-size:13px;color:#8e8ea0;line-height:1.6;margin-top:-8px">Generate a shareable link + access code. The recipient can only chat with the loaded transcript — they cannot add or change anything.</div>
-
-    <div>
-      <div class="flabel">TITLE (shown to the recipient)</div>
-      <input type="text" class="finput" id="deliv-title" placeholder="e.g. John Smith — Senior Developer" autocorrect="off"/>
-    </div>
-
-    <div id="deliv-result" style="display:none;background:#212121;border:1px solid #3f3f3f;border-radius:12px;padding:18px;flex-direction:column;gap:14px">
-      <div style="font-size:13px;color:#8e8ea0">Send both of these to your client:</div>
-      <div>
-        <div class="flabel">LINK</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <div id="deliv-url" style="flex:1;font-size:13px;color:#ececec;background:#171717;border:1px solid #3f3f3f;border-radius:8px;padding:10px 12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0"></div>
-          <button onclick="copyUrl()" style="background:#3f3f3f;border:none;color:#ececec;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;white-space:nowrap;flex-shrink:0">Copy</button>
-        </div>
-      </div>
-      <div>
-        <div class="flabel">ACCESS CODE</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <div id="deliv-code" style="flex:1;font-size:30px;font-weight:700;color:#10a37f;letter-spacing:.25em;text-align:center;background:#171717;border:1px solid #3f3f3f;border-radius:8px;padding:14px"></div>
-          <button onclick="copyCode()" style="background:#3f3f3f;border:none;color:#ececec;border-radius:8px;padding:10px 14px;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;white-space:nowrap;flex-shrink:0">Copy</button>
-        </div>
-      </div>
-      <div style="font-size:12px;color:#565869;line-height:1.6">⚠ Save the code now — it won't be shown again. The link works as long as your server is running.</div>
-    </div>
-
-    <div class="panel-btns" id="deliv-btns">
-      <button class="btn-cancel" onclick="closeDelivModal()">Cancel</button>
-      <button class="btn-add" id="btn-create-deliv" onclick="confirmCreateDeliverable()">Generate link →</button>
-    </div>
-    <button class="btn-cancel" id="btn-close-deliv" onclick="closeDelivModal()" style="display:none">Close</button>
-  </div>
-</div>
-
 
 <!-- UPGRADE MODAL -->
 <div class="overlay" id="upgrade-overlay" onclick="if(event.target===this)closeUpgradeModal()" style="display:none;align-items:center;justify-content:center;padding:20px">
@@ -804,11 +764,11 @@ textarea.finput{resize:vertical;min-height:120px}
         <div class="plan-badge gold" id="plan-badge-pro" style="display:none">Current</div>
       </div>
     </div>
-    <div style="background:#212121;border:1px solid #3f3f3f;border-radius:10px;padding:14px;font-size:13px;color:#8e8ea0;line-height:1.7">
-      To upgrade, open your <strong style="color:#ececec">Inbox</strong> and send a message saying which plan you want. We'll upgrade your account and confirm.
+    <div style="background:#111827;border:1px solid #374151;border-radius:10px;padding:14px;font-size:13px;color:#9ca3af;line-height:1.7">
+      To upgrade, open your <strong style="color:#f3f4f6">Support chat</strong> and send a message saying which plan you want. We'll upgrade your account and confirm.
     </div>
     <div style="display:flex;gap:10px">
-      <button class="btn-cancel" onclick="closeUpgradeModal();openInbox()" style="flex:1;background:#10a37f;color:#fff;border-color:#10a37f">✉️ Open Inbox</button>
+      <button class="btn-cancel" onclick="closeUpgradeModal();openInbox()" style="flex:1;background:#2563eb;color:#fff;border-color:#2563eb">💬 Open Support</button>
       <button class="btn-cancel" onclick="closeUpgradeModal()" style="flex:1">Close</button>
     </div>
   </div>
@@ -859,7 +819,7 @@ function showRequestForm(){
   document.getElementById('request-box').style.display='flex';
   document.getElementById('rsuccess').style.display='none';
   document.getElementById('rerr').classList.remove('show');
-  document.getElementById('r-email').value='';
+  
   document.getElementById('r-user').value='';
   document.getElementById('r-pass').value='';
   document.getElementById('btn-request').disabled=false;
@@ -1008,8 +968,8 @@ function showWelcome(){
   w.id='welcome'; w.className='welcome';
   w.innerHTML = `
     <div class="w-icon">💬</div>
-    <div class="w-title">What do you want to know?</div>
-    <div class="w-sub">Add an interview transcript using the sidebar, then ask anything about the expert's views.</div>
+    <div class="w-title">Expert Intelligence, Instantly</div>
+    <div class="w-sub">Load an interview transcript from the sidebar, then ask anything about the expert's insights, opinions, and recommendations.</div>
     <div class="w-cards">
       <button class="wcard" onclick="ask('Give me a full summary of this expert')"><div class="wcard-t">📋 Summary</div><div class="wcard-s">Overview of key opinions</div></button>
       <button class="wcard" onclick="ask('What is the expert overall opinion of the product?')"><div class="wcard-t">💊 Product Opinion</div><div class="wcard-s">Their view on the product</div></button>
@@ -1185,7 +1145,7 @@ function appendBotMsg(text){
   const msgs = document.getElementById('msgs');
   const row = document.createElement('div');
   row.className='msg-row bot';
-  row.innerHTML=`<div class="msg-inner"><div class="av bot">TC</div><div class="msg-body"><div class="msg-name">FingerPost Echo</div><div class="msg-text">${renderMd(text)}</div></div></div>`;
+  row.innerHTML=`<div class="msg-inner"><div class="av bot">FP</div><div class="msg-body"><div class="msg-name">FingerPost Echo</div><div class="msg-text">${renderMd(text)}</div></div></div>`;
   msgs.appendChild(row);
   scrollBottom();
 }
@@ -1194,7 +1154,7 @@ function addTyping(){
   const msgs = document.getElementById('msgs');
   const w = document.createElement('div');
   w.className='typing-row';
-  w.innerHTML=`<div class="av bot">TC</div><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+  w.innerHTML=`<div class="av bot">FP</div><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
   msgs.appendChild(w);
   scrollBottom();
   return w;
@@ -1306,12 +1266,12 @@ async function openInbox(){
   closeSb();
 
   if(isAdminUser){
-    document.getElementById('inbox-title').textContent = '✉️ Messages';
+    document.getElementById('inbox-title').textContent = '💬 Support';
     document.getElementById('inbox-admin-view').style.display = 'flex';
     document.getElementById('inbox-user-view').style.display = 'none';
     await loadAdminConvos();
   } else {
-    document.getElementById('inbox-title').textContent = '✉️ Inbox';
+    document.getElementById('inbox-title').textContent = '💬 Support';
     document.getElementById('inbox-admin-view').style.display = 'none';
     document.getElementById('inbox-user-view').style.display = 'flex';
     await loadUserInbox();
@@ -1339,18 +1299,18 @@ async function loadAdminConvos(){
     const el = document.getElementById('admin-convos');
     const active = cData.conversations.filter(c=>c.hasMessages);
     if(!active.length){
-      el.innerHTML = '<div style="color:#565869;font-size:13px">No conversations yet.</div>';
+      el.innerHTML = '<div style="color:#6b7280;font-size:13px">No conversations yet.</div>';
       return;
     }
     el.innerHTML = active.map(c=>`
-      <div style="background:#212121;border:1px solid #3f3f3f;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px">
-        <div style="font-size:13px;font-weight:600;color:#ececec">👤 ${esc(c.username)} ${c.unread?`<span style="background:#ef4444;color:#fff;font-size:10px;border-radius:8px;padding:2px 7px">${c.unread} new</span>`:''}</div>
+      <div style="background:#111827;border:1px solid #374151;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px">
+        <div style="font-size:13px;font-weight:600;color:#f3f4f6">👤 ${esc(c.username)} ${c.unread?`<span style="background:#ef4444;color:#fff;font-size:10px;border-radius:8px;padding:2px 7px">${c.unread} new</span>`:''}</div>
         <div style="display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto">
           ${c.messages.map(m=>`
             <div style="display:flex;gap:8px;align-items:flex-start;flex-direction:${m.dir==='to_user'?'row-reverse':'row'}">
-              <div style="background:${m.dir==='to_user'?'#065f46':'#2f2f2f'};border-radius:10px;padding:8px 12px;font-size:13px;color:#ececec;max-width:85%">
+              <div style="background:${m.dir==='to_user'?'#1e40af':'#1f2937'};border-radius:10px;padding:8px 12px;font-size:13px;color:#f3f4f6;max-width:85%">
                 <div>${esc(m.text)}</div>
-                <div style="font-size:10px;color:#565869;margin-top:4px">${new Date(m.sentAt).toLocaleString()}</div>
+                <div style="font-size:10px;color:#6b7280;margin-top:4px">${new Date(m.sentAt).toLocaleString()}</div>
               </div>
             </div>`).join('')}
         </div>
@@ -1384,13 +1344,13 @@ async function loadUserInbox(){
     const data = await res.json();
     const el = document.getElementById('user-messages');
     if(!data.messages.length){
-      el.innerHTML='<div style="color:#565869;font-size:13px;text-align:center;padding:16px">No messages yet.</div>';
+      el.innerHTML='<div style="color:#6b7280;font-size:13px;text-align:center;padding:16px">No messages yet.</div>';
       return;
     }
     el.innerHTML = data.messages.map(m=>`
-      <div style="background:#212121;border:1px solid #3f3f3f;border-radius:10px;padding:12px 14px">
-        <div style="font-size:11px;color:#565869;margin-bottom:6px">From FingerPost · ${new Date(m.sentAt).toLocaleString()}</div>
-        <div style="font-size:14px;color:#ececec;line-height:1.6">${esc(m.text)}</div>
+      <div style="background:#111827;border:1px solid #374151;border-radius:10px;padding:12px 14px">
+        <div style="font-size:11px;color:#6b7280;margin-bottom:6px">From FingerPost · ${new Date(m.sentAt).toLocaleString()}</div>
+        <div style="font-size:14px;color:#f3f4f6;line-height:1.6">${esc(m.text)}</div>
       </div>`).join('');
   } catch(e){ document.getElementById('user-messages').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
 }
@@ -1407,7 +1367,7 @@ async function userSendReply(){
     const data = await res.json();
     if(data.ok){
       document.getElementById('reply-text').value='';
-      showToast('✅ Reply sent');
+      showToast('✅ Message sent');
     } else showToast('⚠ '+data.error);
   } catch(e){ showToast('⚠ Failed to send'); }
 }
@@ -1421,7 +1381,7 @@ async function handleFiles(input){
   const files=Array.from(input.files||[]);
   if(!files.length) return;
   const status=document.getElementById('fstatus');
-  status.style.display='block'; status.style.color='#8e8ea0';
+  status.style.display='block'; status.style.color='#9ca3af';
   status.textContent='Reading files...';
   let loaded=0;
   for(const file of files){
@@ -1442,7 +1402,7 @@ async function handleFiles(input){
   input.value='';
   updateBadge(); renderSrcList(); chatHistory=[];
   if(loaded>0){
-    status.style.color='#6ee7b7';
+    status.style.color='#93c5fd';
     status.textContent=`✅ ${loaded} file${loaded!==1?'s':''} added successfully`;
     setTimeout(()=>status.style.display='none',3000);
   } else {
@@ -1551,13 +1511,13 @@ function switchAdminTab(tab){
   if(tab === 'users'){
     usersTab.style.display='flex';
     inboxTab.style.display='none';
-    usersBtn.style.background='#10a37f'; usersBtn.style.color='#fff';
-    inboxBtn.style.background='transparent'; inboxBtn.style.color='#8e8ea0';
+    usersBtn.style.background='#2563eb'; usersBtn.style.color='#fff';
+    inboxBtn.style.background='transparent'; inboxBtn.style.color='#9ca3af';
   } else {
     usersTab.style.display='none';
     inboxTab.style.display='flex';
-    inboxBtn.style.background='#10a37f'; inboxBtn.style.color='#fff';
-    usersBtn.style.background='transparent'; usersBtn.style.color='#8e8ea0';
+    inboxBtn.style.background='#2563eb'; inboxBtn.style.color='#fff';
+    usersBtn.style.background='transparent'; usersBtn.style.color='#9ca3af';
     document.getElementById('admin-unread-dot').style.display='none';
     loadAdminInbox();
     loadUserDropdown();
@@ -1573,14 +1533,14 @@ async function loadAdminData(){
     const rData = await rRes.json();
     const rEl = document.getElementById('admin-requests');
     if(!rData.requests.length){
-      rEl.innerHTML='<div style="color:#565869;font-size:13px">No pending requests.</div>';
+      rEl.innerHTML='<div style="color:#6b7280;font-size:13px">No pending requests.</div>';
     } else {
       rEl.innerHTML = rData.requests.map(r=>`
-        <div style="display:flex;align-items:center;gap:10px;background:#212121;border:1px solid #3f3f3f;border-radius:8px;padding:11px 13px;margin-bottom:6px">
-          <span style="flex:1;font-size:14px;color:#ececec;font-weight:600">👤 ${esc(r.username)}</span>
-          <span style="font-size:11px;color:#565869">${new Date(r.requestedAt).toLocaleDateString()}</span>
-          <button onclick="adminApprove('${r.id}')" style="background:#10a37f;border:none;color:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;font-family:'Inter',sans-serif">✅ Approve</button>
-          <button onclick="adminDecline('${r.id}')" style="background:#3f3f3f;border:none;color:#f87171;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif">❌ Decline</button>
+        <div style="display:flex;align-items:center;gap:10px;background:#111827;border:1px solid #374151;border-radius:8px;padding:11px 13px;margin-bottom:6px">
+          <span style="flex:1;font-size:14px;color:#f3f4f6;font-weight:600">👤 ${esc(r.username)}</span>
+          <span style="font-size:11px;color:#6b7280">${new Date(r.requestedAt).toLocaleDateString()}</span>
+          <button onclick="adminApprove('${r.id}')" style="background:#2563eb;border:none;color:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif">✅ Approve</button>
+          <button onclick="adminDecline('${r.id}')" style="background:#374151;border:none;color:#f87171;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif">❌ Decline</button>
         </div>`).join('');
     }
   } catch(e){ document.getElementById('admin-requests').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
@@ -1591,27 +1551,27 @@ async function loadAdminData(){
     const uData = await uRes.json();
     const uEl = document.getElementById('admin-users');
     if(!uData.users.length){
-      uEl.innerHTML='<div style="color:#565869;font-size:13px">No users yet.</div>';
+      uEl.innerHTML='<div style="color:#6b7280;font-size:13px">No users yet.</div>';
     } else {
       uEl.innerHTML = uData.users.map(u=>{
         const blockBtn = u.blocked
-          ? `<button onclick="adminUnblock('${u.username}')" style="background:#3f3f3f;border:none;color:#6ee7b7;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:'Inter',sans-serif">Unblock</button>`
-          : `<button onclick="adminBlock('${u.username}')" style="background:#3f3f3f;border:none;color:#fbbf24;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:'Inter',sans-serif">Block</button>`;
-        const planColor = u.plan==='pro'?'#fbbf24':u.plan==='plus'?'#6ee7b7':'#565869';
-        return `<div style="background:#212121;border:1px solid #3f3f3f;border-radius:8px;padding:11px 13px;margin-bottom:6px;display:flex;flex-direction:column;gap:8px">
+          ? `<button onclick="adminUnblock('${u.username}')" style="background:#374151;border:none;color:#93c5fd;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Unblock</button>`
+          : `<button onclick="adminBlock('${u.username}')" style="background:#374151;border:none;color:#fbbf24;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Block</button>`;
+        const planColor = u.plan==='pro'?'#fbbf24':u.plan==='plus'?'#93c5fd':'#6b7280';
+        return `<div style="background:#111827;border:1px solid #374151;border-radius:8px;padding:11px 13px;margin-bottom:6px;display:flex;flex-direction:column;gap:8px">
           <div style="display:flex;align-items:center;gap:8px">
-            <span style="flex:1;font-size:14px;color:${u.blocked?'#f87171':'#ececec'};font-weight:600">👤 ${esc(u.username)}${u.blocked?' (blocked)':''}</span>
-            <span style="font-size:11px;color:${planColor};background:#2a2a2a;padding:2px 8px;border-radius:8px;font-weight:600">${(u.plan||'free').toUpperCase()}</span>
+            <span style="flex:1;font-size:14px;color:${u.blocked?'#f87171':'#f3f4f6'};font-weight:600">👤 ${esc(u.username)}${u.blocked?' (blocked)':''}</span>
+            <span style="font-size:11px;color:${planColor};background:#1a2234;padding:2px 8px;border-radius:8px;font-weight:600">${(u.plan||'free').toUpperCase()}</span>
           </div>
-          <div style="font-size:11px;color:#565869">${u.usageCount||0} msgs today · resets in ${hoursUntilMidnight(u.usageReset)}h</div>
+          <div style="font-size:11px;color:#6b7280">${u.usageCount||0} msgs today · resets in ${hoursUntilMidnight(u.usageReset)}h</div>
           <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-            <select onchange="adminSetPlan('${u.username}',this.value)" style="background:#2a2a2a;border:1px solid #3f3f3f;border-radius:6px;color:#ececec;font-family:'Inter',sans-serif;font-size:11px;padding:5px 8px;cursor:pointer">
+            <select onchange="adminSetPlan('${u.username}',this.value)" style="background:#1a2234;border:1px solid #374151;border-radius:6px;color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:11px;padding:5px 8px;cursor:pointer">
               <option value="free" ${u.plan==='free'?'selected':''}>Free (20/day)</option>
               <option value="plus" ${u.plan==='plus'?'selected':''}>Plus (100/day) — €5/mo</option>
               <option value="pro"  ${u.plan==='pro' ?'selected':''}>Pro (400/day) — €15/mo</option>
             </select>
             ${blockBtn}
-            <button onclick="adminDelete('${u.username}')" style="background:#3f3f3f;border:none;color:#f87171;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:'Inter',sans-serif">Delete</button>
+            <button onclick="adminDelete('${u.username}')" style="background:#374151;border:none;color:#f87171;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif">Delete</button>
           </div>
         </div>`;
       }).join('');
@@ -1625,16 +1585,16 @@ async function loadAdminInbox(){
     const iData = await iRes.json();
     const iEl = document.getElementById('admin-inbox');
     if(!iData.messages || !iData.messages.length){
-      iEl.innerHTML='<div style="color:#565869;font-size:13px">No replies yet.</div>';
+      iEl.innerHTML='<div style="color:#6b7280;font-size:13px">No replies yet.</div>';
       return;
     }
     iEl.innerHTML = iData.messages.map(m=>`
-      <div style="background:#212121;border:1px solid #3f3f3f;border-radius:9px;padding:12px 14px;margin-bottom:6px">
+      <div style="background:#111827;border:1px solid #374151;border-radius:9px;padding:12px 14px;margin-bottom:6px">
         <div style="display:flex;justify-content:space-between;margin-bottom:5px">
-          <span style="font-size:12px;font-weight:600;color:#10a37f">👤 ${esc(m.from)}</span>
-          <span style="font-size:11px;color:#565869">${new Date(m.sentAt).toLocaleString()}</span>
+          <span style="font-size:12px;font-weight:600;color:#2563eb">👤 ${esc(m.from)}</span>
+          <span style="font-size:11px;color:#6b7280">${new Date(m.sentAt).toLocaleString()}</span>
         </div>
-        <div style="font-size:13px;color:#ececec;line-height:1.6">${esc(m.text)}</div>
+        <div style="font-size:13px;color:#f3f4f6;line-height:1.6">${esc(m.text)}</div>
       </div>`).join('');
   } catch(e){ document.getElementById('admin-inbox').innerHTML='<div style="color:#f87171;font-size:13px">Failed to load.</div>'; }
 }
@@ -1672,64 +1632,6 @@ async function adminDelete(username){
   showToast('🗑 '+username+' deleted');await loadAdminData();
 }
 
-let lastDelivUrl = '';
-let lastDelivCode = '';
-
-function createDeliverable(){
-  if(!sources.length){
-    showToast('⚠ Add at least one transcript first before creating a deliverable.');
-    return;
-  }
-  document.getElementById('deliv-title').value = '';
-  document.getElementById('deliv-result').style.display = 'none';
-  document.getElementById('deliv-btns').style.display = 'flex';
-  document.getElementById('btn-close-deliv').style.display = 'none';
-  document.getElementById('btn-create-deliv').disabled = false;
-  document.getElementById('btn-create-deliv').textContent = 'Generate link →';
-  document.getElementById('deliv-overlay').style.display = 'flex';
-  document.getElementById('deliv-result').style.display = 'none';
-  closeSb();
-}
-
-function closeDelivModal(){
-  document.getElementById('deliv-overlay').style.display = 'none';
-}
-
-async function confirmCreateDeliverable(){
-  const title = document.getElementById('deliv-title').value.trim() ||
-    (sources[0]?.name || 'Candidate Profile');
-  const btn = document.getElementById('btn-create-deliv');
-  btn.disabled = true; btn.textContent = 'Generating...';
-
-  try{
-    const res = await fetch(`${SERVER}/api/deliverable/create`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-auth-token':authToken},
-      body:JSON.stringify({sources, title})
-    });
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error||'Failed');
-
-    lastDelivUrl  = data.url;
-    lastDelivCode = data.code;
-
-    document.getElementById('deliv-url').textContent  = data.url;
-    document.getElementById('deliv-code').textContent = data.code;
-    document.getElementById('deliv-result').style.display = 'flex';
-    document.getElementById('deliv-btns').style.display   = 'none';
-    document.getElementById('btn-close-deliv').style.display = 'block';
-  } catch(e){
-    showToast('⚠ '+(e.message||'Could not create deliverable'));
-    btn.disabled=false; btn.textContent='Generate link →';
-  }
-}
-
-function copyUrl(){
-  navigator.clipboard.writeText(lastDelivUrl).then(()=>showToast('✅ Link copied!')).catch(()=>{});
-}
-function copyCode(){
-  navigator.clipboard.writeText(lastDelivCode).then(()=>showToast('✅ Code copied!')).catch(()=>{});
-}
 
 // ── USAGE ──────────────────────────────────────────────────────────────────
 let currentPlan = 'free';

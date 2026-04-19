@@ -72,7 +72,6 @@ async function initDB(){
 
 initDB().catch(e => console.error('DB init error:', e.message));
 
-const deliverables = new Map();
 
 app.use(cors());
 app.use(express.json({ limit: '20mb' }));
@@ -210,35 +209,6 @@ app.post('/api/chat', requireAuth, async (req, res) => {
   await callGroq(system, messages, res);
 });
 
-// ── Deliverables ───────────────────────────────────────────────────────────
-app.post('/api/deliverable/create', requireAuth, (req, res) => {
-  const { sources, title } = req.body;
-  if(!sources || !sources.length) return res.status(400).json({ error: 'No sources' });
-  const id   = crypto.randomBytes(12).toString('hex');
-  const code = Math.random().toString(36).slice(2,8).toUpperCase();
-  deliverables.set(id, { id, code, sources, title: title || 'Expert Interview', createdAt: new Date().toISOString() });
-  res.json({ ok: true, url: `${req.protocol}://${req.get('host')}/d/${id}`, code, id });
-});
-
-app.post('/api/deliverable/access', (req, res) => {
-  const { id, code } = req.body;
-  const d = deliverables.get(id);
-  if(!d) return res.status(404).json({ error: 'Not found or expired' });
-  if(d.code !== code.toUpperCase().trim()) return res.status(401).json({ error: 'Wrong access code' });
-  res.json({ ok: true, title: d.title, sources: d.sources });
-});
-
-app.post('/api/deliverable/chat', async (req, res) => {
-  const { id, code, messages, system } = req.body;
-  const d = deliverables.get(id);
-  if(!d) return res.status(404).json({ error: 'Not found' });
-  if(d.code !== code.toUpperCase().trim()) return res.status(401).json({ error: 'Invalid code' });
-  await callGroq(system, messages, res);
-});
-
-app.get('/d/:id', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'deliverable.html'));
-});
 
 // ── Account requests ───────────────────────────────────────────────────────
 app.post('/api/request-account', async (req, res) => {
