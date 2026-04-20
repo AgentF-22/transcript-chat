@@ -674,7 +674,8 @@ async function afterLogin(supaUser) {
     document.getElementById('btn-admin').style.display   = isAdminUser ? 'flex' : 'none';
     document.getElementById('btn-support').style.display = isAdminUser ? 'none' : 'flex';
     showApp(data.email);
-    updateUserMenuDisplay(data.email, data.plan || 'free');
+    // Force update after showApp sets currentUser
+    setTimeout(() => updateUserMenuDisplay(data.email, data.plan || 'free'), 0);
     checkUnread();
     loadUsage();
     setInterval(checkUnread, 30000);
