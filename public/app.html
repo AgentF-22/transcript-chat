@@ -260,90 +260,110 @@ function updateUserMenuDisplay(email, plan){
 <!-- LOGIN -->
 <div id="login-screen">
   <a href="/" style="position:fixed;top:20px;left:24px;display:flex;align-items:center;gap:6px;color:#6b7280;font-size:13px;text-decoration:none;font-family:'DM Sans',sans-serif;transition:color .15s" onmouseover="this.style.color='#f3f4f6'" onmouseout="this.style.color='#6b7280'">
-    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
     Back to Noted
   </a>
   <div style="width:100%;max-width:380px;background:#1f2937;border:1px solid #1e3a5f;border-radius:20px;padding:40px 32px;display:flex;flex-direction:column;gap:20px;box-shadow:0 30px 60px rgba(0,0,0,.6)">
 
-    <!-- Brand -->
     <div style="text-align:center;margin-bottom:4px">
       <div style="font-size:38px;font-weight:800;font-family:'DM Serif Display',serif;color:#2563eb;line-height:1;margin-bottom:12px">N</div>
-      <div style="font-size:22px;font-weight:700;color:#f3f4f6;letter-spacing:-.3px" id="login-title">Welcome</div>
+      <div style="font-size:22px;font-weight:700;color:#f3f4f6" id="login-title">Welcome</div>
       <div style="font-size:13px;color:#9ca3af;margin-top:5px" id="login-sub">Sign in to your account</div>
     </div>
 
-    <!-- Error -->
     <div id="lerr" style="font-size:13px;color:#f87171;background:#2d1212;border:1px solid #7f1d1d;border-radius:8px;padding:11px 13px;display:none;text-align:center"></div>
     <div id="lsuccess" style="font-size:13px;color:#6ee7b7;background:#022c22;border:1px solid #065f46;border-radius:8px;padding:11px 13px;display:none;text-align:center"></div>
 
-    <!-- Sign in form -->
+    <!-- Sign in -->
     <div id="signin-form" style="display:flex;flex-direction:column;gap:14px">
       <div style="display:flex;flex-direction:column;gap:7px">
         <div style="font-size:11px;font-weight:600;color:#9ca3af;letter-spacing:.08em">EMAIL</div>
-        <input id="si-email" type="email" placeholder="you@example.com"
-          autocomplete="email" style="background:#111827;border:1.5px solid #374151;border-radius:10px;color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 15px;outline:none;width:100%;box-sizing:border-box;transition:border-color .15s"
-          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#374151'"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();doSignIn()}"/>
+        <input id="si-email" type="email" placeholder="you@example.com" autocomplete="email"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();doSignIn()}"
+          style="background:#111827;border:1.5px solid #374151;border-radius:10px;color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 15px;outline:none;width:100%;box-sizing:border-box;transition:border-color .15s"
+          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#374151'"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:7px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;justify-content:space-between">
           <div style="font-size:11px;font-weight:600;color:#9ca3af;letter-spacing:.08em">PASSWORD</div>
-          <button onclick="showForgot()" style="background:none;border:none;color:#6b7280;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline">Forgot password?</button>
+          <button onclick="showForgot()" style="background:none;border:none;color:#6b7280;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline">Forgot?</button>
         </div>
-        <input id="si-pass" type="password" placeholder="Enter your password"
-          autocomplete="current-password" style="background:#111827;border:1.5px solid #374151;border-radius:10px;color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 15px;outline:none;width:100%;box-sizing:border-box;transition:border-color .15s"
-          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#374151'"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();doSignIn()}"/>
+        <input id="si-pass" type="password" placeholder="Your password" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();doSignIn()}"
+          style="background:#111827;border:1.5px solid #374151;border-radius:10px;color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 15px;outline:none;width:100%;box-sizing:border-box;transition:border-color .15s"
+          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#374151'"/>
       </div>
       <button id="btn-signin" onclick="doSignIn()"
-        style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;padding:14px;cursor:pointer;transition:background .15s">
+        style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;padding:14px;cursor:pointer">
         Sign in →
       </button>
       <div style="text-align:center;font-size:13px;color:#6b7280">
-        Don't have an account?
-        <button onclick="showSignUp()" style="background:none;border:none;color:#2563eb;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600">Create one</button>
+        No account? <button onclick="showSignUp()" style="background:none;border:none;color:#2563eb;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600">Create one</button>
       </div>
     </div>
 
-    <!-- Sign up form -->
+    <!-- Sign up step 1: email + password -->
     <div id="signup-form" style="display:none;flex-direction:column;gap:14px">
       <div style="display:flex;flex-direction:column;gap:7px">
         <div style="font-size:11px;font-weight:600;color:#9ca3af;letter-spacing:.08em">EMAIL</div>
-        <input id="su-email" type="email" placeholder="you@example.com"
-          autocomplete="email" style="background:#111827;border:1.5px solid #374151;border-radius:10px;color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 15px;outline:none;width:100%;box-sizing:border-box;transition:border-color .15s"
+        <input id="su-email" type="email" placeholder="you@example.com" autocomplete="email"
+          style="background:#111827;border:1.5px solid #374151;border-radius:10px;color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 15px;outline:none;width:100%;box-sizing:border-box;transition:border-color .15s"
           onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#374151'"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:7px">
         <div style="font-size:11px;font-weight:600;color:#9ca3af;letter-spacing:.08em">PASSWORD</div>
-        <input id="su-pass" type="password" placeholder="Choose a password (min 6 chars)"
-          autocomplete="new-password" style="background:#111827;border:1.5px solid #374151;border-radius:10px;color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 15px;outline:none;width:100%;box-sizing:border-box;transition:border-color .15s"
+        <input id="su-pass" type="password" placeholder="Min 6 characters" autocomplete="new-password"
+          style="background:#111827;border:1.5px solid #374151;border-radius:10px;color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 15px;outline:none;width:100%;box-sizing:border-box;transition:border-color .15s"
           onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#374151'"/>
       </div>
       <div style="display:flex;flex-direction:column;gap:7px">
         <div style="font-size:11px;font-weight:600;color:#9ca3af;letter-spacing:.08em">CONFIRM PASSWORD</div>
-        <input id="su-pass2" type="password" placeholder="Repeat your password"
-          autocomplete="new-password" style="background:#111827;border:1.5px solid #374151;border-radius:10px;color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 15px;outline:none;width:100%;box-sizing:border-box;transition:border-color .15s"
-          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#374151'"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();doSignUp()}"/>
+        <input id="su-pass2" type="password" placeholder="Repeat password" autocomplete="new-password"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();doSignUp()}"
+          style="background:#111827;border:1.5px solid #374151;border-radius:10px;color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 15px;outline:none;width:100%;box-sizing:border-box;transition:border-color .15s"
+          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#374151'"/>
       </div>
       <button id="btn-signup" onclick="doSignUp()"
-        style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;padding:14px;cursor:pointer;transition:background .15s">
+        style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;padding:14px;cursor:pointer">
         Create account →
       </button>
       <div style="text-align:center;font-size:13px;color:#6b7280">
-        Already have an account?
-        <button onclick="showSignIn()" style="background:none;border:none;color:#2563eb;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600">Sign in</button>
+        Already have one? <button onclick="showSignIn()" style="background:none;border:none;color:#2563eb;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:600">Sign in</button>
       </div>
     </div>
 
-    <!-- Forgot password form -->
+    <!-- Sign up step 2: verify email with OTP -->
+    <div id="verify-form" style="display:none;flex-direction:column;gap:14px">
+      <div style="font-size:13px;color:#9ca3af;text-align:center;line-height:1.8;background:#111827;border-radius:10px;padding:12px">
+        We sent a 6-digit code to<br/><strong style="color:#f3f4f6" id="verify-email-label"></strong>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div style="font-size:11px;font-weight:600;color:#9ca3af;letter-spacing:.08em">VERIFICATION CODE</div>
+        <input id="v-otp" type="text" placeholder="123456" maxlength="6"
+          autocomplete="one-time-code" inputmode="numeric"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();doVerifySignup()}"
+          style="background:#111827;border:1.5px solid #374151;border-radius:10px;color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:24px;letter-spacing:.3em;padding:13px 15px;outline:none;width:100%;box-sizing:border-box;text-align:center;transition:border-color .15s"
+          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#374151'"/>
+      </div>
+      <button id="btn-verify-signup" onclick="doVerifySignup()"
+        style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;padding:14px;cursor:pointer">
+        Verify & create account →
+      </button>
+      <div style="display:flex;justify-content:center;gap:16px">
+        <button onclick="resendSignupOtp()" style="background:none;border:none;color:#6b7280;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline">Resend code</button>
+        <span style="color:#374151">·</span>
+        <button onclick="showSignUp()" style="background:none;border:none;color:#6b7280;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:underline">← Back</button>
+      </div>
+    </div>
+
+    <!-- Forgot password -->
     <div id="forgot-form" style="display:none;flex-direction:column;gap:14px">
       <div style="display:flex;flex-direction:column;gap:7px">
         <div style="font-size:11px;font-weight:600;color:#9ca3af;letter-spacing:.08em">EMAIL</div>
         <input id="fp-email" type="email" placeholder="your@email.com"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();doForgot()}"
           style="background:#111827;border:1.5px solid #374151;border-radius:10px;color:#f3f4f6;font-family:'DM Sans',sans-serif;font-size:15px;padding:13px 15px;outline:none;width:100%;box-sizing:border-box;transition:border-color .15s"
-          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#374151'"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();doForgot()}"/>
+          onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#374151'"/>
       </div>
       <button onclick="doForgot()"
         style="width:100%;background:#2563eb;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;padding:14px;cursor:pointer">
@@ -354,12 +374,10 @@ function updateUserMenuDisplay(email, plan){
       </div>
     </div>
 
-    <!-- Divider -->
     <div style="display:flex;align-items:center;gap:10px;color:#374151;font-size:11px;font-weight:600;letter-spacing:.06em">
       <div style="flex:1;height:1px;background:#374151"></div>OR<div style="flex:1;height:1px;background:#374151"></div>
     </div>
 
-    <!-- Google -->
     <button onclick="doGoogleLogin()"
       style="width:100%;background:#111827;color:#f3f4f6;border:1.5px solid #374151;border-radius:12px;font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;padding:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color .15s"
       onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='#374151'">
@@ -367,7 +385,7 @@ function updateUserMenuDisplay(email, plan){
       Continue with Google
     </button>
 
-    <div style="text-align:center;font-size:12px;color:#6b7280;line-height:1.6">
+    <div style="text-align:center;font-size:12px;color:#6b7280">
       <a href="/privacy.html" target="_blank" style="color:#6b7280;text-decoration:underline">Privacy</a> · <a href="/terms.html" target="_blank" style="color:#6b7280;text-decoration:underline">Terms</a>
     </div>
   </div>
@@ -614,59 +632,32 @@ function updateUserMenuDisplay(email, plan){
 
 <script>
 // ── SUPABASE ──────────────────────────────────────────────────────────────
-const _supa = window.supabase.createClient('https://fprgzafskzurjlqdouei.supabase.co', 'sb_publishable_bvorSTMP9eZ8S48evYusEQ_df2PqsXj');
+const { createClient } = window.supabase;
+const _supa = createClient('https://fprgzafskzurjlqdouei.supabase.co', 'sb_publishable_bvorSTMP9eZ8S48evYusEQ_df2PqsXj');
 
 // ── STATE ─────────────────────────────────────────────────────────────────
 let sources=[],chatHistory=[],loading=false,uid=1,activeChatId=null;
 let authToken='',currentUser='',isAdminUser=false,currentPlan='free',chats=[];
-let pendingEmail='';
+let pendingSignupEmail='', pendingSignupPass='';
 const SERVER=window.location.origin;
-const APP_BASE=window.location.origin+'/app';
 function newChatId(){return Math.random().toString(36).slice(2,10)+Date.now().toString(36)}
 
-// ── EXAMPLE ───────────────────────────────────────────────────────────────
-const EXAMPLE=`Interviewer: Can you walk me through your professional background?
-Sarah: Absolutely. I have over 10 years of experience in product management, primarily in fintech. I started at a small payments startup called PayRoute where I was one of the first product hires. After three years I joined Stripe, where I spent five years leading the checkout and conversion team.
-
-Interviewer: What was your biggest achievement at Stripe?
-Sarah: The checkout redesign we shipped in 2021. We completely overhauled the payment flow based on user research and saw a 22% improvement in conversion rates across the platform.
-
-Interviewer: Why are you looking to leave?
-Sarah: Stripe has been incredible for my growth, but I feel ready to shape product strategy from the ground up. I want to build a team and a product vision.
-
-Interviewer: What are your greatest strengths?
-Sarah: Bridging technical and business perspectives. I am comfortable going deep with engineers on architecture, but I can also present clearly to a board. I am also strong at prioritisation.
-
-Interviewer: And areas you are working on?
-Sarah: Delegation. I am naturally hands-on and it took time to realise doing everything myself was slowing the team down.
-
-Interviewer: What are your salary expectations?
-Sarah: I am targeting a base between 180 and 210 thousand, depending on equity and the overall package.
-
-Interviewer: Where do you see yourself in five years?
-Sarah: In a VP of Product or CPO role where I have helped build something meaningful.`;
-
-// ── SUPABASE AUTH ─────────────────────────────────────────────────────────
+// ── AUTH ───────────────────────────────────────────────────────────────────
 window.addEventListener('load', async () => {
-  // Handle Google OAuth redirect back to app
+  const { data: { session } } = await _supa.auth.getSession();
+  if(session && window.location.hash.includes('access_token')) {
+    authToken = session.access_token;
+    window.location.hash = '';
+    await afterLogin(session.user);
+    return;
+  }
+  if(session) await _supa.auth.signOut();
   _supa.auth.onAuthStateChange(async (event, session) => {
-    if(session && event==='SIGNED_IN' && !authToken) {
+    if(event === 'SIGNED_IN' && session && !authToken) {
       authToken = session.access_token;
       await afterLogin(session.user);
     }
   });
-  // Sign out so user always sees login on fresh load
-  // But first check if we're mid-OAuth redirect
-  const { data: { session } } = await _supa.auth.getSession();
-  if(session) {
-    // Only auto-login if URL has OAuth fragment (Google redirect)
-    if(window.location.hash.includes('access_token')) {
-      authToken = session.access_token;
-      await afterLogin(session.user);
-    } else {
-      await _supa.auth.signOut();
-    }
-  }
 });
 
 async function afterLogin(supaUser) {
@@ -679,10 +670,6 @@ async function afterLogin(supaUser) {
     document.getElementById('btn-support').style.display = isAdminUser ? 'none' : 'flex';
     showApp(data.email);
     updateUserMenuDisplay(data.email, data.plan || 'free');
-    // Also update from /api/me in case plan changed
-    fetch(`${SERVER}/api/usage`,{headers:{'x-auth-token':authToken}}).then(r=>r.json()).then(d=>{
-      if(d.ok&&!d.admin) updateUserMenuDisplay(data.email, d.plan);
-    }).catch(()=>{});
     checkUnread();
     loadUsage();
     setInterval(checkUnread, 30000);
@@ -690,142 +677,115 @@ async function afterLogin(supaUser) {
   } catch(e) { showLoginError('Could not reach server.'); }
 }
 
-function showSignIn(){
+// Sign in with email + password
+async function doSignIn() {
+  const email = document.getElementById('si-email').value.trim();
+  const pass  = document.getElementById('si-pass').value;
+  const btn   = document.getElementById('btn-signin');
+  if(!email||!pass) { showLoginError('Please fill in all fields.'); return; }
+  btn.disabled=true; btn.textContent='Signing in...';
+  clearAuthMessages();
+  const {data,error} = await _supa.auth.signInWithPassword({email, password:pass});
+  if(error) {
+    showLoginError(error.message.includes('Invalid') ? 'Incorrect email or password.' : error.message);
+    btn.disabled=false; btn.textContent='Sign in →'; return;
+  }
+  authToken = data.session.access_token;
+  await afterLogin(data.user);
+}
+
+// Sign up step 1: collect email + password, then send OTP
+async function doSignUp() {
+  const email = document.getElementById('su-email').value.trim();
+  const pass  = document.getElementById('su-pass').value;
+  const pass2 = document.getElementById('su-pass2').value;
+  const btn   = document.getElementById('btn-signup');
+  if(!email||!pass||!pass2) { showLoginError('Please fill in all fields.'); return; }
+  if(pass.length < 6) { showLoginError('Password must be at least 6 characters.'); return; }
+  if(pass !== pass2) { showLoginError('Passwords do not match.'); return; }
+  btn.disabled=true; btn.textContent='Sending code...';
+  clearAuthMessages();
+  // Send OTP to verify email before creating account
+  const {error} = await _supa.auth.signInWithOtp({email, options:{shouldCreateUser:true}});
+  if(error) {
+    const m = error.message?.toLowerCase()||'';
+    showLoginError((m.includes('rate limit')||m.includes('too many')) ?
+      'Too many requests — wait a few minutes and try again.' : error.message);
+    btn.disabled=false; btn.textContent='Create account →'; return;
+  }
+  pendingSignupEmail = email;
+  pendingSignupPass  = pass;
+  document.getElementById('verify-email-label').textContent = email;
+  document.getElementById('signup-form').style.display = 'none';
+  document.getElementById('verify-form').style.display = 'flex';
+  document.getElementById('login-title').textContent = 'Verify your email';
+  document.getElementById('login-sub').textContent = 'Check your inbox for the code';
+  btn.disabled=false; btn.textContent='Create account →';
+}
+
+// Sign up step 2: verify OTP then create account with password
+async function doVerifySignup() {
+  const otp = document.getElementById('v-otp').value.trim();
+  const btn = document.getElementById('btn-verify-signup');
+  if(!otp||otp.length<6) { showLoginError('Enter the 6-digit code.'); return; }
+  btn.disabled=true; btn.textContent='Verifying...';
+  clearAuthMessages();
+  // Verify OTP — this logs them in via magic link
+  const {data, error} = await _supa.auth.verifyOtp({email:pendingSignupEmail, token:otp, type:'email'});
+  if(error) { showLoginError('Invalid code. Try again.'); btn.disabled=false; btn.textContent='Verify & create account →'; return; }
+  // Now update their password so they can sign in with it next time
+  if(pendingSignupPass) {
+    await _supa.auth.updateUser({password: pendingSignupPass});
+  }
+  authToken = data.session.access_token;
+  await afterLogin(data.user);
+}
+
+async function resendSignupOtp() {
+  await _supa.auth.signInWithOtp({email:pendingSignupEmail, options:{shouldCreateUser:true}});
+  showLoginSuccess('✅ New code sent!');
+}
+
+async function doForgot() {
+  const email = document.getElementById('fp-email').value.trim();
+  if(!email) { showLoginError('Enter your email.'); return; }
+  clearAuthMessages();
+  await _supa.auth.resetPasswordForEmail(email, {redirectTo: window.location.origin+'/app'});
+  showLoginSuccess('✅ Reset link sent — check your email.');
+}
+
+function showSignIn() {
   document.getElementById('signin-form').style.display='flex';
   document.getElementById('signup-form').style.display='none';
+  document.getElementById('verify-form').style.display='none';
   document.getElementById('forgot-form').style.display='none';
   document.getElementById('login-title').textContent='Welcome';
   document.getElementById('login-sub').textContent='Sign in to your account';
   clearAuthMessages();
 }
-function showSignUp(){
+function showSignUp() {
   document.getElementById('signin-form').style.display='none';
   document.getElementById('signup-form').style.display='flex';
+  document.getElementById('verify-form').style.display='none';
   document.getElementById('forgot-form').style.display='none';
   document.getElementById('login-title').textContent='Create account';
-  document.getElementById('login-sub').textContent='Start for free — no card required';
+  document.getElementById('login-sub').textContent='Free to start — no card required';
   clearAuthMessages();
 }
-function showForgot(){
+function showForgot() {
   document.getElementById('signin-form').style.display='none';
   document.getElementById('signup-form').style.display='none';
+  document.getElementById('verify-form').style.display='none';
   document.getElementById('forgot-form').style.display='flex';
   document.getElementById('login-title').textContent='Reset password';
   document.getElementById('login-sub').textContent="We'll send you a reset link";
   clearAuthMessages();
 }
-function clearAuthMessages(){
-  document.getElementById('lerr').style.display='none';
-  document.getElementById('lsuccess').style.display='none';
-}
-function showLoginError(msg){
-  const el=document.getElementById('lerr');
-  el.textContent=msg; el.style.display='block';
-  document.getElementById('lsuccess').style.display='none';
-}
-function showLoginSuccess(msg){
-  const el=document.getElementById('lsuccess');
-  el.textContent=msg; el.style.display='block';
-  document.getElementById('lerr').style.display='none';
-}
-function clearLoginError(){ clearAuthMessages(); }
-
-async function doSignIn(){
-  const email=document.getElementById('si-email').value.trim();
-  const pass=document.getElementById('si-pass').value;
-  const btn=document.getElementById('btn-signin');
-  if(!email||!pass){ showLoginError('Please fill in all fields.'); return; }
-  btn.disabled=true; btn.textContent='Signing in...';
-  clearAuthMessages();
-  // Try password first, fall back to OTP if no password set
-  const {data,error}=await _supa.auth.signInWithPassword({email,password:pass});
-  if(error){
-    if(error.message.includes('Invalid login') || error.message.includes('Email not confirmed')){
-      showLoginError('Incorrect email or password.');
-    } else {
-      showLoginError(error.message);
-    }
-    btn.disabled=false; btn.textContent='Sign in →'; return;
-  }
-  authToken=data.session.access_token;
-  await afterLogin(data.user);
-}
-
-async function doSignUp(){
-  const email=document.getElementById('su-email').value.trim();
-  const pass=document.getElementById('su-pass').value;
-  const pass2=document.getElementById('su-pass2').value;
-  const btn=document.getElementById('btn-signup');
-  if(!email||!pass||!pass2){ showLoginError('Please fill in all fields.'); return; }
-  if(pass.length<6){ showLoginError('Password must be at least 6 characters.'); return; }
-  if(pass!==pass2){ showLoginError('Passwords do not match.'); return; }
-  btn.disabled=true; btn.textContent='Creating account...';
-  clearAuthMessages();
-  const {data,error}=await _supa.auth.signUp({email,password:pass});
-  if(error){ showLoginError(error.message); btn.disabled=false; btn.textContent='Create account →'; return; }
-  if(data.session){
-    // Email confirmation disabled - logged in immediately
-    authToken=data.session.access_token;
-    await afterLogin(data.user);
-  } else {
-    // Email confirmation required
-    showLoginSuccess('✅ Check your email for a confirmation link, then sign in.');
-    btn.disabled=false; btn.textContent='Create account →';
-    setTimeout(()=>showSignIn(), 4000);
-  }
-}
-
-async function doForgot(){
-  const email=document.getElementById('fp-email').value.trim();
-  if(!email){ showLoginError('Enter your email.'); return; }
-  clearAuthMessages();
-  const {error}=await _supa.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+'/app'});
-  if(error){ showLoginError(error.message); return; }
-  showLoginSuccess('✅ Reset link sent — check your email.');
-}
-
-async function tryEmailNext() {
-  const email = document.getElementById('l-email').value.trim();
-  if(!email) return;
-  const btn = document.getElementById('btn-continue');
-  btn.disabled=true; btn.textContent='Sending code...';
-  clearLoginError();
-  const { error } = await _supa.auth.signInWithOtp({email, options:{shouldCreateUser:true}});
-  if(error) { const m=error.message?.toLowerCase()||''; const friendly = (m.includes('rate limit')||m.includes('too many')) ? 'We\'re having a high demand right now — please wait a few minutes and try again, or use Continue with Google.' : error.message; showLoginError(friendly); btn.disabled=false; btn.textContent='Continue →'; return; }
-  pendingEmail = email;
-  document.getElementById('otp-email-label').textContent = email;
-  document.getElementById('email-form').style.display = 'none';
-  document.getElementById('otp-form').style.display   = 'flex';
-  btn.disabled=false; btn.textContent='Continue →';
-}
-
-async function doOtpVerify() {
-  const otp = document.getElementById('l-otp').value.trim();
-  const btn = document.getElementById('btn-verify');
-  const err = document.getElementById('otp-err');
-  err.style.display='none';
-  if(!otp||otp.length<6) { err.textContent='Enter the 6-digit code.'; err.style.display='block'; return; }
-  btn.disabled=true; btn.textContent='Verifying...';
-  const { data, error } = await _supa.auth.verifyOtp({email:pendingEmail, token:otp, type:'email'});
-  if(error) { err.textContent=error.message||'Invalid code.'; err.style.display='block'; btn.disabled=false; btn.textContent='Verify & sign in →'; return; }
-  authToken = data.session.access_token;
-  await afterLogin(data.user);
-}
-
-async function resendOtp() {
-  await _supa.auth.signInWithOtp({email:pendingEmail,options:{shouldCreateUser:true}});
-  showToast('✅ New code sent!');
-}
-
-function showEmailForm() {
-  document.getElementById('otp-form').style.display='none';
-  document.getElementById('email-form').style.display='flex';
-}
 
 async function doGoogleLogin() {
-  const { error } = await _supa.auth.signInWithOAuth({
+  const {error} = await _supa.auth.signInWithOAuth({
     provider:'google',
-    options:{redirectTo: window.location.origin+'/app'}
+    options:{redirectTo: window.location.href}
   });
   if(error) showLoginError(error.message);
 }
@@ -833,14 +793,13 @@ async function doGoogleLogin() {
 async function logout() {
   await _supa.auth.signOut();
   authToken=''; currentUser=''; chats=[];
-  sources=[]; chatHistory=[]; activeChatId=null;
+  sources=[]; chatHistory=[]; activeChatId=null; currentPlan='free';
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('app').classList.remove('visible');
+  document.getElementById('usage-wrap').style.display='none';
   showSignIn();
   document.getElementById('si-email').value='';
   document.getElementById('si-pass').value='';
-  document.getElementById('usage-wrap').style.display='none';
-  clearLoginError();
 }
 
 function showApp(email) {
@@ -849,16 +808,24 @@ function showApp(email) {
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').classList.add('visible');
   renderSidebar();
-  updateUserMenuDisplay(email||currentUser, currentPlan||"free");
+  updateUserMenuDisplay(currentUser, currentPlan||'free');
 }
 
 function showLoginError(msg) {
-  const err=document.getElementById('lerr');
-  err.textContent=msg; err.style.display='block';
+  const el=document.getElementById('lerr');
+  el.textContent=msg; el.style.display='block';
+  document.getElementById('lsuccess').style.display='none';
 }
-function clearLoginError() {
+function showLoginSuccess(msg) {
+  const el=document.getElementById('lsuccess');
+  el.textContent=msg; el.style.display='block';
   document.getElementById('lerr').style.display='none';
 }
+function clearAuthMessages() {
+  document.getElementById('lerr').style.display='none';
+  document.getElementById('lsuccess').style.display='none';
+}
+function clearLoginError(){ clearAuthMessages(); }
 
 function saveChats(){localStorage.setItem('noted_chats_'+currentUser,JSON.stringify(chats.slice(0,50)))}
 function newChat(){loading=false;activeChatId=null;chatHistory=[];sources=[];updateBadge();toggleSend();const msgs=document.getElementById('msgs');while(msgs.firstChild)msgs.removeChild(msgs.firstChild);showWelcome();const inp=document.getElementById('chat-inp');if(inp){inp.value='';inp.style.height='auto'}renderSidebar();closeSb()}
