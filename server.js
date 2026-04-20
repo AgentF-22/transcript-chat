@@ -138,18 +138,33 @@ async function requireAdmin(req, res, next){
 }
 
 // ── Usage check ────────────────────────────────────────────────────────────
+function getMidnight(){
+  const d = new Date();
+  d.setHours(24, 0, 0, 0); // next midnight
+  return d;
+}
+function getLastMidnight(){
+  const d = new Date();
+  d.setHours(0, 0, 0, 0); // today midnight
+  return d;
+}
+
 async function checkAndIncrementUsage(user){
   if(user.is_admin) return { ok: true };
-  const plan  = PLANS[user.plan] || PLANS.free;
-  const now   = new Date();
-  const reset = new Date(user.usage_reset);
-  if((now - reset) > 24 * 60 * 60 * 1000){
-    await pool.query('UPDATE profiles SET usage_count=1, usage_reset=$1 WHERE id=$2', [now.toISOString(), user.id]);
+  const plan        = PLANS[user.plan] || PLANS.free;
+  const now         = new Date();
+  const lastMidnight = getLastMidnight();
+  const reset       = new Date(user.usage_reset);
+
+  // Reset if last reset was before today's midnight
+  if(reset < lastMidnight){
+    const nextMidnight = getMidnight();
+    await pool.query('UPDATE profiles SET usage_count=1, usage_reset=$1 WHERE id=$2', [nextMidnight.toISOString(), user.id]);
     return { ok: true, used: 1, limit: plan.daily };
   }
   if(user.usage_count >= plan.daily){
-    const msLeft = 24*60*60*1000 - (now - reset);
-    const hLeft  = Math.ceil(msLeft / (60*60*1000));
+    const nextMidnight = getMidnight();
+    const hLeft = Math.ceil((nextMidnight - now) / (60*60*1000));
     return { ok: false, used: user.usage_count, limit: plan.daily, hoursLeft: hLeft };
   }
   await pool.query('UPDATE profiles SET usage_count=usage_count+1 WHERE id=$1', [user.id]);
@@ -186,10 +201,10 @@ app.get('/api/usage', requireAuth, async (req, res) => {
   const plan  = PLANS[user.plan] || PLANS.free;
   const now   = new Date();
   const reset = new Date(user.usage_reset);
-  let used = user.usage_count;
-  if((now - reset) > 24 * 60 * 60 * 1000) used = 0;
-  const msLeft = Math.max(0, 24*60*60*1000 - (now - reset));
-  const hLeft  = Math.ceil(msLeft / (60*60*1000));
+  const lastMidnight = getLastMidnight();
+  const nextMidnight = getMidnight();
+  let used = (reset < lastMidnight) ? 0 : user.usage_count;
+  const hLeft = Math.ceil((nextMidnight - now) / (60*60*1000));
   res.json({
     ok: true,
     plan: user.plan || 'free',
