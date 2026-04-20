@@ -211,13 +211,42 @@ textarea.finput{resize:vertical;min-height:120px}
 .sb-overlay.open{display:block}
 
 @media(max-width:700px){
-  .sb{position:fixed;left:0;top:0;bottom:0;z-index:90;transform:translateX(-100%)}
+  /* Sidebar slides in */
+  .sb{position:fixed;left:0;top:0;bottom:0;z-index:90;transform:translateX(-100%);width:280px}
   .sb.open{transform:translateX(0)}
   .mob-bar{display:flex}
+
+  /* Main area */
   .msgs{padding-top:16px}
-  .inp-area{padding:10px 14px;padding-bottom:max(14px,env(safe-area-inset-bottom))}
-  .msg-inner,.typing-row{padding:0 14px}
-  .welcome{padding:24px 16px 16px}
+  .inp-area{padding:10px 12px;padding-bottom:max(14px,env(safe-area-inset-bottom))}
+  .msg-inner,.typing-row{padding:0 12px}
+  .welcome{padding:20px 14px 14px}
+  .w-cards{grid-template-columns:1fr 1fr;gap:8px}
+  .wcard{padding:12px}
+  .wcard-t{font-size:12px}
+  .wcard-s{font-size:11px}
+
+  /* Login screen */
+  #login-screen{padding:16px;align-items:flex-start;padding-top:60px}
+  #login-screen > a{top:14px;left:16px}
+  #login-screen > div > div:last-child > div{max-width:100%}
+
+  /* Modals full screen on mobile */
+  .modal-wrap{padding:0;align-items:flex-end}
+  .modal{border-radius:20px 20px 0 0;max-height:92dvh;max-width:100%!important;width:100%}
+
+  /* Panel full width */
+  .panel{border-radius:20px 20px 0 0;left:0;right:0;bottom:0}
+
+  /* Input box */
+  .inp-box{border-radius:12px}
+
+  /* Welcome cards */
+  .w-title{font-size:20px}
+  .w-sub{font-size:14px}
+
+  /* User menu dropdown */
+  #user-dropdown{left:8px!important;right:8px!important;width:auto!important}
 }
 @media(min-width:701px){
   .panel{left:auto;right:24px;width:440px;border-radius:18px;bottom:24px;border:1px solid var(--border);max-height:88vh}
@@ -299,7 +328,7 @@ async function adminReply(){
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
     Back to Noted
   </a>
-  <div style="width:100%;max-width:380px;background:#1f2937;border:1px solid #1e3a5f;border-radius:20px;padding:40px 32px;display:flex;flex-direction:column;gap:20px;box-shadow:0 30px 60px rgba(0,0,0,.6)">
+  <div style="width:100%;max-width:380px;background:#1f2937;border:1px solid #1e3a5f;border-radius:20px;padding:32px 24px;display:flex;flex-direction:column;gap:20px;box-shadow:0 30px 60px rgba(0,0,0,.6)">
 
     <div style="text-align:center;margin-bottom:4px">
       <div style="font-size:38px;font-weight:800;font-family:'DM Serif Display',serif;color:#2563eb;line-height:1;margin-bottom:12px">N</div>
@@ -1357,13 +1386,42 @@ textarea.finput{resize:vertical;min-height:120px}
 .sb-overlay.open{display:block}
 
 @media(max-width:700px){
-  .sb{position:fixed;left:0;top:0;bottom:0;z-index:90;transform:translateX(-100%)}
+  /* Sidebar slides in */
+  .sb{position:fixed;left:0;top:0;bottom:0;z-index:90;transform:translateX(-100%);width:280px}
   .sb.open{transform:translateX(0)}
   .mob-bar{display:flex}
+
+  /* Main area */
   .msgs{padding-top:16px}
-  .inp-area{padding:10px 14px;padding-bottom:max(14px,env(safe-area-inset-bottom))}
-  .msg-inner,.typing-row{padding:0 14px}
-  .welcome{padding:24px 16px 16px}
+  .inp-area{padding:10px 12px;padding-bottom:max(14px,env(safe-area-inset-bottom))}
+  .msg-inner,.typing-row{padding:0 12px}
+  .welcome{padding:20px 14px 14px}
+  .w-cards{grid-template-columns:1fr 1fr;gap:8px}
+  .wcard{padding:12px}
+  .wcard-t{font-size:12px}
+  .wcard-s{font-size:11px}
+
+  /* Login screen */
+  #login-screen{padding:16px;align-items:flex-start;padding-top:60px}
+  #login-screen > a{top:14px;left:16px}
+  #login-screen > div > div:last-child > div{max-width:100%}
+
+  /* Modals full screen on mobile */
+  .modal-wrap{padding:0;align-items:flex-end}
+  .modal{border-radius:20px 20px 0 0;max-height:92dvh;max-width:100%!important;width:100%}
+
+  /* Panel full width */
+  .panel{border-radius:20px 20px 0 0;left:0;right:0;bottom:0}
+
+  /* Input box */
+  .inp-box{border-radius:12px}
+
+  /* Welcome cards */
+  .w-title{font-size:20px}
+  .w-sub{font-size:14px}
+
+  /* User menu dropdown */
+  #user-dropdown{left:8px!important;right:8px!important;width:auto!important}
 }
 @media(min-width:701px){
   .panel{left:auto;right:24px;width:440px;border-radius:18px;bottom:24px;border:1px solid var(--border);max-height:88vh}
@@ -1380,7 +1438,7 @@ textarea.finput{resize:vertical;min-height:120px}
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
     Back to Noted
   </a>
-  <div style="width:100%;max-width:380px;background:#1f2937;border:1px solid #1e3a5f;border-radius:20px;padding:40px 32px;display:flex;flex-direction:column;gap:20px;box-shadow:0 30px 60px rgba(0,0,0,.6)">
+  <div style="width:100%;max-width:380px;background:#1f2937;border:1px solid #1e3a5f;border-radius:20px;padding:32px 24px;display:flex;flex-direction:column;gap:20px;box-shadow:0 30px 60px rgba(0,0,0,.6)">
 
     <div style="text-align:center;margin-bottom:4px">
       <div style="font-size:38px;font-weight:800;font-family:'DM Serif Display',serif;color:#2563eb;line-height:1;margin-bottom:12px">N</div>
