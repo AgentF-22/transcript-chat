@@ -223,7 +223,34 @@ textarea.finput{resize:vertical;min-height:120px}
   .panel{left:auto;right:24px;width:440px;border-radius:18px;bottom:24px;border:1px solid var(--border);max-height:88vh}
 }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js">
+function toggleUserMenu(){
+  const btn = document.getElementById('user-menu-btn');
+  const dd  = document.getElementById('user-dropdown');
+  const isOpen = dd.classList.contains('open');
+  if(isOpen){ closeUserMenu(); } else {
+    dd.classList.add('open');
+    btn.classList.add('open');
+    setTimeout(()=>document.addEventListener('click', closeUserMenuOutside, {once:true}), 0);
+  }
+}
+function closeUserMenu(){
+  document.getElementById('user-dropdown').classList.remove('open');
+  document.getElementById('user-menu-btn').classList.remove('open');
+}
+function closeUserMenuOutside(e){
+  if(!document.getElementById('user-menu-btn').contains(e.target)) closeUserMenu();
+}
+function updateUserMenuDisplay(email, plan){
+  const emailEl = document.getElementById('user-email-display');
+  const planEl  = document.getElementById('user-plan-display');
+  const avEl    = document.getElementById('user-avatar');
+  if(emailEl) emailEl.textContent = email || '';
+  if(planEl)  planEl.textContent  = (plan||'free').charAt(0).toUpperCase()+(plan||'free').slice(1)+' plan';
+  if(avEl)    avEl.textContent    = (email||'?')[0].toUpperCase();
+}
+
+</script>
 </head>
 <body>
 
@@ -329,18 +356,43 @@ textarea.finput{resize:vertical;min-height:120px}
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
         Admin panel
       </button>
-      <button class="sb-nav" onclick="logout()" style="color:var(--text3)">
-        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-        Sign out
-      </button>
     </div>
-    <div class="usage-wrap" id="usage-wrap" style="display:none">
+
+    <!-- Usage bar (non-admin) -->
+    <div class="usage-wrap" id="usage-wrap" style="display:none;padding:0 10px 6px">
       <div class="usage-row">
         <span class="usage-plan" id="usage-plan-label">Free plan</span>
         <span class="usage-nums" id="usage-count-label">0/20</span>
       </div>
       <div class="usage-track"><div class="usage-fill" id="usage-bar-fill" style="width:0%"></div></div>
       <button class="btn-upgrade" onclick="openUpgradeModal()">Upgrade plan ↑</button>
+    </div>
+
+    <!-- User menu -->
+    <div class="user-menu-wrap">
+      <button class="user-menu-btn" id="user-menu-btn" onclick="toggleUserMenu()">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div class="user-info">
+          <div class="user-email" id="user-email-display">Loading...</div>
+          <div class="user-plan-tag" id="user-plan-display">Free plan</div>
+        </div>
+        <svg class="user-menu-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="user-dropdown" id="user-dropdown">
+        <a href="/privacy.html" target="_blank" class="user-dropdown-item">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          Privacy policy
+        </a>
+        <a href="/terms.html" target="_blank" class="user-dropdown-item">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Terms of service
+        </a>
+        <div class="user-dropdown-sep"></div>
+        <button class="user-dropdown-item danger" onclick="closeUserMenu();logout()">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          Sign out
+        </button>
+      </div>
     </div>
   </div>
 
@@ -564,6 +616,7 @@ async function afterLogin(supaUser) {
     document.getElementById('btn-admin').style.display   = isAdminUser ? 'flex' : 'none';
     document.getElementById('btn-support').style.display = isAdminUser ? 'none' : 'flex';
     showApp(data.email);
+    updateUserMenuDisplay(data.email, data.plan);
     checkUnread();
     loadUsage();
     setInterval(checkUnread, 30000);
