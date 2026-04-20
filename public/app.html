@@ -324,7 +324,7 @@ async function adminReply(){
 
 <!-- LOGIN -->
 <div id="login-screen">
-  <a href="/" style="position:fixed;top:20px;left:24px;display:flex;align-items:center;gap:6px;color:#6b7280;font-size:13px;text-decoration:none;font-family:'DM Sans',sans-serif;transition:color .15s" onmouseover="this.style.color='#f3f4f6'" onmouseout="this.style.color='#6b7280'">
+  <a id="back-link" href="/" style="position:fixed;top:20px;left:24px;display:flex;align-items:center;gap:6px;color:#6b7280;font-size:13px;text-decoration:none;font-family:'DM Sans',sans-serif;transition:color .15s" onmouseover="this.style.color='#f3f4f6'" onmouseout="this.style.color='#6b7280'">
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
     Back to Noted
   </a>
@@ -907,6 +907,7 @@ async function logout() {
   authToken=''; currentUser=''; chats=[];
   sources=[]; chatHistory=[]; activeChatId=null; currentPlan='free';
   document.getElementById('login-screen').style.display='flex';
+  const bl=document.getElementById('back-link');if(bl)bl.style.display='flex';
   document.getElementById('app').classList.remove('visible');
   document.getElementById('usage-wrap').style.display='none';
   showSignIn();
@@ -919,6 +920,8 @@ function showApp(displayName) {
   chats = JSON.parse(localStorage.getItem('noted_chats_'+currentUser)||'[]');
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').classList.add('visible');
+  const bl = document.getElementById('back-link');
+  if(bl) bl.style.display='none';
   renderSidebar();
   updateUserMenuDisplay(currentUser, currentPlan||'free');
 }
@@ -981,7 +984,8 @@ async function send(){
     if(!res.ok){
       const ed=await res.json().catch(()=>({}));
       if(res.status===429){typingEl.remove();loading=false;toggleSend();showToast('⚠ '+(ed?.error||'Daily limit reached.'));loadUsage();chatHistory.pop();return}
-      if(res.status===401){authToken='';typingEl.remove();loading=false;toggleSend();document.getElementById('login-screen').style.display='flex';document.getElementById('app').classList.remove('visible');return}
+      if(res.status===401){authToken='';typingEl.remove();loading=false;toggleSend();document.getElementById('login-screen').style.display='flex';
+  const bl=document.getElementById('back-link');if(bl)bl.style.display='flex';document.getElementById('app').classList.remove('visible');return}
       throw new Error(ed?.error||`Server error ${res.status}`);
     }
     const data=await res.json();const reply=data.reply||'No response.';
@@ -1434,7 +1438,7 @@ textarea.finput{resize:vertical;min-height:120px}
 
 <!-- LOGIN -->
 <div id="login-screen">
-  <a href="/" style="position:fixed;top:20px;left:24px;display:flex;align-items:center;gap:6px;color:#6b7280;font-size:13px;text-decoration:none;font-family:'DM Sans',sans-serif;transition:color .15s" onmouseover="this.style.color='#f3f4f6'" onmouseout="this.style.color='#6b7280'">
+  <a id="back-link" href="/" style="position:fixed;top:20px;left:24px;display:flex;align-items:center;gap:6px;color:#6b7280;font-size:13px;text-decoration:none;font-family:'DM Sans',sans-serif;transition:color .15s" onmouseover="this.style.color='#f3f4f6'" onmouseout="this.style.color='#6b7280'">
     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
     Back to Noted
   </a>
@@ -2017,6 +2021,7 @@ async function logout() {
   authToken=''; currentUser=''; chats=[];
   sources=[]; chatHistory=[]; activeChatId=null; currentPlan='free';
   document.getElementById('login-screen').style.display='flex';
+  const bl=document.getElementById('back-link');if(bl)bl.style.display='flex';
   document.getElementById('app').classList.remove('visible');
   document.getElementById('usage-wrap').style.display='none';
   showSignIn();
@@ -2029,6 +2034,8 @@ function showApp(displayName) {
   chats = JSON.parse(localStorage.getItem('noted_chats_'+currentUser)||'[]');
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').classList.add('visible');
+  const bl = document.getElementById('back-link');
+  if(bl) bl.style.display='none';
   renderSidebar();
   updateUserMenuDisplay(currentUser, currentPlan||'free');
 }
@@ -2091,7 +2098,8 @@ async function send(){
     if(!res.ok){
       const ed=await res.json().catch(()=>({}));
       if(res.status===429){typingEl.remove();loading=false;toggleSend();showToast('⚠ '+(ed?.error||'Daily limit reached.'));loadUsage();chatHistory.pop();return}
-      if(res.status===401){authToken='';typingEl.remove();loading=false;toggleSend();document.getElementById('login-screen').style.display='flex';document.getElementById('app').classList.remove('visible');return}
+      if(res.status===401){authToken='';typingEl.remove();loading=false;toggleSend();document.getElementById('login-screen').style.display='flex';
+  const bl=document.getElementById('back-link');if(bl)bl.style.display='flex';document.getElementById('app').classList.remove('visible');return}
       throw new Error(ed?.error||`Server error ${res.status}`);
     }
     const data=await res.json();const reply=data.reply||'No response.';
