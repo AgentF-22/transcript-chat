@@ -13,11 +13,13 @@ const SUPABASE_URL    = process.env.SUPABASE_URL    || 'https://fprgzafskzurjlqd
 const SUPABASE_SECRET = process.env.SUPABASE_SECRET || ''; // service_role key — set in Railway
 const ADMIN_EMAIL     = process.env.ADMIN_EMAIL     || ''; // your email — set in Railway
 
-// ── Plans ──────────────────────────────────────────────────────────────────
+// ── Limits (secret - users don't see plan names) ──────────────────────────
+const DEFAULT_LIMIT = 50;
 const PLANS = {
-  free: { label: 'Free',  daily: 20  },
+  free: { label: 'Free',  daily: 50  },
   plus: { label: 'Plus',  daily: 100 },
   pro:  { label: 'Pro',   daily: 400 },
+  custom: { label: 'Free', daily: 50 },
 };
 
 // ── PostgreSQL ─────────────────────────────────────────────────────────────
@@ -213,13 +215,13 @@ app.get('/api/usage', requireAuth, async (req, res) => {
   const nextMidnight = getMidnight();
   let used = (reset < lastMidnight) ? 0 : user.usage_count;
   const hLeft = Math.ceil((nextMidnight - now) / (60*60*1000));
+  // Don't expose plan name or exact limit to users
+  const pct = Math.min(100, Math.round((used / plan.daily) * 100));
   res.json({
     ok: true,
-    plan: user.plan || 'free',
-    planLabel: plan.label,
     used,
     limit: plan.daily,
-    remaining: Math.max(0, plan.daily - used),
+    pct,
     hoursUntilReset: hLeft
   });
 });
