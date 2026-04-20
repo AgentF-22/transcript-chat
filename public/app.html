@@ -225,18 +225,20 @@ textarea.finput{resize:vertical;min-height:120px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js">
 function toggleUserMenu(){
-  const btn = document.getElementById('user-menu-btn');
-  const dd  = document.getElementById('user-dropdown');
-  const isOpen = dd.classList.contains('open');
+  const dd = document.getElementById('user-dropdown');
+  const ch = document.getElementById('user-chevron');
+  const isOpen = dd.style.display === 'flex';
   if(isOpen){ closeUserMenu(); } else {
-    dd.classList.add('open');
-    btn.classList.add('open');
+    dd.style.display='flex';
+    if(ch) ch.style.transform='rotate(180deg)';
     setTimeout(()=>document.addEventListener('click', closeUserMenuOutside, {once:true}), 0);
   }
 }
 function closeUserMenu(){
-  document.getElementById('user-dropdown').classList.remove('open');
-  document.getElementById('user-menu-btn').classList.remove('open');
+  const dd = document.getElementById('user-dropdown');
+  const ch = document.getElementById('user-chevron');
+  if(dd) dd.style.display='none';
+  if(ch) ch.style.transform='rotate(0deg)';
 }
 function closeUserMenuOutside(e){
   if(!document.getElementById('user-menu-btn').contains(e.target)) closeUserMenu();
@@ -409,26 +411,34 @@ function updateUserMenuDisplay(email, plan){
     </div>
 
     <!-- User menu -->
-    <div class="user-menu-wrap">
-      <button class="user-menu-btn" id="user-menu-btn" onclick="toggleUserMenu()">
-        <div class="user-avatar" id="user-avatar">?</div>
-        <div class="user-info">
-          <div class="user-email" id="user-email-display">Loading...</div>
-          <div class="user-plan-tag" id="user-plan-display">Free plan</div>
+    <div style="padding:8px 10px;border-top:1px solid var(--border);position:relative">
+      <button id="user-menu-btn" onclick="toggleUserMenu()"
+        style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-radius:10px;padding:9px 10px;cursor:pointer;transition:background .15s;text-align:left"
+        onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">
+        <div id="user-avatar" style="width:32px;height:32px;border-radius:50%;flex-shrink:0;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">?</div>
+        <div style="flex:1;min-width:0">
+          <div id="user-email-display" style="font-size:12px;color:var(--text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Loading...</div>
+          <div id="user-plan-display" style="font-size:10px;color:var(--text3);margin-top:1px">Free plan</div>
         </div>
-        <svg class="user-menu-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+        <svg id="user-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text3);flex-shrink:0;transition:transform .2s"><path d="M19 9l-7 7-7-7"/></svg>
       </button>
-      <div class="user-dropdown" id="user-dropdown">
-        <a href="/privacy.html" target="_blank" class="user-dropdown-item">
+      <div id="user-dropdown" style="display:none;position:absolute;bottom:calc(100% + 4px);left:10px;right:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:6px;box-shadow:0 -8px 24px rgba(0,0,0,.3);flex-direction:column;gap:2px;z-index:200">
+        <a href="/privacy.html" target="_blank"
+          style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;color:var(--text2);text-decoration:none;transition:background .12s"
+          onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
           Privacy policy
         </a>
-        <a href="/terms.html" target="_blank" class="user-dropdown-item">
+        <a href="/terms.html" target="_blank"
+          style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;color:var(--text2);text-decoration:none;transition:background .12s"
+          onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
           Terms of service
         </a>
-        <div class="user-dropdown-sep"></div>
-        <button class="user-dropdown-item danger" onclick="closeUserMenu();logout()">
+        <div style="height:1px;background:var(--border);margin:4px 0"></div>
+        <button onclick="closeUserMenu();logout()"
+          style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13px;color:var(--danger);background:none;border:none;width:100%;text-align:left;cursor:pointer;font-family:var(--font);transition:background .12s"
+          onmouseover="this.style.background='var(--danger-dim)'" onmouseout="this.style.background='none'">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
           Sign out
         </button>
