@@ -247,8 +247,8 @@ function updateUserMenuDisplay(name, plan){
   const emailEl = document.getElementById('user-email-display');
   const planEl  = document.getElementById('user-plan-display');
   const avEl    = document.getElementById('user-avatar');
-  const display = name || currentUser || '';
-  if(emailEl && display) emailEl.textContent = display;
+  const display = (name || currentUser || '').split('@')[0];
+  if(emailEl) emailEl.textContent = display || 'User';
   const p = plan || currentPlan || 'free';
   if(planEl)  planEl.textContent  = p.charAt(0).toUpperCase()+p.slice(1)+' plan';
   if(avEl)    avEl.textContent    = (email||currentUser||'?')[0].toUpperCase();
@@ -445,9 +445,9 @@ function updateUserMenuDisplay(name, plan){
       <button id="user-menu-btn" onclick="toggleUserMenu()"
         style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;border-radius:10px;padding:9px 10px;cursor:pointer;transition:background .15s;text-align:left"
         onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">
-        <div id="user-avatar" style="width:32px;height:32px;border-radius:50%;flex-shrink:0;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">?</div>
+        <div id="user-avatar" style="width:32px;height:32px;border-radius:50%;flex-shrink:0;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">U</div>
         <div style="flex:1;min-width:0">
-          <div id="user-email-display" style="font-size:12px;color:var(--text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Loading...</div>
+          <div id="user-email-display" style="font-size:12px;color:var(--text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
           <div id="user-plan-display" style="font-size:10px;color:var(--text3);margin-top:1px">Free plan</div>
         </div>
         <svg id="user-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text3);flex-shrink:0;transition:transform .2s"><path d="M19 9l-7 7-7-7"/></svg>
