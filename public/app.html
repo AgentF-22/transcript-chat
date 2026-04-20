@@ -746,16 +746,17 @@ async function doSignUp(){
   if(pass!==pass2){ showLoginError('Passwords do not match.'); return; }
   btn.disabled=true; btn.textContent='Creating account...';
   clearAuthMessages();
-  const {data,error}=await _supa.auth.signUp({email,password:pass,options:{emailRedirectTo:window.location.origin+'/app'}});
+  const {data,error}=await _supa.auth.signUp({email,password:pass});
   if(error){ showLoginError(error.message); btn.disabled=false; btn.textContent='Create account →'; return; }
-  // Check if email confirmation is needed
-  if(data.user&&data.session){
+  if(data.session){
+    // Email confirmation disabled - logged in immediately
     authToken=data.session.access_token;
     await afterLogin(data.user);
   } else {
-    showLoginSuccess('✅ Account created! Check your email to confirm your account, then sign in.');
+    // Email confirmation required
+    showLoginSuccess('✅ Check your email for a confirmation link, then sign in.');
     btn.disabled=false; btn.textContent='Create account →';
-    setTimeout(()=>showSignIn(), 3000);
+    setTimeout(()=>showSignIn(), 4000);
   }
 }
 
@@ -934,6 +935,7 @@ async function loadUsage(){
     const res=await fetch(`${SERVER}/api/usage`,{headers:{'x-auth-token':authToken}});
     const d=await res.json();if(!d.ok||d.admin)return;
     currentPlan=d.plan;
+    updateUserMenuDisplay(currentUser, d.plan);
     document.getElementById('usage-wrap').style.display='block';
     document.getElementById('usage-plan-label').textContent=d.planLabel+' plan';
     document.getElementById('usage-count-label').textContent=`${d.used}/${d.limit}`;
