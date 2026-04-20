@@ -223,38 +223,8 @@ textarea.finput{resize:vertical;min-height:120px}
   .panel{left:auto;right:24px;width:440px;border-radius:18px;bottom:24px;border:1px solid var(--border);max-height:88vh}
 }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js">
-function toggleUserMenu(){
-  const dd = document.getElementById('user-dropdown');
-  const ch = document.getElementById('user-chevron');
-  const isOpen = dd.style.display === 'flex';
-  if(isOpen){ closeUserMenu(); } else {
-    dd.style.display='flex';
-    if(ch) ch.style.transform='rotate(180deg)';
-    setTimeout(()=>document.addEventListener('click', closeUserMenuOutside, {once:true}), 0);
-  }
-}
-function closeUserMenu(){
-  const dd = document.getElementById('user-dropdown');
-  const ch = document.getElementById('user-chevron');
-  if(dd) dd.style.display='none';
-  if(ch) ch.style.transform='rotate(0deg)';
-}
-function closeUserMenuOutside(e){
-  if(!document.getElementById('user-menu-btn').contains(e.target)) closeUserMenu();
-}
-function updateUserMenuDisplay(name, plan){
-  const emailEl = document.getElementById('user-email-display');
-  const planEl  = document.getElementById('user-plan-display');
-  const avEl    = document.getElementById('user-avatar');
-  const display = (name || currentUser || '').split('@')[0];
-  if(emailEl) emailEl.textContent = display || 'User';
-  const p = plan || currentPlan || 'free';
-  if(planEl)  planEl.textContent  = p.charAt(0).toUpperCase()+p.slice(1)+' plan';
-  if(avEl)    avEl.textContent    = (email||currentUser||'?')[0].toUpperCase();
-}
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
-</script>
 </head>
 <body>
 
@@ -1029,6 +999,35 @@ function readAsText(file){return new Promise((res,rej)=>{const r=new FileReader(
 async function readDocx(file){const ab=await file.arrayBuffer();const res=await fetch(`${SERVER}/api/extract-docx`,{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:ab});const d=await res.json();if(!d.ok)throw new Error(d.error||'Could not read document');return d.text}
 async function readPDF(file){if(!window.pdfjsLib){await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}const buf=await file.arrayBuffer();const pdf=await window.pdfjsLib.getDocument({data:buf}).promise;let text='';for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i);const content=await page.getTextContent();text+=content.items.map(it=>it.str).join(' ')+'\n'}return text}
 function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}
+function toggleUserMenu(){
+  const dd = document.getElementById('user-dropdown');
+  const ch = document.getElementById('user-chevron');
+  const isOpen = dd.style.display === 'flex';
+  if(isOpen){ closeUserMenu(); } else {
+    dd.style.display='flex';
+    if(ch) ch.style.transform='rotate(180deg)';
+    setTimeout(()=>document.addEventListener('click', closeUserMenuOutside, {once:true}), 0);
+  }
+}
+function closeUserMenu(){
+  const dd = document.getElementById('user-dropdown');
+  const ch = document.getElementById('user-chevron');
+  if(dd) dd.style.display='none';
+  if(ch) ch.style.transform='rotate(0deg)';
+}
+function closeUserMenuOutside(e){
+  if(!document.getElementById('user-menu-btn').contains(e.target)) closeUserMenu();
+}
+function updateUserMenuDisplay(name, plan){
+  const emailEl = document.getElementById('user-email-display');
+  const planEl  = document.getElementById('user-plan-display');
+  const avEl    = document.getElementById('user-avatar');
+  const display = (name || currentUser || '').split('@')[0];
+  if(emailEl) emailEl.textContent = display || 'User';
+  const p = plan || currentPlan || 'free';
+  if(planEl)  planEl.textContent  = p.charAt(0).toUpperCase()+p.slice(1)+' plan';
+  if(avEl)    avEl.textContent    = (email||currentUser||'?')[0].toUpperCase();
+}
 </script>
 </body>
 </html>
