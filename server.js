@@ -73,21 +73,15 @@ initDB().catch(e => console.error('DB init error:', e.message));
 app.use(cors());
 app.use(express.json({ limit: '20mb' }));
 app.use(express.raw({ type: 'application/octet-stream', limit: '20mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Landing page at root, app at /app
+// Specific routes BEFORE static middleware
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'landing.html'));
 });
 app.get('/app', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'app.html'));
 });
-app.get('/privacy.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'privacy.html'));
-});
-app.get('/terms.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'terms.html'));
-});
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ── Verify Supabase JWT ────────────────────────────────────────────────────
 async function verifySupabaseToken(token){
