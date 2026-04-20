@@ -263,7 +263,7 @@ function updateUserMenuDisplay(email, plan){
     <!-- Brand -->
     <div style="text-align:center;margin-bottom:4px">
       <div style="font-size:38px;font-weight:800;font-family:'DM Serif Display',serif;color:#2563eb;line-height:1;margin-bottom:12px">N</div>
-      <div style="font-size:22px;font-weight:700;color:#f3f4f6;letter-spacing:-.3px" id="login-title">Welcome back</div>
+      <div style="font-size:22px;font-weight:700;color:#f3f4f6;letter-spacing:-.3px" id="login-title">Welcome</div>
       <div style="font-size:13px;color:#9ca3af;margin-top:5px" id="login-sub">Sign in to your account</div>
     </div>
 
@@ -678,7 +678,7 @@ function showSignIn(){
   document.getElementById('signin-form').style.display='flex';
   document.getElementById('signup-form').style.display='none';
   document.getElementById('forgot-form').style.display='none';
-  document.getElementById('login-title').textContent='Welcome back';
+  document.getElementById('login-title').textContent='Welcome';
   document.getElementById('login-sub').textContent='Sign in to your account';
   clearAuthMessages();
 }
@@ -695,7 +695,7 @@ function showForgot(){
   document.getElementById('signup-form').style.display='none';
   document.getElementById('forgot-form').style.display='flex';
   document.getElementById('login-title').textContent='Reset password';
-  document.getElementById('login-sub').textContent='We'll send you a reset link';
+  document.getElementById('login-sub').textContent="We'll send you a reset link";
   clearAuthMessages();
 }
 function clearAuthMessages(){
