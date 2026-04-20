@@ -644,20 +644,25 @@ function newChatId(){return Math.random().toString(36).slice(2,10)+Date.now().to
 
 // ── AUTH ───────────────────────────────────────────────────────────────────
 window.addEventListener('load', async () => {
-  const { data: { session } } = await _supa.auth.getSession();
-  if(session && window.location.hash.includes('access_token')) {
-    authToken = session.access_token;
-    window.location.hash = '';
-    await afterLogin(session.user);
+  // Check URL for Google OAuth tokens (hash or query params)
+  const hash = window.location.hash;
+  const params = new URLSearchParams(window.location.search);
+  const isOAuthRedirect = hash.includes('access_token') || params.get('code');
+
+  if(isOAuthRedirect) {
+    // Coming back from Google — wait for Supabase to process the tokens
+    _supa.auth.onAuthStateChange(async (event, session) => {
+      if((event === 'SIGNED_IN') && session && !authToken) {
+        authToken = session.access_token;
+        window.history.replaceState({}, '', window.location.pathname);
+        await afterLogin(session.user);
+      }
+    });
     return;
   }
-  if(session) await _supa.auth.signOut();
-  _supa.auth.onAuthStateChange(async (event, session) => {
-    if(event === 'SIGNED_IN' && session && !authToken) {
-      authToken = session.access_token;
-      await afterLogin(session.user);
-    }
-  });
+
+  // Normal load — sign out any existing session and show login
+  await _supa.auth.signOut();
 });
 
 async function afterLogin(supaUser) {
