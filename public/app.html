@@ -247,9 +247,10 @@ function updateUserMenuDisplay(email, plan){
   const emailEl = document.getElementById('user-email-display');
   const planEl  = document.getElementById('user-plan-display');
   const avEl    = document.getElementById('user-avatar');
-  if(emailEl) emailEl.textContent = email || '';
-  if(planEl)  planEl.textContent  = (plan||'free').charAt(0).toUpperCase()+(plan||'free').slice(1)+' plan';
-  if(avEl)    avEl.textContent    = (email||'?')[0].toUpperCase();
+  if(emailEl) emailEl.textContent = email || currentUser || '?';
+  const p = plan || currentPlan || 'free';
+  if(planEl)  planEl.textContent  = p.charAt(0).toUpperCase()+p.slice(1)+' plan';
+  if(avEl)    avEl.textContent    = (email||currentUser||'?')[0].toUpperCase();
 }
 
 </script>
@@ -258,6 +259,10 @@ function updateUserMenuDisplay(email, plan){
 
 <!-- LOGIN -->
 <div id="login-screen">
+  <a href="/" style="position:fixed;top:20px;left:24px;display:flex;align-items:center;gap:6px;color:#6b7280;font-size:13px;text-decoration:none;font-family:'DM Sans',sans-serif;transition:color .15s" onmouseover="this.style.color='#f3f4f6'" onmouseout="this.style.color='#6b7280'">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Back to Noted
+  </a>
   <div style="width:100%;max-width:380px;background:#1f2937;border:1px solid #1e3a5f;border-radius:20px;padding:40px 32px;display:flex;flex-direction:column;gap:20px;box-shadow:0 30px 60px rgba(0,0,0,.6)">
 
     <!-- Brand -->
@@ -666,7 +671,11 @@ async function afterLogin(supaUser) {
     document.getElementById('btn-admin').style.display   = isAdminUser ? 'flex' : 'none';
     document.getElementById('btn-support').style.display = isAdminUser ? 'none' : 'flex';
     showApp(data.email);
-    updateUserMenuDisplay(data.email, data.plan);
+    updateUserMenuDisplay(data.email, data.plan || 'free');
+    // Also update from /api/me in case plan changed
+    fetch(`${SERVER}/api/usage`,{headers:{'x-auth-token':authToken}}).then(r=>r.json()).then(d=>{
+      if(d.ok&&!d.admin) updateUserMenuDisplay(data.email, d.plan);
+    }).catch(()=>{});
     checkUnread();
     loadUsage();
     setInterval(checkUnread, 30000);
@@ -824,6 +833,7 @@ function showApp(email) {
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').classList.add('visible');
   renderSidebar();
+  updateUserMenuDisplay(currentUser, currentPlan);
 }
 
 function showLoginError(msg) {
