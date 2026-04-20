@@ -294,7 +294,7 @@ textarea.finput{resize:vertical;min-height:120px}
     </button>
 
     <div style="text-align:center;font-size:12px;color:#6b7280;line-height:1.6">
-      New users get free access automatically.
+      New users get free access automatically.<br/><a href="/privacy.html" style="color:#6b7280;font-size:11px;text-decoration:underline">Privacy</a> · <a href="/terms.html" style="color:#6b7280;font-size:11px;text-decoration:underline">Terms</a>
     </div>
   </div>
 </div>
@@ -514,6 +514,7 @@ let sources=[],chatHistory=[],loading=false,uid=1,activeChatId=null;
 let authToken='',currentUser='',isAdminUser=false,currentPlan='free',chats=[];
 let pendingEmail='';
 const SERVER=window.location.origin;
+const APP_BASE=window.location.origin+'/app';
 function newChatId(){return Math.random().toString(36).slice(2,10)+Date.now().toString(36)}
 
 // ── EXAMPLE ───────────────────────────────────────────────────────────────
@@ -611,7 +612,7 @@ function showEmailForm() {
 async function doGoogleLogin() {
   const { error } = await _supa.auth.signInWithOAuth({
     provider:'google',
-    options:{redirectTo: window.location.origin}
+    options:{redirectTo: window.location.origin+'/app'}
   });
   if(error) showLoginError(error.message);
 }

@@ -75,6 +75,20 @@ app.use(express.json({ limit: '20mb' }));
 app.use(express.raw({ type: 'application/octet-stream', limit: '20mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Landing page at root, app at /app
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'landing.html'));
+});
+app.get('/app', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+app.get('/privacy.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'privacy.html'));
+});
+app.get('/terms.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'terms.html'));
+});
+
 // ── Verify Supabase JWT ────────────────────────────────────────────────────
 async function verifySupabaseToken(token){
   try {

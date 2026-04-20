@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Noted — Turn any transcript into a conversation</title>
+<meta name="description" content="Upload any interview, meeting, or podcast transcript and ask anything about it. AI-powered transcript intelligence."/>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:#0d1117;color:#d1d5db;overflow-x:hidden}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 48px;
+  background:rgba(13,17,23,.85);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo{font-family:'DM Serif Display',serif;font-size:24px;font-weight:700;color:#2563eb}
+.nav-name{font-size:17px;font-weight:700;color:#f3f4f6}
+.nav-links{display:flex;align-items:center;gap:8px}
+.nav-link{font-size:14px;color:#6b7280;text-decoration:none;padding:8px 14px;border-radius:8px;transition:color .15s}
+.nav-link:hover{color:#f3f4f6}
+.nav-cta{
+  background:#2563eb;color:#fff;border:none;border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;
+  padding:10px 20px;cursor:pointer;text-decoration:none;
+  transition:background .15s;
+}
+.nav-cta:hover{background:#1d4ed8}
+
+/* HERO */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:120px 24px 80px;
+  background:radial-gradient(ellipse 80% 50% at 50% -10%, rgba(37,99,235,.15) 0%, transparent 70%);
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.2);
+  border-radius:20px;padding:6px 14px;font-size:13px;color:#93c5fd;
+  margin-bottom:28px;font-weight:500;
+}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:#2563eb}
+h1{
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(40px,6vw,72px);
+  font-weight:400;color:#f3f4f6;
+  line-height:1.1;letter-spacing:-.02em;
+  max-width:800px;margin-bottom:24px;
+}
+h1 span{color:#2563eb}
+.hero-sub{
+  font-size:clamp(16px,2vw,20px);color:#6b7280;
+  max-width:520px;line-height:1.7;margin-bottom:40px;
+}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{
+  background:#2563eb;color:#fff;border:none;border-radius:12px;
+  font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;
+  padding:15px 32px;cursor:pointer;text-decoration:none;
+  transition:background .15s;display:inline-block;
+}
+.btn-primary:hover{background:#1d4ed8}
+.btn-secondary{
+  background:transparent;color:#f3f4f6;
+  border:1px solid #374151;border-radius:12px;
+  font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;
+  padding:15px 32px;cursor:pointer;text-decoration:none;
+  transition:border-color .15s;display:inline-block;
+}
+.btn-secondary:hover{border-color:#6b7280}
+
+/* DEMO */
+.demo{
+  max-width:800px;margin:60px auto 0;
+  background:#1f2937;border:1px solid #374151;
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 40px 80px rgba(0,0,0,.5);
+}
+.demo-bar{
+  background:#111827;padding:12px 16px;
+  display:flex;align-items:center;gap:8px;
+  border-bottom:1px solid #374151;
+}
+.demo-dot{width:12px;height:12px;border-radius:50%}
+.demo-url{
+  flex:1;background:#1f2937;border:1px solid #374151;
+  border-radius:6px;padding:5px 12px;font-size:12px;color:#6b7280;
+  margin:0 12px;
+}
+.demo-body{padding:28px;display:flex;flex-direction:column;gap:16px}
+.demo-msg{display:flex;gap:12px;align-items:flex-start}
+.demo-msg.user{flex-direction:row-reverse}
+.demo-av{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;
+}
+.demo-av.bot{background:#2563eb;color:#fff}
+.demo-av.user{background:#374151;color:#9ca3af}
+.demo-bubble{
+  background:#111827;border-radius:12px;padding:12px 16px;
+  font-size:14px;line-height:1.6;color:#d1d5db;max-width:80%;
+}
+.demo-msg.user .demo-bubble{background:#2563eb;color:#fff;border-radius:12px 12px 4px 12px}
+.demo-typing{display:flex;gap:4px;padding:14px 16px;background:#111827;border-radius:12px}
+.demo-dot-anim{width:6px;height:6px;border-radius:50%;background:#6b7280;animation:pulse 1.2s infinite}
+.demo-dot-anim:nth-child(2){animation-delay:.2s}
+.demo-dot-anim:nth-child(3){animation-delay:.4s}
+@keyframes pulse{0%,80%,100%{opacity:.3;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+/* HOW IT WORKS */
+.section{padding:100px 24px;text-align:center}
+.section-label{font-size:12px;font-weight:600;letter-spacing:.1em;color:#2563eb;text-transform:uppercase;margin-bottom:12px}
+h2{font-family:'DM Serif Display',serif;font-size:clamp(28px,4vw,44px);color:#f3f4f6;margin-bottom:16px;font-weight:400}
+.section-sub{font-size:17px;color:#6b7280;max-width:480px;margin:0 auto 60px;line-height:1.7}
+
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;max-width:900px;margin:0 auto}
+.step{
+  background:#1f2937;border:1px solid #374151;border-radius:16px;
+  padding:32px 24px;text-align:left;
+}
+.step-num{
+  width:36px;height:36px;border-radius:10px;background:rgba(37,99,235,.15);
+  border:1px solid rgba(37,99,235,.2);color:#2563eb;
+  font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  margin-bottom:18px;
+}
+.step-title{font-size:16px;font-weight:600;color:#f3f4f6;margin-bottom:8px}
+.step-desc{font-size:14px;color:#6b7280;line-height:1.6}
+
+/* USE CASES */
+.usecases{background:#111827;padding:100px 24px}
+.usecases-inner{max-width:1000px;margin:0 auto;text-align:center}
+.uc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:48px}
+.uc-card{
+  background:#1f2937;border:1px solid #374151;border-radius:14px;
+  padding:24px 20px;text-align:center;
+}
+.uc-icon{font-size:28px;margin-bottom:12px}
+.uc-title{font-size:14px;font-weight:600;color:#f3f4f6;margin-bottom:6px}
+.uc-desc{font-size:13px;color:#6b7280;line-height:1.5}
+
+/* PRICING */
+.pricing{padding:100px 24px;text-align:center}
+.pricing-inner{max-width:900px;margin:0 auto}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:48px}
+.plan{
+  background:#1f2937;border:1px solid #374151;
+  border-radius:16px;padding:32px 28px;text-align:left;
+  position:relative;
+}
+.plan.featured{border-color:#2563eb;background:#1a2744}
+.plan-badge-top{
+  position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+  background:#2563eb;color:#fff;font-size:11px;font-weight:700;
+  padding:4px 12px;border-radius:20px;white-space:nowrap;
+}
+.plan-name{font-size:18px;font-weight:700;color:#f3f4f6;margin-bottom:4px}
+.plan-price{font-size:36px;font-weight:700;color:#f3f4f6;margin:16px 0 4px}
+.plan-price span{font-size:16px;font-weight:400;color:#6b7280}
+.plan-period{font-size:13px;color:#6b7280;margin-bottom:24px}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.plan-features li{font-size:14px;color:#9ca3af;display:flex;align-items:center;gap:8px}
+.plan-features li::before{content:'✓';color:#2563eb;font-weight:700;flex-shrink:0}
+.plan-btn{
+  width:100%;padding:13px;border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;
+  cursor:pointer;border:none;text-align:center;text-decoration:none;
+  display:block;transition:background .15s;
+}
+.plan-btn.primary{background:#2563eb;color:#fff}
+.plan-btn.primary:hover{background:#1d4ed8}
+.plan-btn.secondary{background:#374151;color:#f3f4f6}
+.plan-btn.secondary:hover{background:#4b5563}
+
+/* CTA */
+.cta{
+  padding:100px 24px;text-align:center;
+  background:radial-gradient(ellipse 60% 60% at 50% 50%, rgba(37,99,235,.1) 0%, transparent 70%);
+}
+.cta h2{margin-bottom:16px}
+.cta p{font-size:17px;color:#6b7280;margin-bottom:36px}
+
+/* FOOTER */
+footer{
+  background:#0d1117;border-top:1px solid #1f2937;
+  padding:40px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:16px;
+}
+.footer-brand{display:flex;align-items:center;gap:8px}
+.footer-logo{font-family:'DM Serif Display',serif;font-size:20px;color:#2563eb}
+.footer-name{font-size:15px;font-weight:700;color:#6b7280}
+.footer-links{display:flex;gap:24px}
+.footer-links a{font-size:13px;color:#6b7280;text-decoration:none;transition:color .15s}
+.footer-links a:hover{color:#f3f4f6}
+.footer-copy{font-size:13px;color:#4b5563}
+
+@media(max-width:640px){
+  nav{padding:14px 20px}
+  .nav-links .nav-link{display:none}
+  .hero{padding:100px 20px 60px}
+  footer{padding:32px 20px;flex-direction:column;text-align:center}
+  .footer-links{justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-brand">
+    <span class="nav-logo">N</span>
+    <span class="nav-name">Noted</span>
+  </a>
+  <div class="nav-links">
+    <a href="#how" class="nav-link">How it works</a>
+    <a href="#pricing" class="nav-link">Pricing</a>
+    <a href="/app" class="nav-cta">Get started →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <div class="hero-badge-dot"></div>
+    AI-powered transcript intelligence
+  </div>
+  <h1>Turn any transcript into a <span>conversation</span></h1>
+  <p class="hero-sub">Upload an interview, meeting, podcast, or call — then ask anything about it. Get instant answers, summaries, and insights.</p>
+  <div class="hero-btns">
+    <a href="/app" class="btn-primary">Start for free →</a>
+    <a href="#how" class="btn-secondary">See how it works</a>
+  </div>
+
+  <!-- Mock UI -->
+  <div class="demo">
+    <div class="demo-bar">
+      <div class="demo-dot" style="background:#ef4444"></div>
+      <div class="demo-dot" style="background:#f59e0b"></div>
+      <div class="demo-dot" style="background:#22c55e"></div>
+      <div class="demo-url">noted.up.railway.app</div>
+    </div>
+    <div class="demo-body">
+      <div class="demo-msg user">
+        <div class="demo-av user">U</div>
+        <div class="demo-bubble">What were the candidate's main concerns about the role?</div>
+      </div>
+      <div class="demo-msg">
+        <div class="demo-av bot">N</div>
+        <div class="demo-bubble">Sarah expressed two main concerns. First, she was worried about the size of the engineering team — she prefers working in smaller, more agile groups. Second, she asked several questions about remote work flexibility, suggesting that location may be a factor in her decision.</div>
+      </div>
+      <div class="demo-msg user">
+        <div class="demo-av user">U</div>
+        <div class="demo-bubble">Would she accept a fully remote offer?</div>
+      </div>
+      <div class="demo-msg">
+        <div class="demo-av bot">N</div>
+        <div class="demo-typing">
+          <div class="demo-dot-anim"></div>
+          <div class="demo-dot-anim"></div>
+          <div class="demo-dot-anim"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div class="section-label">How it works</div>
+  <h2>Three steps to instant insights</h2>
+  <p class="section-sub">No setup, no training. Just upload and start asking.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-title">Upload your transcript</div>
+      <div class="step-desc">Paste text or upload a .txt, .docx, or .pdf file. Supports any language.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-title">Ask anything</div>
+      <div class="step-desc">Type any question in plain English. Get clear, direct answers based on the transcript.</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-title">Extract insights</div>
+      <div class="step-desc">Summarise, compare, find quotes, identify themes — whatever you need.</div>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section class="usecases">
+  <div class="usecases-inner">
+    <div class="section-label">Use cases</div>
+    <h2>Built for anyone with transcripts</h2>
+    <p class="section-sub">Whether you're hiring, researching, or reviewing — Noted has you covered.</p>
+    <div class="uc-grid">
+      <div class="uc-card">
+        <div class="uc-icon">🎙️</div>
+        <div class="uc-title">Recruiters</div>
+        <div class="uc-desc">Review candidate interviews faster and extract key answers.</div>
+      </div>
+      <div class="uc-card">
+        <div class="uc-icon">🔬</div>
+        <div class="uc-title">Researchers</div>
+        <div class="uc-desc">Analyse expert interviews and find patterns across sessions.</div>
+      </div>
+      <div class="uc-card">
+        <div class="uc-icon">🎧</div>
+        <div class="uc-title">Podcasters</div>
+        <div class="uc-desc">Turn episode transcripts into show notes and highlights.</div>
+      </div>
+      <div class="uc-card">
+        <div class="uc-icon">📋</div>
+        <div class="uc-title">Consultants</div>
+        <div class="uc-desc">Quickly extract client needs and action items from meetings.</div>
+      </div>
+      <div class="uc-card">
+        <div class="uc-icon">📰</div>
+        <div class="uc-title">Journalists</div>
+        <div class="uc-desc">Find quotes and facts from long interview transcripts instantly.</div>
+      </div>
+      <div class="uc-card">
+        <div class="uc-icon">🎓</div>
+        <div class="uc-title">Students</div>
+        <div class="uc-desc">Summarise lecture recordings and find key concepts fast.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="pricing-inner">
+    <div class="section-label">Pricing</div>
+    <h2>Simple, transparent pricing</h2>
+    <p class="section-sub">Start free. Upgrade when you need more.</p>
+    <div class="plans">
+      <div class="plan">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">€0<span>/mo</span></div>
+        <div class="plan-period">No credit card required</div>
+        <ul class="plan-features">
+          <li>20 messages per day</li>
+          <li>All file formats supported</li>
+          <li>Google sign-in</li>
+          <li>Email support</li>
+        </ul>
+        <a href="/app" class="plan-btn secondary">Get started</a>
+      </div>
+      <div class="plan featured">
+        <div class="plan-badge-top">Most popular</div>
+        <div class="plan-name">Plus</div>
+        <div class="plan-price">€5<span>/mo</span></div>
+        <div class="plan-period">Billed monthly</div>
+        <ul class="plan-features">
+          <li>100 messages per day</li>
+          <li>Everything in Free</li>
+          <li>Priority support</li>
+          <li>Early access to new features</li>
+        </ul>
+        <a href="/app" class="plan-btn primary">Upgrade to Plus</a>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">€15<span>/mo</span></div>
+        <div class="plan-period">Billed monthly</div>
+        <ul class="plan-features">
+          <li>400 messages per day</li>
+          <li>Everything in Plus</li>
+          <li>Dedicated support</li>
+          <li>Usage analytics</li>
+        </ul>
+        <a href="/app" class="plan-btn secondary">Upgrade to Pro</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <h2>Ready to get started?</h2>
+  <p>Join hundreds of professionals using Noted to work smarter.</p>
+  <a href="/app" class="btn-primary">Start for free — no card needed →</a>
+</section>
+
+<footer>
+  <div class="footer-brand">
+    <span class="footer-logo">N</span>
+    <span class="footer-name">Noted</span>
+  </div>
+  <div class="footer-links">
+    <a href="/privacy.html">Privacy</a>
+    <a href="/terms.html">Terms</a>
+    <a href="/app">App</a>
+  </div>
+  <div class="footer-copy">© 2026 Noted. All rights reserved.</div>
+</footer>
+
+</body>
+</html>
