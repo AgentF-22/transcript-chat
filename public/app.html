@@ -648,27 +648,20 @@ Sarah: In a VP of Product or CPO role where I have helped build something meanin
 
 // ── SUPABASE AUTH ─────────────────────────────────────────────────────────
 window.addEventListener('load', async () => {
-  // Sign out any existing session on page load so user always sees login
-  await _supa.auth.signOut();
-
-  // Only auto-login if coming back from Google OAuth redirect (hash contains access_token)
+  // Check if coming back from Google OAuth (URL has tokens)
   const hash = window.location.hash;
-  if(hash && hash.includes('access_token')) {
-    const { data: { session } } = await _supa.auth.getSession();
-    if(session) {
-      authToken = session.access_token;
-      await afterLogin(session.user);
-      return;
-    }
+  if(hash && (hash.includes('access_token') || hash.includes('code='))) {
+    _supa.auth.onAuthStateChange(async (event, session) => {
+      if(session && event==='SIGNED_IN') {
+        authToken = session.access_token;
+        window.location.hash = '';
+        await afterLogin(session.user);
+      }
+    });
+    return;
   }
-
-  // Listen for Google OAuth redirect
-  _supa.auth.onAuthStateChange(async (event, session) => {
-    if(session && event==='SIGNED_IN' && authToken === '') {
-      authToken = session.access_token;
-      await afterLogin(session.user);
-    }
-  });
+  // Normal page load — sign out and show login
+  await _supa.auth.signOut();
 });
 
 async function afterLogin(supaUser) {
