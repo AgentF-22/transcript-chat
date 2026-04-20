@@ -648,20 +648,25 @@ Sarah: In a VP of Product or CPO role where I have helped build something meanin
 
 // ── SUPABASE AUTH ─────────────────────────────────────────────────────────
 window.addEventListener('load', async () => {
-  // Check if coming back from Google OAuth (URL has tokens)
-  const hash = window.location.hash;
-  if(hash && (hash.includes('access_token') || hash.includes('code='))) {
-    _supa.auth.onAuthStateChange(async (event, session) => {
-      if(session && event==='SIGNED_IN') {
-        authToken = session.access_token;
-        window.location.hash = '';
-        await afterLogin(session.user);
-      }
-    });
-    return;
+  // Handle Google OAuth redirect back to app
+  _supa.auth.onAuthStateChange(async (event, session) => {
+    if(session && event==='SIGNED_IN' && !authToken) {
+      authToken = session.access_token;
+      await afterLogin(session.user);
+    }
+  });
+  // Sign out so user always sees login on fresh load
+  // But first check if we're mid-OAuth redirect
+  const { data: { session } } = await _supa.auth.getSession();
+  if(session) {
+    // Only auto-login if URL has OAuth fragment (Google redirect)
+    if(window.location.hash.includes('access_token')) {
+      authToken = session.access_token;
+      await afterLogin(session.user);
+    } else {
+      await _supa.auth.signOut();
+    }
   }
-  // Normal page load — sign out and show login
-  await _supa.auth.signOut();
 });
 
 async function afterLogin(supaUser) {
@@ -732,8 +737,16 @@ async function doSignIn(){
   if(!email||!pass){ showLoginError('Please fill in all fields.'); return; }
   btn.disabled=true; btn.textContent='Signing in...';
   clearAuthMessages();
+  // Try password first, fall back to OTP if no password set
   const {data,error}=await _supa.auth.signInWithPassword({email,password:pass});
-  if(error){ showLoginError(error.message); btn.disabled=false; btn.textContent='Sign in →'; return; }
+  if(error){
+    if(error.message.includes('Invalid login') || error.message.includes('Email not confirmed')){
+      showLoginError('Incorrect email or password.');
+    } else {
+      showLoginError(error.message);
+    }
+    btn.disabled=false; btn.textContent='Sign in →'; return;
+  }
   authToken=data.session.access_token;
   await afterLogin(data.user);
 }
@@ -836,7 +849,7 @@ function showApp(email) {
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').classList.add('visible');
   renderSidebar();
-  updateUserMenuDisplay(currentUser, currentPlan);
+  updateUserMenuDisplay(email||currentUser, currentPlan||"free");
 }
 
 function showLoginError(msg) {
